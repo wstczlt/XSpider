@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: 'application'
+mainClassName = 'com.test.xspider.SpiderMain'
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile "mysql:mysql-connector-java:5.1.37"
+    compile "org.jsoup:jsoup:1.8.3"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.6.3"
+    compile "junit:junit:4.12"
+
+    compile "us.codecraft:webmagic-core:0.6.0"
+    compile "us.codecraft:webmagic-extension:0.6.0"
+
+    compile 'com.github.promeg:tinypinyin:2.0.3' // TinyPinyin核心包，约80KB
+}
+
+
