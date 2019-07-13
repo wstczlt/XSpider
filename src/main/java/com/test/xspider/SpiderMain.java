@@ -12,8 +12,8 @@ public class SpiderMain {
 
   public static void main(String[] args) {
     // build urls
-    final long startMatchID = 1662650;
-    final long endMatchID = 1662660;
+    final long startMatchID = 1652650;
+    final long endMatchID = 1652660;
     final List<String> matchUrls = new UrlProducer(startMatchID, endMatchID).buildUrls();
 
     // build consumers
