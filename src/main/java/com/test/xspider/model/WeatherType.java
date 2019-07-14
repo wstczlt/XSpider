@@ -1,6 +1,6 @@
 package com.test.xspider.model;
 
-public enum  WeatherType {
+public enum WeatherType {
 
   UNKNOWN(0), // 未知
   SUNNY(1), // 晴天

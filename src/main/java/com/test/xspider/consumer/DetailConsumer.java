@@ -1,20 +1,20 @@
 package com.test.xspider.consumer;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.test.xspider.PageConsumer;
 import com.test.xspider.Pair;
 import com.test.xspider.XSpiderUtils;
 import com.test.xspider.model.UrlType;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 import us.codecraft.webmagic.Page;
 
 // => http://score.nowscore.com/detail/1662654cn.html
 // 只爬取已结束的比赛
-public class DetailPageConsumer implements PageConsumer {
+public class DetailConsumer implements PageConsumer {
 
   // ----- 静态信息 ---
   // matchID, 比赛ID
@@ -69,23 +69,19 @@ public class DetailPageConsumer implements PageConsumer {
 
   private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-mm-dd HH:mm");
 
-  private static void log(Throwable e) {
-//    e.printStackTrace();
-  }
-
   @Override
   public void accept(Page page) {
     UrlType urlType = UrlType.formUrl(page.getUrl().toString());
     if (urlType != UrlType.DETAIL) {
       return;
     }
-    System.out.println("DetailPageConsumer => " + page.getUrl());
+    System.out.println("DetailConsumer => " + page.getUrl());
 
     try { // matchID, 比赛ID => /detail/1747187cn.html
       String matchIDString = page.getUrl().regex("[0-9]+").toString();
       page.putField("matchID", Long.parseLong(matchIDString));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
       page.setSkip(true); // 没有matchID直接抛弃
       return;
     }
@@ -98,7 +94,7 @@ public class DetailPageConsumer implements PageConsumer {
       Date date = DATE_FORMAT.parse(matchTimeString);
       page.putField("matchTime", date.getTime());
     } catch (Throwable e) { // 可忽略
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     try { // weather, 天气(原文未加工) => 天气：多云 温度：24℃～25℃
@@ -109,18 +105,20 @@ public class DetailPageConsumer implements PageConsumer {
       weather = weather.replace("\n", "");
       page.putField("weather", weather);
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     try { // hostName, 主队名称; customName, 客队名称
-      String hostName = page.getHtml().xpath("//div[@id=home]/a/span[@class=name]/text()").toString();
-      String customName = page.getHtml().xpath("//div[@id=guest]/a/span[@class=name]/text()").toString();
-      page.putField("hostName", hostName);
+      String hostName =
+          page.getHtml().xpath("//div[@id=home]/a/span[@class=name]/text()").toString();
+      String customName =
+          page.getHtml().xpath("//div[@id=guest]/a/span[@class=name]/text()").toString();
+      page.putField("hostName", hostName.replace("(中)", "")); // 去掉中立场
       page.putField("hostNamePinyin", Pinyin.toPinyin(hostName, ""));
       page.putField("customName", customName);
       page.putField("customNamePinyin", Pinyin.toPinyin(hostName, ""));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     try { // hostScore, customScore, 主客队比分
@@ -128,25 +126,27 @@ public class DetailPageConsumer implements PageConsumer {
       page.putField("hostScore", scores.get(0));
       page.putField("customScore", scores.get(1));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     // ------ 技术统计 ------
 
     try { // hostCornerScore, customCornerScore, 主客队角球数
-      Pair<String, String> cornerScorePair = XSpiderUtils.selectTableOfTd(page.getHtml(), "技术统计", "角球");
+      Pair<String, String> cornerScorePair =
+          XSpiderUtils.selectTableOfTd(page.getHtml(), "技术统计", "角球");
       page.putField("hostCornerScore", Integer.parseInt(cornerScorePair.first));
       page.putField("customCornerScore", Integer.parseInt(cornerScorePair.second));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     try { // hostYellowCard, customYellowCard, 主客队黄卡数
-      Pair<String, String> yellowCardPair = XSpiderUtils.selectTableOfTd(page.getHtml(), "技术统计", "黄牌");
+      Pair<String, String> yellowCardPair =
+          XSpiderUtils.selectTableOfTd(page.getHtml(), "技术统计", "黄牌");
       page.putField("hostYellowCard", Integer.parseInt(yellowCardPair.first));
       page.putField("customYellowCard", Integer.parseInt(yellowCardPair.second));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     try { // hostRedCard, customRedCard, 主客队红卡数
@@ -154,7 +154,7 @@ public class DetailPageConsumer implements PageConsumer {
       page.putField("hostRedCard", Integer.parseInt(redCardPair.first));
       page.putField("customRedCard", Integer.parseInt(redCardPair.second));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     try { // hostShoot, customShoot, 主客队射门数
@@ -162,15 +162,16 @@ public class DetailPageConsumer implements PageConsumer {
       page.putField("hostShoot", Integer.parseInt(shootPair.first));
       page.putField("customShoot", Integer.parseInt(shootPair.second));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     try { // hostBestShoot, customBestShoot, 主客队射正数
-      Pair<String, String> bestShootPair = XSpiderUtils.selectTableOfTd(page.getHtml(), "技术统计", "射正");
+      Pair<String, String> bestShootPair =
+          XSpiderUtils.selectTableOfTd(page.getHtml(), "技术统计", "射正");
       page.putField("hostBestShoot", Integer.parseInt(bestShootPair.first));
       page.putField("customBestShoot", Integer.parseInt(bestShootPair.second));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     try { // hostAttack, customAttach, 主客队进攻数
@@ -178,23 +179,25 @@ public class DetailPageConsumer implements PageConsumer {
       page.putField("hostAttack", Integer.parseInt(attackPair.first));
       page.putField("customAttach", Integer.parseInt(attackPair.second));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     try { // hostBestAttack, customBestAttack, 主客队危险进攻数
-      Pair<String, String> bestAttackPair = XSpiderUtils.selectTableOfTd(page.getHtml(), "技术统计", "危险进攻");
+      Pair<String, String> bestAttackPair =
+          XSpiderUtils.selectTableOfTd(page.getHtml(), "技术统计", "危险进攻");
       page.putField("hostBestAttack", Integer.parseInt(bestAttackPair.first));
       page.putField("customBestAttack", Integer.parseInt(bestAttackPair.second));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     try { // hostControlRate, customControlRate, 主客队危险进攻数
-      Pair<String, String> controlRatePair = XSpiderUtils.selectTableOfTd(page.getHtml(), "技术统计", "控球率");
+      Pair<String, String> controlRatePair =
+          XSpiderUtils.selectTableOfTd(page.getHtml(), "技术统计", "控球率");
       page.putField("hostControlRate", Float.parseFloat(controlRatePair.first.replace("%", "")));
       page.putField("customControlRate", Float.parseFloat(controlRatePair.second.replace("%", "")));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
 
@@ -214,7 +217,7 @@ public class DetailPageConsumer implements PageConsumer {
       page.putField("customScoreOf3", Float.parseFloat(customScoreArray[0]));
       page.putField("customScoreOf10", Float.parseFloat(customScoreArray[1]));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     // hostLossOf3, 主队近3场平均丢球数
@@ -231,7 +234,7 @@ public class DetailPageConsumer implements PageConsumer {
       page.putField("customLossOf3", Float.parseFloat(customLossArray[0]));
       page.putField("customLossOf10", Float.parseFloat(customLossArray[1]));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
 
@@ -249,7 +252,7 @@ public class DetailPageConsumer implements PageConsumer {
       page.putField("customCornerOf3", Float.parseFloat(customCornerArray[0]));
       page.putField("customCornerOf10", Float.parseFloat(customCornerArray[1]));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     // hostYellowCardOf3, 主队近3场平均黄卡数
@@ -257,7 +260,8 @@ public class DetailPageConsumer implements PageConsumer {
     // hostYellowCardOf10, 主队近10场平均黄卡数
     // customYellowCardOf10, 客队近10场平均黄卡数
     try {
-      Pair<String, String> yellowCardPair = XSpiderUtils.selectTableOfTd(page.getHtml(), "技统数据", "黄牌");
+      Pair<String, String> yellowCardPair =
+          XSpiderUtils.selectTableOfTd(page.getHtml(), "技统数据", "黄牌");
       String[] hostYellowCardArray = yellowCardPair.first.split("/");
       page.putField("hostYellowCardOf3", Float.parseFloat(hostYellowCardArray[0]));
       page.putField("hostYellowCardOf10", Float.parseFloat(hostYellowCardArray[1]));
@@ -266,7 +270,7 @@ public class DetailPageConsumer implements PageConsumer {
       page.putField("customYellowCardOf3", Float.parseFloat(customYellowCardArray[0]));
       page.putField("customYellowCardOf10", Float.parseFloat(customYellowCardArray[1]));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
     // hostControlRateOf3, 主队近3场平均控球率
@@ -274,16 +278,21 @@ public class DetailPageConsumer implements PageConsumer {
     // hostControlRateOf10, 主队近10场平均控球率
     // customControlRateOf10, 客队近10场平均控球率
     try {
-      Pair<String, String> controlRatePair = XSpiderUtils.selectTableOfTd(page.getHtml(), "技统数据", "控球率");
+      Pair<String, String> controlRatePair =
+          XSpiderUtils.selectTableOfTd(page.getHtml(), "技统数据", "控球率");
       String[] hostControlRateArray = controlRatePair.first.split("/");
-      page.putField("hostControlRateOf3", Float.parseFloat(hostControlRateArray[0].replace("%", "")));
-      page.putField("hostControlRateOf10", Float.parseFloat(hostControlRateArray[1].replace("%", "")));
+      page.putField("hostControlRateOf3",
+          Float.parseFloat(hostControlRateArray[0].replace("%", "")));
+      page.putField("hostControlRateOf10",
+          Float.parseFloat(hostControlRateArray[1].replace("%", "")));
 
       String[] customControlRateArray = controlRatePair.second.split("/");
-      page.putField("customControlRateOf3", Float.parseFloat(customControlRateArray[0].replace("%", "")));
-      page.putField("customControlRateOf10", Float.parseFloat(customControlRateArray[1].replace("%", "")));
+      page.putField("customControlRateOf3",
+          Float.parseFloat(customControlRateArray[0].replace("%", "")));
+      page.putField("customControlRateOf10",
+          Float.parseFloat(customControlRateArray[1].replace("%", "")));
     } catch (Throwable e) {
-      log(e);
+      XSpiderUtils.log(e);
     }
 
   }

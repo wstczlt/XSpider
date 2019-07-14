@@ -1,9 +1,9 @@
 package com.test.xspider;
 
-import com.test.xspider.model.UrlType;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.test.xspider.model.UrlType;
 
 public class UrlProducer {
 
