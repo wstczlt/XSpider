@@ -17,7 +17,7 @@ public class MatchProcessor implements PageProcessor {
   }
 
   @Override
-  public void process(Page page) {
+  public synchronized void process(Page page) {
     for (PageConsumer consumer : mConsumers) {
       consumer.accept(page);
       // 如果被设置了无效，则跳过这个html的处理

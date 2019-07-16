@@ -1,7 +1,5 @@
 package com.test.xspider.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 public enum UrlType {
@@ -19,14 +17,19 @@ public enum UrlType {
   private static final String MATCH_CORNER_ODD_URL =
       "http://score.nowscore.com/odds/cornerDetail.aspx?id=%d"; // 角球信息
 
-  public static List<String> buildUrls(long matchID) {
-    List<String> matchUrls = new ArrayList<>();
-    matchUrls.add(String.format(Locale.US, MATCH_DETAIL_URL, matchID));
-    matchUrls.add(String.format(Locale.US, MATCH_ANALYSIS_URL, matchID));
-    matchUrls.add(String.format(Locale.US, MATCH_SCORE_ODD_URL, matchID));
-    matchUrls.add(String.format(Locale.US, MATCH_CORNER_ODD_URL, matchID));
-
-    return matchUrls;
+  public String buildUrl(int matchID) {
+    switch (this) {
+      case DETAIL:
+        return String.format(Locale.US, MATCH_DETAIL_URL, matchID);
+      case ANALYSIS:
+        return String.format(Locale.US, MATCH_ANALYSIS_URL, matchID);
+      case SCORE_ODD:
+        return String.format(Locale.US, MATCH_SCORE_ODD_URL, matchID);
+      case CORNER_ODD:
+        return String.format(Locale.US, MATCH_CORNER_ODD_URL, matchID);
+      default:
+        throw new RuntimeException("" + this);
+    }
   }
 
   public static UrlType formUrl(String url) {
@@ -43,5 +46,22 @@ public enum UrlType {
       return CORNER_ODD;
     }
     throw new RuntimeException("unknown url=" + url);
+  }
+
+  public static int extractMatchID(String url) {
+    UrlType type = formUrl(url);
+    switch (type) {
+      case DETAIL:
+        return Integer
+            .parseInt(url.substring(MATCH_DETAIL_URL.indexOf("%d")).replace("cn.html", ""));
+      case ANALYSIS:
+        return Integer.parseInt(url.substring(MATCH_ANALYSIS_URL.indexOf("%d")));
+      case SCORE_ODD:
+        return Integer.parseInt(url.substring(MATCH_SCORE_ODD_URL.indexOf("%d")));
+      case CORNER_ODD:
+        return Integer.parseInt(url.substring(MATCH_CORNER_ODD_URL.indexOf("%d")));
+      default:
+        throw new RuntimeException(url);
+    }
   }
 }

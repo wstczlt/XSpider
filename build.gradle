@@ -16,6 +16,9 @@ dependencies {
     compile "us.codecraft:webmagic-core:0.7.3"
     compile "us.codecraft:webmagic-extension:0.7.3"
     compile "cn.wanghaomiao:JsoupXpath:2.3.2"
+    compile "org.xerial:sqlite-jdbc:3.28.0"
+    compile "commons-dbcp:commons-dbcp:1.4"
+    compile "commons-dbutils:commons-dbutils:1.4"
 
     compile 'com.github.promeg:tinypinyin:2.0.3' // TinyPinyin核心包，约80KB
 }

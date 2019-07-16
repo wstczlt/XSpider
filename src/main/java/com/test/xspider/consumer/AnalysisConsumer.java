@@ -44,13 +44,9 @@ public class AnalysisConsumer implements PageConsumer {
       return;
     }
     final JXDocument xpath = JXDocument.create(page.getRawText());
-    System.out.println("AnalysisConsumer => " + page.getUrl());
-    try { // matchID, 比赛ID
-      String matchIDString = page.getUrl().regex("[0-9]+").toString();
-      page.putField("matchID", Long.parseLong(matchIDString));
-    } catch (Throwable e) {
-      XSpiderUtils.log(e);
-      page.setSkip(true); // 没有matchID直接抛弃
+    System.out.println("Consumer(Analysis) => " + page.getUrl());
+    final int matchID = XSpiderUtils.extractMatchID(page);
+    if (matchID <= 0) {
       return;
     }
 
@@ -80,15 +76,16 @@ public class AnalysisConsumer implements PageConsumer {
 
       // 获取主队(总)：总排名、总胜率
       List<JXNode> hostData = xpath.selN("//tr[@bgcolor='#FFECEC']").get(0).sel("//td/text()");
-      page.putField("hostLeagueRank", Integer.parseInt(hostData.get(9).asString()));
+      page.putField("hostLeagueRank", XSpiderUtils.valueOfInt(hostData.get(9).asString()));
       page.putField("hostLeagueRateOfVictory",
-          Float.parseFloat(hostData.get(10).asString().replace("%", "")));
+          XSpiderUtils.valueOfFloat(hostData.get(10).asString().replace("%", "")));
       // 获取主队(主场)：总排名、总胜率
       List<JXNode> hostDataOfHost =
           xpath.selN("//tr[@bgcolor='#FFECEC']").get(1).sel("//td/text()");
-      page.putField("hostLeagueOnHostRank", Integer.parseInt(hostDataOfHost.get(9).asString()));
+      page.putField("hostLeagueOnHostRank",
+          XSpiderUtils.valueOfInt(hostDataOfHost.get(9).asString()));
       page.putField("hostLeagueOnHostRateOfVictory",
-          Float.parseFloat(hostDataOfHost.get(10).asString().replace("%", "")));
+          XSpiderUtils.valueOfFloat(hostDataOfHost.get(10).asString().replace("%", "")));
     } catch (Throwable e) {
       XSpiderUtils.log(e);
     }
@@ -100,15 +97,16 @@ public class AnalysisConsumer implements PageConsumer {
     try {
       // 获取客队(总)：总排名、总胜率
       List<JXNode> hostData = xpath.selN("//tr[@bgcolor='#CCCCFF']").get(0).sel("//td/text()");
-      page.putField("customLeagueRank", Integer.parseInt(hostData.get(9).asString()));
+      page.putField("customLeagueRank", XSpiderUtils.valueOfInt(hostData.get(9).asString()));
       page.putField("customLeagueRateOfVictory",
-          Float.parseFloat(hostData.get(10).asString().replace("%", "")));
+          XSpiderUtils.valueOfFloat(hostData.get(10).asString().replace("%", "")));
       // 获取客队(客场)：总排名、总胜率
       List<JXNode> hostDataOfHost =
           xpath.selN("//tr[@bgcolor='#CCCCFF']").get(2).sel("//td/text()");
-      page.putField("customLeagueOnCustomRank", Integer.parseInt(hostDataOfHost.get(9).asString()));
+      page.putField("customLeagueOnCustomRank",
+          XSpiderUtils.valueOfInt(hostDataOfHost.get(9).asString()));
       page.putField("customLeagueOnCustomRateOfVictory",
-          Float.parseFloat(hostDataOfHost.get(10).asString().replace("%", "")));
+          XSpiderUtils.valueOfFloat(hostDataOfHost.get(10).asString().replace("%", "")));
     } catch (Throwable e) {
       XSpiderUtils.log(e);
     }
