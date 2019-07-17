@@ -5,14 +5,14 @@ import java.util.List;
 import org.seimicrawler.xpath.JXDocument;
 import org.seimicrawler.xpath.JXNode;
 
-import com.test.xspider.PageConsumer;
-import com.test.xspider.XSpiderUtils;
+import com.test.xspider.utils.Consumer;
+import com.test.xspider.utils.XSpiderUtils;
 import com.test.xspider.model.UrlType;
 
 import us.codecraft.webmagic.Page;
 
 // => "http://score.nowscore.com/analysis/1662654cn.html"
-public class AnalysisConsumer implements PageConsumer {
+public class AnalysisConsumer implements Consumer {
 
   // matchID, 比赛ID
   // league, 联赛名称

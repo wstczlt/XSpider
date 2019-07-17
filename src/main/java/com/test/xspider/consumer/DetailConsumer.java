@@ -5,17 +5,17 @@ import java.util.Date;
 import java.util.List;
 
 import com.github.promeg.pinyinhelper.Pinyin;
-import com.test.xspider.PageConsumer;
-import com.test.xspider.Pair;
+import com.test.xspider.utils.Consumer;
+import com.test.xspider.utils.Pair;
 import com.test.xspider.XSpiderConfig;
-import com.test.xspider.XSpiderUtils;
+import com.test.xspider.utils.XSpiderUtils;
 import com.test.xspider.model.UrlType;
 
 import us.codecraft.webmagic.Page;
 
 // => http://score.nowscore.com/detail/1662654cn.html
 // 只爬取已结束的比赛
-public class DetailConsumer implements PageConsumer {
+public class DetailConsumer implements Consumer {
 
   // ----- 静态信息 ---
   // matchID, 比赛ID

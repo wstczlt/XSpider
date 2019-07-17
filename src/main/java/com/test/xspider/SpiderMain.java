@@ -9,6 +9,7 @@ import com.test.xspider.consumer.DetailConsumer;
 import com.test.xspider.consumer.ScoreOddConsumer;
 import com.test.xspider.model.UrlType;
 import com.test.xspider.pipline.SQLitePipeline;
+import com.test.xspider.utils.Consumer;
 
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Spider;
@@ -19,12 +20,12 @@ public class SpiderMain {
 
   public static void main(String[] args) {
     // build consumers
-    final List<PageConsumer> consumers = new ArrayList<>();
+    final List<Consumer> consumers = new ArrayList<>();
     consumers.add(new DetailConsumer());
     consumers.add(new AnalysisConsumer());
     consumers.add(new ScoreOddConsumer());
     consumers.add(new CornerOddConsumer());
-    PageProcessor processor = new MatchProcessor(consumers);
+    PageProcessor processor = new XSpiderProcessor(consumers);
 
     // build spider
     final Spider spider = Spider.create(processor)

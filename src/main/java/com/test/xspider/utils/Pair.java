@@ -1,4 +1,4 @@
-package com.test.xspider;
+package com.test.xspider.utils;
 
 public class Pair<K, V> {
 

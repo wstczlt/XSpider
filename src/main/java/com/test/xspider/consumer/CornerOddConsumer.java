@@ -5,15 +5,15 @@ import java.util.List;
 import org.seimicrawler.xpath.JXDocument;
 import org.seimicrawler.xpath.JXNode;
 
-import com.test.xspider.PageConsumer;
-import com.test.xspider.XSpiderUtils;
+import com.test.xspider.utils.Consumer;
+import com.test.xspider.utils.XSpiderUtils;
 import com.test.xspider.model.UrlType;
 
 import us.codecraft.webmagic.Page;
 
 // => http://score.nowscore.com/odds/3in1Odds.aspx?companyid=3&id=1662653
 // 皇冠指数集合
-public class CornerOddConsumer implements PageConsumer {
+public class CornerOddConsumer implements Consumer {
 
   private static final String PREFIX_ORIGINAL = "original"; // 初盘
   private static final String PREFIX_OPENING = "opening"; // 比赛开始前的即时盘
