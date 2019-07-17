@@ -5,11 +5,11 @@ import java.util.Date;
 import java.util.List;
 
 import com.github.promeg.pinyinhelper.Pinyin;
+import com.test.xspider.XSpiderConfig;
+import com.test.xspider.model.UrlType;
 import com.test.xspider.utils.Consumer;
 import com.test.xspider.utils.Pair;
-import com.test.xspider.XSpiderConfig;
 import com.test.xspider.utils.XSpiderUtils;
-import com.test.xspider.model.UrlType;
 
 import us.codecraft.webmagic.Page;
 
@@ -95,6 +95,7 @@ public class DetailConsumer implements Consumer {
         page.setSkip(true);
         return;
       }
+      page.putField("matchTime", date.getTime());
     } catch (Throwable e) { // 缺少基本信息
       XSpiderUtils.log(e);
       page.setSkip(true);

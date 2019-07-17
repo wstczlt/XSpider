@@ -125,7 +125,7 @@ public class SQLitePipeline implements Pipeline {
       mDataSource = new BasicDataSource();
       // 基本设置
       mDataSource.setDriverClassName("org.sqlite.JDBC");
-      mDataSource.setUrl("jdbc:sqlite:sqlite/football.db");
+      mDataSource.setUrl("jdbc:sqlite:sqlite/football_1.db");
       // 高级设置
       mDataSource.setInitialSize(10);// 初始化连接
       mDataSource.setMinIdle(5);// 最小空闲连接

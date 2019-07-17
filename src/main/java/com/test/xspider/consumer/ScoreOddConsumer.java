@@ -5,9 +5,9 @@ import java.util.List;
 import org.seimicrawler.xpath.JXDocument;
 import org.seimicrawler.xpath.JXNode;
 
+import com.test.xspider.model.UrlType;
 import com.test.xspider.utils.Consumer;
 import com.test.xspider.utils.XSpiderUtils;
-import com.test.xspider.model.UrlType;
 
 import us.codecraft.webmagic.Page;
 
@@ -19,6 +19,7 @@ public class ScoreOddConsumer implements Consumer {
   private static final String PREFIX_OPENING = "opening"; // 比赛开始前的即时盘
   private static final String PREFIX_MIDDLE = "middle"; // 中场盘
 
+  private static int sSuccessCount = 0;
 
   // 亚盘指数：初盘、即时盘、中场盘、00~100分钟盘口
   // 大小球指数: 初盘、即时盘、中场盘、00~100分钟盘口
@@ -30,7 +31,7 @@ public class ScoreOddConsumer implements Consumer {
       return;
     }
     final JXDocument xpath = JXDocument.create(page.getRawText());
-    System.out.println("Consumer(ScoreOdd) => " + page.getUrl());
+    System.out.println("Consumer(ScoreOdd: ) " + (++sSuccessCount) + " => " + page.getUrl());
     final int matchID = XSpiderUtils.extractMatchID(page);
     if (matchID <= 0) {
       return;
