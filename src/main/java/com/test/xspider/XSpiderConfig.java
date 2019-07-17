@@ -7,8 +7,8 @@ public class XSpiderConfig {
 
   public static final int MATCH_ID_START = 1650000; // 起始ID
   public static final int MATCH_ID_END = 1700000; // 结束ID
-  public static final int MAX_CACHE_ITEMS = 100; // 先攒数据，用于创建数据库的初始key
-  public static final int SPIDER_THREAD_COUNT = 20; // 线程数
+  public static final int MAX_CACHE_ITEMS = 1000; // 先攒数据，用于创建数据库的初始key
+  public static final int SPIDER_THREAD_COUNT = 100; // 线程数
 
   // public static final int MATCH_ID_START = 1661600; // 起始ID
   // public static final int MATCH_ID_END = 1661610; // 结束ID

@@ -1,6 +1,6 @@
 package com.test.xspider.pipline;
 
-import com.test.xspider.XSpiderConfig;
+import static com.test.xspider.utils.XSpiderDbSupplier.getDataSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,11 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sql.DataSource;
-
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
+
+import com.test.xspider.XSpiderConfig;
 
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;
@@ -21,7 +20,57 @@ import us.codecraft.webmagic.pipeline.Pipeline;
 
 public class SQLitePipeline implements Pipeline {
 
-  private BasicDataSource mDataSource;
+  private static final Set<String> MUST_HAVE_COLUMNS = new HashSet<>();
+  static {
+    MUST_HAVE_COLUMNS.add("matchID");
+    MUST_HAVE_COLUMNS.add("matchTime");
+    MUST_HAVE_COLUMNS.add("hostName");
+    MUST_HAVE_COLUMNS.add("hostNamePinyin");
+    MUST_HAVE_COLUMNS.add("customName");
+    MUST_HAVE_COLUMNS.add("customNamePinyin");
+    MUST_HAVE_COLUMNS.add("hostScore");
+    MUST_HAVE_COLUMNS.add("customScore");
+    MUST_HAVE_COLUMNS.add("hostCornerScore");
+    MUST_HAVE_COLUMNS.add("customCornerScore");
+    MUST_HAVE_COLUMNS.add("league");
+    MUST_HAVE_COLUMNS.add("hostLeagueRank");
+    MUST_HAVE_COLUMNS.add("hostLeagueRateOfVictory");
+    MUST_HAVE_COLUMNS.add("hostLeagueOnHostRank");
+    MUST_HAVE_COLUMNS.add("hostLeagueOnHostRateOfVictory");
+    MUST_HAVE_COLUMNS.add("customLeagueRank");
+    MUST_HAVE_COLUMNS.add("customLeagueRateOfVictory");
+    MUST_HAVE_COLUMNS.add("customLeagueOnCustomRank");
+    MUST_HAVE_COLUMNS.add("customLeagueOnCustomRateOfVictory");
+    MUST_HAVE_COLUMNS.add("original_scoreOdd");
+    MUST_HAVE_COLUMNS.add("original_scoreOddOfVictory");
+    MUST_HAVE_COLUMNS.add("original_scoreOddOfDefeat");
+    MUST_HAVE_COLUMNS.add("opening_scoreOdd");
+    MUST_HAVE_COLUMNS.add("opening_scoreOddOfVictory");
+    MUST_HAVE_COLUMNS.add("opening_scoreOddOfDefeat");
+
+    MUST_HAVE_COLUMNS.add("original_bigOdd");
+    MUST_HAVE_COLUMNS.add("original_bigOddOfVictory");
+    MUST_HAVE_COLUMNS.add("original_bigOddOfDefeat");
+    MUST_HAVE_COLUMNS.add("opening_bigOdd");
+    MUST_HAVE_COLUMNS.add("opening_bigOddOfVictory");
+    MUST_HAVE_COLUMNS.add("opening_bigOddOfDefeat");
+
+    MUST_HAVE_COLUMNS.add("original_drawOdd");
+    MUST_HAVE_COLUMNS.add("original_victoryOdd");
+    MUST_HAVE_COLUMNS.add("original_defeatOdd");
+    MUST_HAVE_COLUMNS.add("opening_drawOdd");
+    MUST_HAVE_COLUMNS.add("opening_victoryOdd");
+    MUST_HAVE_COLUMNS.add("opening_defeatOdd");
+
+    MUST_HAVE_COLUMNS.add("original_cornerOdd");
+    MUST_HAVE_COLUMNS.add("original_cornerOddOfVictory");
+    MUST_HAVE_COLUMNS.add("original_cornerOddOfDefeat");
+    MUST_HAVE_COLUMNS.add("opening_cornerOdd");
+    MUST_HAVE_COLUMNS.add("opening_cornerOddOfVictory");
+    MUST_HAVE_COLUMNS.add("opening_cornerOddOfDefeat");
+
+  }
+
   private List<String> mColumns = new ArrayList<>();
   private List<ResultItems> mResultItems = new ArrayList<>(); // 前期积累元素, 得到一个全量的key集合
 
@@ -53,7 +102,7 @@ public class SQLitePipeline implements Pipeline {
         sb.append(", ").append(column).append(" TEXT");
       }
       sb.append(")");
-      final QueryRunner runner = new QueryRunner(obtainDataSource());
+      final QueryRunner runner = new QueryRunner(getDataSource());
       runner.update("DROP TABLE if exists football");
       runner.update(sb.toString());
     } catch (Throwable e) {
@@ -64,7 +113,7 @@ public class SQLitePipeline implements Pipeline {
   private void updateDatabase(ResultItems items) {
     try {
       final Integer matchID = items.get("matchID"); // matchID必须要
-      QueryRunner runner = new QueryRunner(obtainDataSource());
+      QueryRunner runner = new QueryRunner(getDataSource());
       Map<String, Object> resultMap =
           runner.query("select matchID from football where matchID=" + matchID, new MapHandler());
       if (resultMap != null && resultMap.size() > 0) {// 做update
@@ -78,7 +127,7 @@ public class SQLitePipeline implements Pipeline {
   }
 
   private List<String> obtainColumns() {
-    Set<String> columnSet = new HashSet<>();
+    Set<String> columnSet = new HashSet<>(MUST_HAVE_COLUMNS);
     for (ResultItems items : mResultItems) { // 去重
       columnSet.addAll(items.getAll().keySet());
     }
@@ -118,21 +167,5 @@ public class SQLitePipeline implements Pipeline {
     sb.deleteCharAt(sb.length() - 1); // 删掉最后一个逗号;
     sb.append(" WHERE matchID=").append(matchID);
     return sb.toString();
-  }
-
-  private DataSource obtainDataSource() {
-    if (mDataSource == null) {
-      mDataSource = new BasicDataSource();
-      // 基本设置
-      mDataSource.setDriverClassName("org.sqlite.JDBC");
-      mDataSource.setUrl("jdbc:sqlite:sqlite/football_1.db");
-      // 高级设置
-      mDataSource.setInitialSize(10);// 初始化连接
-      mDataSource.setMinIdle(5);// 最小空闲连接
-      mDataSource.setMaxIdle(20);// 最大空闲连接
-      mDataSource.setMaxActive(50);// 最大连接数量
-    }
-
-    return mDataSource;
   }
 }

@@ -1,4 +1,4 @@
-package com.test.xspider;
+package com.test.xspider.utils;
 
 import com.test.xspider.utils.Consumer;
 
@@ -10,7 +10,7 @@ import us.codecraft.webmagic.processor.PageProcessor;
 
 public class XSpiderProcessor implements PageProcessor {
 
-  private final Site mSite = Site.me().setRetryTimes(3).setSleepTime(100);
+  private final Site mSite = Site.me().setTimeOut(5000).setRetryTimes(3).setSleepTime(1000);
 
   private final List<Consumer> mConsumers;
 

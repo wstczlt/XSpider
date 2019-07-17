@@ -10,10 +10,13 @@ import com.test.xspider.consumer.ScoreOddConsumer;
 import com.test.xspider.model.UrlType;
 import com.test.xspider.pipline.SQLitePipeline;
 import com.test.xspider.utils.Consumer;
+import com.test.xspider.utils.XSpiderDownloader;
+import com.test.xspider.utils.XSpiderProcessor;
+import com.test.xspider.utils.XSpiderProxyProvider;
 
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Spider;
-import us.codecraft.webmagic.downloader.HttpClientDownloader;
+import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.scheduler.PriorityScheduler;
 
@@ -28,19 +31,10 @@ public class SpiderMain {
     consumers.add(new CornerOddConsumer());
     PageProcessor processor = new XSpiderProcessor(consumers);
 
-    final HttpClientDownloader downloader = new HttpClientDownloader() {
-
-      @Override
-      protected void onError(Request request) {
-        System.out.println("Failed: => " + request);
-        super.onError(request);
-      }
-    };
-    downloader.setProxyProvider(new XSpiderProxyProvider());
     // build spider
     final Spider spider = Spider.create(processor)
         .setScheduler(new PriorityScheduler())
-        .setDownloader(downloader)
+        .setDownloader(new XSpiderDownloader().setProxyProvider(new XSpiderProxyProvider()))
         .thread(XSpiderConfig.SPIDER_THREAD_COUNT);
     // build urls
     final List<Request> requests = collectRequests();
@@ -48,6 +42,7 @@ public class SpiderMain {
       spider.addRequest(request);
     }
     spider.addPipeline(new SQLitePipeline());
+//    spider.addPipeline(new ConsolePipeline());
     spider.run();
   }
 
