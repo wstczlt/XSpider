@@ -89,17 +89,17 @@ public class XSpiderUtils {
   }
 
 
-  public static int valueOfInt(String str) {
+  public static int valueOfInt(Object str) {
     try {
-      return Integer.parseInt(str);
+      return Integer.parseInt(str != null ? str.toString() : "");
     } catch (Throwable e) {
       return -1;
     }
   }
 
-  public static float valueOfFloat(String str) {
+  public static float valueOfFloat(Object str) {
     try {
-      return Float.parseFloat(str);
+      return Float.parseFloat(str != null ? str.toString() : "");
     } catch (Throwable e) {
       return -1;
     }

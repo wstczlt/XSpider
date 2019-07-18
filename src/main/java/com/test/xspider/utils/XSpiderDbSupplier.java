@@ -13,7 +13,7 @@ public class XSpiderDbSupplier {
       sDataSource = new BasicDataSource();
       // 基本设置
       sDataSource.setDriverClassName("org.sqlite.JDBC");
-      sDataSource.setUrl("jdbc:sqlite:sqlite/football_1.db");
+      sDataSource.setUrl("jdbc:sqlite:sqlite/football.db");
       // 高级设置
       sDataSource.setInitialSize(10);// 初始化连接
       sDataSource.setMinIdle(5);// 最小空闲连接
