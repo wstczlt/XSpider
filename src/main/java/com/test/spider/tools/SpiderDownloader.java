@@ -77,11 +77,24 @@ public class SpiderDownloader extends AbstractDownloader {
     return httpClient;
   }
 
+  private final Object mLock = new byte[0];
+
   @Override
   public Page download(Request request, Task task) {
     if (task == null || task.getSite() == null) {
       throw new NullPointerException("task or site can not be null");
     }
+    return doDownload(request, task);
+    // UrlType urlType = UrlType.formUrl(request.getUrl());
+    // if (urlType != UrlType.SCORE_ODD) {
+    // return doDownload(request, task);
+    // }
+    // synchronized (mLock) { // 指数Url只能单线程请求
+    // return doDownload(request, task);
+    // }
+  }
+
+  private Page doDownload(Request request, Task task) {
     CloseableHttpResponse response = null;
     CloseableHttpClient httpClient = getHttpClient(task.getSite());
     Proxy proxy = proxyProvider != null ? proxyProvider.getProxy(request, task) : null;

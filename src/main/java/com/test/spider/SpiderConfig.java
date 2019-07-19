@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class SpiderConfig {
 
-  public static final String DATABASE_URL = "jdbc:sqlite:sqlite/football_1.db";
+  public static final String DATABASE_URL = "jdbc:sqlite:sqlite/football.db";
   public static final int DOWNLOAD_RETRY_COUNT = 1;
   public static final int THREAD_SLEEP_TIME = 1000;
   public static final String USER_AGENT =
@@ -14,7 +14,7 @@ public class SpiderConfig {
   public static final int MATCH_ID_START = 1500000; // 起始ID
   public static final int MATCH_ID_END = 1720000; // 结束ID
   public static final int MAX_CACHE_ITEMS = 1000; // 先攒数据，用于创建数据库的初始key
-  public static final int SPIDER_THREAD_COUNT = 4; // 线程数
+  public static final int SPIDER_THREAD_COUNT = 50; // 线程数
 
 //   public static final int MATCH_ID_START = 1662650; // 起始ID
 //   public static final int MATCH_ID_END = 1662660; // 结束ID

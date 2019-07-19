@@ -13,9 +13,9 @@ import com.test.spider.SpiderUtils;
 import com.test.spider.tools.Pair;
 import com.test.train.TrainModel;
 import com.test.train.match.Match;
-import com.test.train.match.TrainKeys;
+import com.test.train.match.TrainKey;
 
-public class TrainUtils implements TrainKeys {
+public class TrainUtils {
 
   /**
    * 从数据库属性Map构建一个Match模型.
@@ -42,6 +42,12 @@ public class TrainUtils implements TrainKeys {
     match.mOriginalScoreOddOfDefeat =
         SpiderUtils.valueOfFloat(databaseMap.get("original_scoreOddOfDefeat"));
 
+    match.mOpeningScoreOdd = SpiderUtils.valueOfFloat(databaseMap.get("opening_scoreOdd"));
+    match.mOpeningScoreOddOfVictory =
+        SpiderUtils.valueOfFloat(databaseMap.get("opening_scoreOddOfVictory"));
+    match.mOpeningScoreOddOfDefeat =
+        SpiderUtils.valueOfFloat(databaseMap.get("opening_scoreOddOfDefeat"));
+
     match.mOriginalVictoryOdd =
         SpiderUtils.valueOfFloat(databaseMap.get("original_victoryOdd"));
     match.mOriginalDrawOdd = SpiderUtils.valueOfFloat(databaseMap.get("original_drawOdd"));
@@ -61,6 +67,18 @@ public class TrainUtils implements TrainKeys {
     match.mOpeningBigOddOfDefeat =
         SpiderUtils.valueOfFloat(databaseMap.get("opening_bigOddOfDefeat"));
 
+    match.mHostScoreOf3 = SpiderUtils.valueOfFloat(databaseMap.get("hostScoreOf3"));
+    match.mCustomScoreOf3 = SpiderUtils.valueOfFloat(databaseMap.get("customScoreOf3"));
+
+    match.mHostLossOf3 = SpiderUtils.valueOfFloat(databaseMap.get("hostLossOf3"));
+    match.mCustomLossOf3 = SpiderUtils.valueOfFloat(databaseMap.get("customLossOf3"));
+
+    match.mHostControlRateOf3 = SpiderUtils.valueOfFloat(databaseMap.get("hostControlRateOf3"));
+    match.mCustomControlRateOf3 = SpiderUtils.valueOfFloat(databaseMap.get("customControlRateOf3"));
+
+    match.mHostCornerOf3 = SpiderUtils.valueOfFloat(databaseMap.get("hostCornerOf3"));
+    match.mCustomCornerOf3 = SpiderUtils.valueOfFloat(databaseMap.get("customCornerOf3"));
+
     return match;
   }
 
@@ -70,37 +88,9 @@ public class TrainUtils implements TrainKeys {
   public static Map<String, Float> buildTrainMap(Match match) {
     Map<String, Float> values = new HashMap<>();
     if (isLegalMatch(match)) {
-      values.put(VICTORY_VALUE, (match.mHostScore - match.mCustomScore) > 0 ? 1f : 0);
-      values.put(DRAW_VALUE, (match.mHostScore - match.mCustomScore) == 0 ? 1f : 0);
-      values.put(DEFEAT_VALUE, (match.mHostScore - match.mCustomScore) < 0 ? 1f : 0);
-
-      values.put(ODD_VICTORY_VALUE,
-          (match.mHostScore - match.mCustomScore + match.mOriginalScoreOdd) > 0 ? 1f : 0);
-      values.put(ODD_DRAW_VALUE,
-          (match.mHostScore - match.mCustomScore + match.mOriginalScoreOdd) == 0 ? 1f : 0);
-      values.put(ODD_DEFEAT_VALUE,
-          (match.mHostScore - match.mCustomScore + match.mOriginalScoreOdd) < 0 ? 1f : 0);
-
-      values.put(BALL_VICTORY_VALUE,
-          (match.mHostScore + match.mCustomScore - match.mOriginalBigOdd) > 0 ? 1f : 0);
-      values.put(BALL_DREW_VALUE,
-          (match.mHostScore + match.mCustomScore - match.mOriginalBigOdd) == 0 ? 1f : 0);
-      values.put(BALL_DEFEAT_VALUE,
-          (match.mHostScore + match.mCustomScore - match.mOriginalBigOdd) < 0 ? 1f : 0);
-
-      values.put(ORIGINAL_SCORE_ODD, match.mOriginalScoreOdd);
-      values.put(ORIGINAL_SCORE_ODD_OF_VICTORY, match.mOriginalScoreOddOfVictory);
-      values.put(ORIGINAL_SCORE_ODD_OF_DEFEAT, match.mOriginalScoreOddOfDefeat);
-      values.put(ORIGINAL_BIG_ODD, match.mOriginalBigOdd);
-      values.put(ORIGINAL_BIG_ODD_OF_VICTORY, match.mOriginalBigOddOfVictory);
-      values.put(ORIGINAL_BIG_ODD_OF_DEFEAT, match.mOriginalBigOddOfDefeat);
-      values.put(ORIGINAL_VICTORY_ODD, match.mOriginalVictoryOdd);
-      values.put(ORIGINAL_DRAW_ODD, match.mOriginalDrawOdd);
-      values.put(ORIGINAL_DEFEAT_ODD, match.mOriginalDefeatOdd);
-      values.put(DELTA_VICTORY_ODD,
-          match.mOriginalVictoryOdd - match.mOpeningVictoryOdd);
-      values.put(DELTA_DRAW_ODD, match.mOriginalDrawOdd - match.mOpeningDrawOdd);
-      values.put(DELTA_DEFEAT_ODD, match.mOriginalDefeatOdd - match.mOpeningDefeatOdd);
+      for (TrainKey trainKey : TrainKey.values()) {
+        values.put(trainKey.mKey, trainKey.mCalculator.compute(match));
+      }
     }
 
     return values;
@@ -140,15 +130,15 @@ public class TrainUtils implements TrainKeys {
   /**
    * 用于产生数据集.
    */
-  public static Pair<String, String> buildTrainLine(Map<String, Float> dataSet, List<String> keyOfX,
-      String keyOfY) {
+  public static Pair<String, String> buildTrainLine(Map<String, Float> dataSet,
+      List<TrainKey> keyOfX, TrainKey keyOfY) {
     List<String> list = new ArrayList<>();
-    for (String key : keyOfX) {
-      list.add(String.format("%.2f", dataSet.get(key)));
+    for (TrainKey key : keyOfX) {
+      list.add(String.format("%.2f", dataSet.get(key.mKey)));
     }
 
     String trainLineX = StringUtils.join(list, "   ");
-    String trainLineY = String.format("%.2f", dataSet.get(keyOfY));
+    String trainLineY = String.format("%.2f", dataSet.get(keyOfY.mKey));
 
     return new Pair<>(trainLineX, trainLineY);
   }

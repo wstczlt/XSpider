@@ -6,13 +6,13 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 
-import com.test.train.match.TrainKeys;
+import com.test.train.match.TrainKey;
 import com.test.train.utils.TrainUtils;
 
 /**
  * 描述AI模型.
  */
-public abstract class TrainModel implements TrainKeys {
+public abstract class TrainModel {
 
   /**
    * 触发训练.
@@ -39,13 +39,6 @@ public abstract class TrainModel implements TrainKeys {
   }
 
   /**
-   * 判断是否是阳性样本.
-   */
-  public final boolean isPositive(Map<String, Float> valueMap) {
-    return valueMap.get(keyOfY()) == 1;
-  }
-
-  /**
    * 模型名称.
    */
   public abstract String name();
@@ -53,13 +46,19 @@ public abstract class TrainModel implements TrainKeys {
   /**
    * 需要训练的数据集key
    */
-  public abstract List<String> keyOfX();
+  public abstract List<TrainKey> keyOfX();
 
   /**
    * 训练集的结果集的key
    */
-  public abstract String keyOfY();
+  public abstract TrainKey keyOfY();
 
+  /**
+   * 判断是否是阳性样本.
+   */
+  public final boolean isPositive(Map<String, Float> valueMap) {
+    return valueMap.get(keyOfY().mKey) == 1;
+  }
 
   public final String nameOfX() {
     return "temp/" + "x_" + name() + ".dat";

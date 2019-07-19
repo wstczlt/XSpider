@@ -1,21 +1,22 @@
 package com.test.train;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.test.spider.tools.Pair;
+import com.test.train.match.Match;
+import com.test.train.match.MatchDao;
 import com.test.train.model.BigBall;
 import com.test.train.model.OddDefeat;
 import com.test.train.model.OddVictory;
 import com.test.train.model.SmallBall;
-import com.test.train.match.Match;
-import com.test.train.match.MatchDao;
 import com.test.train.utils.TrainUtils;
 
 public class TrainMain {
 
-  private static final int TEST_SET_COUNT = 500; // 测试集大小
+  private static final int TEST_SET_COUNT = 1000; // 测试集大小
 
   public static void main(String[] args) {
     try {
@@ -78,6 +79,8 @@ public class TrainMain {
   private static Pair<List<Map<String, Float>>, List<Map<String, Float>>> buildDataSet(
       List<Match> matches) {
     // 生成训练集以及测试集
+    matches = new ArrayList<>(matches);
+    Collections.shuffle(matches); // 拷贝一份并打散, 有利于验证结果
     final List<Map<String, Float>> trainSet = new ArrayList<>();
     final List<Map<String, Float>> testSet = new ArrayList<>();
     for (int i = 0; i < matches.size(); i++) {

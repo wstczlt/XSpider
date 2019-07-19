@@ -10,33 +10,35 @@ import org.apache.commons.dbutils.handlers.MapListHandler;
 import com.test.spider.SpiderDB;
 import com.test.train.utils.TrainUtils;
 
-// select count(*) from football where hostScore is not null AND customScore is not null AND
-// original_scoreOdd is not null AND original_bigOdd is not null AND original_drawOdd is not null;
-
-// (matchID, customAttach, customBestAttack, customBestShoot,
-// customControlRate, customControlRateOf10, customControlRateOf3, customCornerOf10,
-// customCornerOf3, customCornerScore, customLeagueOnCustomRank,
-// customLeagueOnCustomRateOfVictory, customLeagueRank, customLeagueRateOfVictory, customLossOf10,
-// customLossOf3, customName, customNamePinyin, customRedCard, customScore, customScoreOf10,
-// customScoreOf3, customShoot, customYellowCard, customYellowCardOf10, customYellowCardOf3,
-// hostAttack, hostBestAttack, hostBestShoot, hostControlRate, hostControlRateOf10,
-// hostControlRateOf3, hostCornerOf10, hostCornerOf3, hostCornerScore, hostLeagueOnHostRank,
-// hostLeagueOnHostRateOfVictory, hostLeagueRank, hostLeagueRateOfVictory, hostLossOf10,
-// hostLossOf3, hostName, hostNamePinyin, hostRedCard, hostScore, hostScoreOf10, hostScoreOf3,
-// hostShoot, hostYellowCard, hostYellowCardOf10, hostYellowCardOf3, league, matchTime,
-// middle_bigOdd, middle_bigOddOfDefeat, middle_bigOddOfVictory, middle_cornerOdd,
-// middle_cornerOddOfDefeat, middle_cornerOddOfVictory, middle_customCornerScore,
-// middle_customScore, middle_defeatOdd, middle_drawOdd, middle_hostCornerScore, middle_hostScore,
-// middle_scoreOdd, middle_scoreOddOfDefeat, middle_scoreOddOfVictory, middle_victoryOdd,
-// opening_bigOdd, opening_bigOddOfDefeat, opening_bigOddOfVictory, opening_cornerOdd,
-// opening_cornerOddOfDefeat, opening_cornerOddOfVictory, opening_customCornerScore,
-// opening_customScore, opening_defeatOdd, opening_drawOdd, opening_hostCornerScore,
-// opening_hostScore, opening_scoreOdd, opening_scoreOddOfDefeat, opening_scoreOddOfVictory,
-// opening_victoryOdd, original_bigOdd, original_bigOddOfDefeat, original_bigOddOfVictory,
-// original_cornerOdd, original_cornerOddOfDefeat, original_cornerOddOfVictory,
-// original_customCornerScore, original_customScore, original_defeatOdd, original_drawOdd,
-// original_hostCornerScore, original_hostScore, original_scoreOdd, original_scoreOddOfDefeat,
-// original_scoreOddOfVictory, original_victoryOdd, weather)
+// CREATE TABLE football(matchID INTEGER PRIMARY KEY, customAttach TEXT, customBestAttack TEXT,
+// customBestShoot TEXT, customControlRate TEXT, customControlRateOf10 TEXT, customControlRateOf3
+// TEXT, customCornerOf10 TEXT, customCornerOf3 TEXT, customCornerScore TEXT,
+// customLeagueOnCustomRank TEXT, customLeagueOnCustomRateOfVictory TEXT, customLeagueRank TEXT,
+// customLeagueRateOfVictory TEXT, customLossOf10 TEXT, customLossOf3 TEXT, customName TEXT,
+// customNamePinyin TEXT, customRedCard TEXT, customScore TEXT, customScoreOf10 TEXT, customScoreOf3
+// TEXT, customShoot TEXT, customYellowCard TEXT, customYellowCardOf10 TEXT, customYellowCardOf3
+// TEXT, hostAttack TEXT, hostBestAttack TEXT, hostBestShoot TEXT, hostControlRate TEXT,
+// hostControlRateOf10 TEXT, hostControlRateOf3 TEXT, hostCornerOf10 TEXT, hostCornerOf3 TEXT,
+// hostCornerScore TEXT, hostLeagueOnHostRank TEXT, hostLeagueOnHostRateOfVictory TEXT,
+// hostLeagueRank TEXT, hostLeagueRateOfVictory TEXT, hostLossOf10 TEXT, hostLossOf3 TEXT, hostName
+// TEXT, hostNamePinyin TEXT, hostRedCard TEXT, hostScore TEXT, hostScoreOf10 TEXT, hostScoreOf3
+// TEXT, hostShoot TEXT, hostYellowCard TEXT, hostYellowCardOf10 TEXT, hostYellowCardOf3 TEXT,
+// league TEXT, matchTime TEXT, middle_bigOdd TEXT, middle_bigOddOfDefeat TEXT,
+// middle_bigOddOfVictory TEXT, middle_cornerOdd TEXT, middle_cornerOddOfDefeat TEXT,
+// middle_cornerOddOfVictory TEXT, middle_customCornerScore TEXT, middle_customScore TEXT,
+// middle_defeatOdd TEXT, middle_drawOdd TEXT, middle_hostCornerScore TEXT, middle_hostScore TEXT,
+// middle_scoreOdd TEXT, middle_scoreOddOfDefeat TEXT, middle_scoreOddOfVictory TEXT,
+// middle_victoryOdd TEXT, opening_bigOdd TEXT, opening_bigOddOfDefeat TEXT, opening_bigOddOfVictory
+// TEXT, opening_cornerOdd TEXT, opening_cornerOddOfDefeat TEXT, opening_cornerOddOfVictory TEXT,
+// opening_customCornerScore TEXT, opening_customScore TEXT, opening_defeatOdd TEXT, opening_drawOdd
+// TEXT, opening_hostCornerScore TEXT, opening_hostScore TEXT, opening_scoreOdd TEXT,
+// opening_scoreOddOfDefeat TEXT, opening_scoreOddOfVictory TEXT, opening_victoryOdd TEXT,
+// original_bigOdd TEXT, original_bigOddOfDefeat TEXT, original_bigOddOfVictory TEXT,
+// original_cornerOdd TEXT, original_cornerOddOfDefeat TEXT, original_cornerOddOfVictory TEXT,
+// original_customCornerScore TEXT, original_customScore TEXT, original_defeatOdd TEXT,
+// original_drawOdd TEXT, original_hostCornerScore TEXT, original_hostScore TEXT, original_scoreOdd
+// TEXT, original_scoreOddOfDefeat TEXT, original_scoreOddOfVictory TEXT, original_victoryOdd TEXT,
+// weather TEXT)
 
 public class MatchDao {
 
