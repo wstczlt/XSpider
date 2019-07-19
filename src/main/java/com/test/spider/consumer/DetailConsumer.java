@@ -310,7 +310,7 @@ public class DetailConsumer implements Consumer {
     }
 
     System.out.println("(Detail) => " + matchID);
-//    System.out.println(page.getResultItems().getAll());
+    // System.out.println(page.getResultItems().getAll());
 
   }
 

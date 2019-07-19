@@ -34,6 +34,6 @@ public class CornerOddConsumer implements Consumer {
     }
 
     System.out.println("(Corner) => " + matchID);
-//    System.out.println(page.getResultItems().getAll());
+    // System.out.println(page.getResultItems().getAll());
   }
 }

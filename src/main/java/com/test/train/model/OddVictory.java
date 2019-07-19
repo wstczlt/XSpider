@@ -27,46 +27,18 @@ public class OddVictory extends TrainModel {
     TRAIN_KEYS.add(DELTA_DEFEAT_ODD); // 临场欧盘负赔变化
   }
 
-  // 训练出来的权重系数
-  private static final double[] TRAIN_WEIGHT =
-      new double[] {0.08320605, 0.04103623, 0.27885258, 0.0009057, -0.19773558, -0.29755065,
-          -0.01712915, 0.00851083, 0.01462657, 0.05188101, -0.00913558, -0.02969478};
-  // 训练出来的常量
-  private static final double TRAIN_CONST = 0.594880;
+  @Override
+  public String name() {
+    return "oddVictory";
+  }
 
   @Override
-  public List<String> trainKeys() {
+  public List<String> keyOfX() {
     return TRAIN_KEYS;
   }
 
   @Override
-  public String trainValue() {
+  public String keyOfY() {
     return ODD_VICTORY_VALUE;
-  }
-
-  @Override
-  public float computeValue() {
-    double prop = TRAIN_CONST;
-    for (int i = 0; i < TRAIN_KEYS.size(); i++) {
-      Float value = mValues.get(TRAIN_KEYS.get(i));
-      if (value == null) {
-        return -1;
-      }
-      prop += value * TRAIN_WEIGHT[i];
-    }
-
-    return (float) prop;
-  }
-
-  @Override
-  public float computeProfit() {
-    boolean isVictory = mValues.get(ODD_VICTORY_VALUE) == 1;
-    boolean isDrew = mValues.get(ODD_DRAW_VALUE) == 1; // 走水
-    return isVictory ? mValues.get(ORIGINAL_SCORE_ODD_OF_VICTORY) : (isDrew ? 0 : -1); // 用初盘水位计算
-  }
-
-  @Override
-  public boolean isPositive() {
-    return computeValue() >= 0.5f;
   }
 }

@@ -6,7 +6,6 @@ import org.seimicrawler.xpath.JXDocument;
 import org.seimicrawler.xpath.JXNode;
 
 import com.test.spider.SpiderUtils;
-import com.test.spider.model.TableModel;
 import com.test.spider.model.UrlType;
 
 import us.codecraft.webmagic.Page;

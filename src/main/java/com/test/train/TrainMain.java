@@ -1,142 +1,97 @@
 package com.test.train;
 
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.MapListHandler;
-import org.apache.commons.io.IOUtils;
-
-import com.test.spider.SpiderDB;
+import com.test.spider.tools.Pair;
 import com.test.train.model.BigBall;
+import com.test.train.model.OddDefeat;
+import com.test.train.model.OddVictory;
+import com.test.train.model.SmallBall;
+import com.test.train.match.Match;
+import com.test.train.match.MatchDao;
+import com.test.train.utils.TrainUtils;
 
 public class TrainMain {
 
-  // select count(*) from football where hostScore is not null AND customScore is not null AND
-  // original_scoreOdd is not null AND original_bigOdd is not null AND original_drawOdd is not null;
-
-  // (matchID, customAttach, customBestAttack, customBestShoot,
-  // customControlRate, customControlRateOf10, customControlRateOf3, customCornerOf10,
-  // customCornerOf3, customCornerScore, customLeagueOnCustomRank,
-  // customLeagueOnCustomRateOfVictory, customLeagueRank, customLeagueRateOfVictory, customLossOf10,
-  // customLossOf3, customName, customNamePinyin, customRedCard, customScore, customScoreOf10,
-  // customScoreOf3, customShoot, customYellowCard, customYellowCardOf10, customYellowCardOf3,
-  // hostAttack, hostBestAttack, hostBestShoot, hostControlRate, hostControlRateOf10,
-  // hostControlRateOf3, hostCornerOf10, hostCornerOf3, hostCornerScore, hostLeagueOnHostRank,
-  // hostLeagueOnHostRateOfVictory, hostLeagueRank, hostLeagueRateOfVictory, hostLossOf10,
-  // hostLossOf3, hostName, hostNamePinyin, hostRedCard, hostScore, hostScoreOf10, hostScoreOf3,
-  // hostShoot, hostYellowCard, hostYellowCardOf10, hostYellowCardOf3, league, matchTime,
-  // middle_bigOdd, middle_bigOddOfDefeat, middle_bigOddOfVictory, middle_cornerOdd,
-  // middle_cornerOddOfDefeat, middle_cornerOddOfVictory, middle_customCornerScore,
-  // middle_customScore, middle_defeatOdd, middle_drawOdd, middle_hostCornerScore, middle_hostScore,
-  // middle_scoreOdd, middle_scoreOddOfDefeat, middle_scoreOddOfVictory, middle_victoryOdd,
-  // opening_bigOdd, opening_bigOddOfDefeat, opening_bigOddOfVictory, opening_cornerOdd,
-  // opening_cornerOddOfDefeat, opening_cornerOddOfVictory, opening_customCornerScore,
-  // opening_customScore, opening_defeatOdd, opening_drawOdd, opening_hostCornerScore,
-  // opening_hostScore, opening_scoreOdd, opening_scoreOddOfDefeat, opening_scoreOddOfVictory,
-  // opening_victoryOdd, original_bigOdd, original_bigOddOfDefeat, original_bigOddOfVictory,
-  // original_cornerOdd, original_cornerOddOfDefeat, original_cornerOddOfVictory,
-  // original_customCornerScore, original_customScore, original_defeatOdd, original_drawOdd,
-  // original_hostCornerScore, original_hostScore, original_scoreOdd, original_scoreOddOfDefeat,
-  // original_scoreOddOfVictory, original_victoryOdd, weather)
-
-
-  private static final String QUERY_SQL =
-      "select * from football where hostScore is not null AND customScore is not null AND original_scoreOdd is not null AND original_bigOdd is not null AND original_drawOdd is not null order by matchTime desc";
-  private static final int MAX_RECENTLY = 5; // 最近几场比赛
-
-  private static final int TRAINING_SET_COUNT = 6000; // 训练集大小
-  private static final String TRAINING_X_PATH = "training/x.dat";
-  private static final String TRAINING_Y_PATH = "training/y.dat";
+  private static final int TEST_SET_COUNT = 500; // 测试集大小
 
   public static void main(String[] args) {
-    TrainMain train = new TrainMain();
-    final List<Match> matches = train.loadAllMatch();
-    // train.writeTrainingValues(matches, new BigBall());
-    train.testTrainOddVictory(matches, new BigBall());
-  }
-
-  private List<Match> loadAllMatch() {
-    final List<Match> matches = new ArrayList<>();
-    QueryRunner runner = new QueryRunner(SpiderDB.getDataSource());
     try {
-      List<Map<String, Object>> mapList = runner.query(QUERY_SQL, new MapListHandler());
-      for (Map<String, Object> map : mapList) {
-        final Match match = Match.fromMap(map);
-        matches.add(match);
+      final List<Match> matches = MatchDao.loadAllMatch();
+      final Pair<List<Map<String, Float>>, List<Map<String, Float>>> dataSet =
+          buildDataSet(matches);
+      final TrainModel[] models =
+          {new OddVictory(), new OddDefeat(), new BigBall(), new SmallBall()};
+
+      // 训练
+      for (TrainModel model : models) {
+        model.train(dataSet.first);
       }
-    } catch (Throwable e) {
+
+      // 测试
+      for (TrainModel model : models) {
+        test(model, dataSet.second);
+      }
+    } catch (Exception e) {
       e.printStackTrace();
     }
 
-    return matches;
   }
 
-  private void testTrainOddVictory(List<Match> matches, TrainModel trainable) { // 参数: 最小购买概率
-    int buyCount = 0; // 购买总数(等价于比赛总数)
-    int trainBuyCount = 0; // AI购买的比赛总数
-    float totalGain = 0; // 总盈利
-    float trainBuyGain = 0; // AI总回款
+  private static void test(TrainModel model, List<Map<String, Float>> testSet) throws Exception {
+    double[] predictValues = model.predict(testSet);
+    final double positiveThreshold = 0.55f;
+    int aiBuyCount = 0, manBuyCount = 0; // AI出手购买次数, 人类无脑购买次数
+    int aiHitCount = 0, manHitCount = 0; // AI正确次数，人类无脑正确次数
+    if (predictValues.length != testSet.size()) {
+      throw new RuntimeException();
+    }
+    for (int i = 0; i < predictValues.length; i++) {
+      final boolean positive = model.isPositive(testSet.get(i));
+      manBuyCount++;
+      if (positive) { // 实际阳性
+        manHitCount++;
+      }
+      boolean predictPositive = predictValues[i] >= positiveThreshold; // AI预测结果
+      if (predictPositive) { // 预测阳性
+        aiBuyCount++;
+        if (positive) { // 实际阳性
+          aiHitCount++;
+        }
+      }
+    }
+
+    System.out
+        .println(String.format("Model=%s, AI购买场次=%d,  AI命中次数=%d, AI命中率=%.2f，AI总盈利=%.2f",
+            model.name(), aiBuyCount, aiHitCount, aiHitCount * 1.00f / aiBuyCount,
+            aiHitCount * 1.88f - aiBuyCount));
+
+    System.out
+        .println(String.format("Model=%s, 无脑买场次=%d, 无脑买命中次数=%d, 无脑买命中率=%.2f，无脑买盈利=%.2f",
+            model.name(), manBuyCount, manHitCount, manHitCount * 1.00f / manBuyCount,
+            manHitCount * 1.88f - manBuyCount));
+    System.out.println();
+  }
+
+  private static Pair<List<Map<String, Float>>, List<Map<String, Float>>> buildDataSet(
+      List<Match> matches) {
+    // 生成训练集以及测试集
+    final List<Map<String, Float>> trainSet = new ArrayList<>();
+    final List<Map<String, Float>> testSet = new ArrayList<>();
     for (int i = 0; i < matches.size(); i++) {
-      if (i < TRAINING_SET_COUNT) { // 训练集数据不使用
+      final Map<String, Float> item = TrainUtils.buildTrainMap(matches.get(i));
+      if (item.isEmpty()) {
         continue;
       }
-      final Match match = matches.get(i);
-      final Map<String, Float> values = TrainModel.toMap(match);
-      if (values.isEmpty()) {
-        continue;
-      }
-      trainable.setValues(values);
-      System.out
-          .println(
-              "matchID=" + match.mMatchID + "ballCount=" + (match.mHostScore + match.mCustomScore)
-                  + ", originOddCount=" + match.mOriginalBigOdd
-                  + ", odd=" + match.mOriginalBigOddOfVictory);
-      boolean trainBuy = trainable.isPositive();
-      buyCount++;
-      totalGain = totalGain + trainable.computeProfit();
-      if (trainBuy) {
-        trainBuyCount++;
-        trainBuyGain = trainBuyGain + trainable.computeProfit();
+      if (i < TEST_SET_COUNT) {
+        testSet.add(item);
+      } else {
+        trainSet.add(item);
       }
     }
 
-    System.out.println(String.format("无脑购买了: %d 场，盈利: %.2f, 盈利率: %.2f", buyCount, totalGain,
-        totalGain * 1f / buyCount));
-    System.out.println(String.format("AI购买了: %d 场上盘，盈利: %.2f, 盈利率: %.2f", trainBuyCount,
-        trainBuyGain, trainBuyGain * 1f / trainBuyCount));
+    return new Pair<>(trainSet, testSet);
   }
-
-
-  // 写入训练集数据
-  private void writeTrainingValues(List<Match> matches, TrainModel trainable) {
-    List<String> xValue = new ArrayList<>();
-    List<String> yValue = new ArrayList<>();
-    for (int i = 0; i < matches.size(); i++) {
-      final Match match = matches.get(i);
-      Map<String, Float> values = TrainModel.toMap(match);
-      if (values.isEmpty() || i >= TRAINING_SET_COUNT) { // 训练集大小
-        continue;
-      }
-      trainable.setValues(values);
-      xValue.add(trainable.toX());
-      yValue.add(trainable.toY());
-    }
-    FileWriter xWriter = null;
-    FileWriter yWriter = null;
-    try {
-      xWriter = new FileWriter(TRAINING_X_PATH);
-      yWriter = new FileWriter(TRAINING_Y_PATH);
-      IOUtils.writeLines(xValue, null, xWriter);
-      IOUtils.writeLines(yValue, null, yWriter);
-    } catch (Throwable e) {
-      e.printStackTrace();
-    } finally {
-      IOUtils.closeQuietly(xWriter);
-      IOUtils.closeQuietly(yWriter);
-    }
-  }
-
 }
