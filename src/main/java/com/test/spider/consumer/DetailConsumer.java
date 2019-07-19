@@ -78,6 +78,22 @@ public class DetailConsumer implements Consumer {
       return;
     }
 
+    try { // hostName, 主队名称; customName, 客队名称
+      String hostName =
+          page.getHtml().xpath("//div[@id=home]/a/span[@class=name]/text()").toString();
+      String customName =
+          page.getHtml().xpath("//div[@id=guest]/a/span[@class=name]/text()").toString();
+      page.putField("hostName", hostName.replace("(中)", "")); // 去掉中立场
+      page.putField("hostNamePinyin", Pinyin.toPinyin(hostName, ""));
+      page.putField("customName", customName);
+      page.putField("customNamePinyin", Pinyin.toPinyin(customName, ""));
+      System.out.println("matchID = " + matchID + " => (" + hostName + " VS " + customName + ")");
+    } catch (Throwable e) { // 缺少基本信息
+      SpiderUtils.log(e);
+      page.setSkip(true);
+      return;
+    }
+
     try { // matchTime, 比赛时间，=> 开赛时间：2019-07-11 17:00
       int matchTimeStart = page.getRawText().indexOf("开赛时间：");
       int matchTimeEnd = page.getRawText().indexOf("</span>", matchTimeStart);
@@ -87,9 +103,7 @@ public class DetailConsumer implements Consumer {
       // 要求在时间范围内
       if (date.getTime() < SpiderConfig.MIN_DATE.getTime()
           || date.getTime() > SpiderConfig.MAX_DATE.getTime()) {
-        System.out.println("matchID date => " + matchTimeString);
-        System.out.println("小于最小: " + (date.getTime() < SpiderConfig.MIN_DATE.getTime()));
-        System.out.println("大于最大: " + (date.getTime() > SpiderConfig.MAX_DATE.getTime()));
+        // System.out.println("matchID = " + matchID + ", 时间超出范围 => " + matchTimeString);
         page.setSkip(true);
         return;
       }
@@ -99,13 +113,8 @@ public class DetailConsumer implements Consumer {
       page.setSkip(true);
       return;
     }
-    // 如果页面复合条件，则继续抓取, matchID越小，优先级越高
-    List<String> requests = new ArrayList<>();
-    requests.add(UrlType.ANALYSIS.buildUrl(matchID));
-    requests.add(UrlType.SCORE.buildUrl(matchID));
-    requests.add(UrlType.SCORE_ODD.buildUrl(matchID));
-    requests.add(UrlType.CORNER_ODD.buildUrl(matchID));
-    page.addTargetRequests(requests, Integer.MAX_VALUE - matchID);
+
+
     try { // weather, 天气(原文未加工) => 天气：多云 温度：24℃～25℃
       int weatherStart = page.getRawText().indexOf("天气：");
       int weatherEnd = page.getRawText().indexOf("<", weatherStart);
@@ -119,30 +128,17 @@ public class DetailConsumer implements Consumer {
       SpiderUtils.log(e);
     }
 
-    try { // hostName, 主队名称; customName, 客队名称
-      String hostName =
-          page.getHtml().xpath("//div[@id=home]/a/span[@class=name]/text()").toString();
-      String customName =
-          page.getHtml().xpath("//div[@id=guest]/a/span[@class=name]/text()").toString();
-      page.putField("hostName", hostName.replace("(中)", "")); // 去掉中立场
-      page.putField("hostNamePinyin", Pinyin.toPinyin(hostName, ""));
-      page.putField("customName", customName);
-      page.putField("customNamePinyin", Pinyin.toPinyin(customName, ""));
-      System.out.println("matchID = " + matchID + " => (" + hostName + " VS " + customName + ")");
-    } catch (Throwable e) {
-      SpiderUtils.log(e);
-    }
-
     try { // hostScore, customScore, 主客队比分
       List<String> scores = page.getHtml().xpath("//span[@class='b t15']/text()").all();
       page.putField("hostScore", scores.get(0));
       page.putField("customScore", scores.get(1));
     } catch (Throwable e) {
       SpiderUtils.log(e);
+      page.setSkip(true);
+      return;
     }
 
     // ------ 技术统计 ------
-
     try { // hostCornerScore, customCornerScore, 主客队角球数
       Pair<String, String> cornerScorePair =
           SpiderUtils.selectTableOfTd(page.getHtml(), "技术统计", "角球");
@@ -224,12 +220,16 @@ public class DetailConsumer implements Consumer {
     try {
       Pair<String, String> scorePair = SpiderUtils.selectTableOfTd(page.getHtml(), "技统数据", "进球");
       String[] hostScoreArray = scorePair.first.split("/");
-      page.putField("hostScoreOf3", SpiderUtils.valueOfFloat(hostScoreArray[0]));
-      page.putField("hostScoreOf10", SpiderUtils.valueOfFloat(hostScoreArray[1]));
+      if (hostScoreArray.length >= 2) {
+        page.putField("hostScoreOf3", SpiderUtils.valueOfFloat(hostScoreArray[0]));
+        page.putField("hostScoreOf10", SpiderUtils.valueOfFloat(hostScoreArray[1]));
+      }
 
       String[] customScoreArray = scorePair.second.split("/");
-      page.putField("customScoreOf3", SpiderUtils.valueOfFloat(customScoreArray[0]));
-      page.putField("customScoreOf10", SpiderUtils.valueOfFloat(customScoreArray[1]));
+      if (customScoreArray.length >= 2) {
+        page.putField("customScoreOf3", SpiderUtils.valueOfFloat(customScoreArray[0]));
+        page.putField("customScoreOf10", SpiderUtils.valueOfFloat(customScoreArray[1]));
+      }
     } catch (Throwable e) {
       SpiderUtils.log(e);
     }
@@ -241,12 +241,16 @@ public class DetailConsumer implements Consumer {
     try {
       Pair<String, String> lossPair = SpiderUtils.selectTableOfTd(page.getHtml(), "技统数据", "失球");
       String[] hostLossArray = lossPair.first.split("/");
-      page.putField("hostLossOf3", SpiderUtils.valueOfFloat(hostLossArray[0]));
-      page.putField("hostLossOf10", SpiderUtils.valueOfFloat(hostLossArray[1]));
+      if (hostLossArray.length >= 2) {
+        page.putField("hostLossOf3", SpiderUtils.valueOfFloat(hostLossArray[0]));
+        page.putField("hostLossOf10", SpiderUtils.valueOfFloat(hostLossArray[1]));
+      }
 
       String[] customLossArray = lossPair.second.split("/");
-      page.putField("customLossOf3", SpiderUtils.valueOfFloat(customLossArray[0]));
-      page.putField("customLossOf10", SpiderUtils.valueOfFloat(customLossArray[1]));
+      if (customLossArray.length >= 2) {
+        page.putField("customLossOf3", SpiderUtils.valueOfFloat(customLossArray[0]));
+        page.putField("customLossOf10", SpiderUtils.valueOfFloat(customLossArray[1]));
+      }
     } catch (Throwable e) {
       SpiderUtils.log(e);
     }
@@ -259,12 +263,16 @@ public class DetailConsumer implements Consumer {
     try {
       Pair<String, String> cornerPair = SpiderUtils.selectTableOfTd(page.getHtml(), "技统数据", "角球");
       String[] hostCornerArray = cornerPair.first.split("/");
-      page.putField("hostCornerOf3", SpiderUtils.valueOfFloat(hostCornerArray[0]));
-      page.putField("hostCornerOf10", SpiderUtils.valueOfFloat(hostCornerArray[1]));
+      if (hostCornerArray.length >= 2) {
+        page.putField("hostCornerOf3", SpiderUtils.valueOfFloat(hostCornerArray[0]));
+        page.putField("hostCornerOf10", SpiderUtils.valueOfFloat(hostCornerArray[1]));
+      }
 
       String[] customCornerArray = cornerPair.second.split("/");
-      page.putField("customCornerOf3", SpiderUtils.valueOfFloat(customCornerArray[0]));
-      page.putField("customCornerOf10", SpiderUtils.valueOfFloat(customCornerArray[1]));
+      if (customCornerArray.length >= 2) {
+        page.putField("customCornerOf3", SpiderUtils.valueOfFloat(customCornerArray[0]));
+        page.putField("customCornerOf10", SpiderUtils.valueOfFloat(customCornerArray[1]));
+      }
     } catch (Throwable e) {
       SpiderUtils.log(e);
     }
@@ -277,12 +285,16 @@ public class DetailConsumer implements Consumer {
       Pair<String, String> yellowCardPair =
           SpiderUtils.selectTableOfTd(page.getHtml(), "技统数据", "黄牌");
       String[] hostYellowCardArray = yellowCardPair.first.split("/");
-      page.putField("hostYellowCardOf3", SpiderUtils.valueOfFloat(hostYellowCardArray[0]));
-      page.putField("hostYellowCardOf10", SpiderUtils.valueOfFloat(hostYellowCardArray[1]));
+      if (hostYellowCardArray.length >= 2) {
+        page.putField("hostYellowCardOf3", SpiderUtils.valueOfFloat(hostYellowCardArray[0]));
+        page.putField("hostYellowCardOf10", SpiderUtils.valueOfFloat(hostYellowCardArray[1]));
+      }
 
       String[] customYellowCardArray = yellowCardPair.second.split("/");
-      page.putField("customYellowCardOf3", SpiderUtils.valueOfFloat(customYellowCardArray[0]));
-      page.putField("customYellowCardOf10", SpiderUtils.valueOfFloat(customYellowCardArray[1]));
+      if (customYellowCardArray.length >= 2) {
+        page.putField("customYellowCardOf3", SpiderUtils.valueOfFloat(customYellowCardArray[0]));
+        page.putField("customYellowCardOf10", SpiderUtils.valueOfFloat(customYellowCardArray[1]));
+      }
     } catch (Throwable e) {
       SpiderUtils.log(e);
     }
@@ -295,23 +307,34 @@ public class DetailConsumer implements Consumer {
       Pair<String, String> controlRatePair =
           SpiderUtils.selectTableOfTd(page.getHtml(), "技统数据", "控球率");
       String[] hostControlRateArray = controlRatePair.first.split("/");
-      page.putField("hostControlRateOf3",
-          SpiderUtils.valueOfFloat(hostControlRateArray[0].replace("%", "")));
-      page.putField("hostControlRateOf10",
-          SpiderUtils.valueOfFloat(hostControlRateArray[1].replace("%", "")));
+      if (hostControlRateArray.length >= 2) {
+        page.putField("hostControlRateOf3",
+            SpiderUtils.valueOfFloat(hostControlRateArray[0].replace("%", "")));
+        page.putField("hostControlRateOf10",
+            SpiderUtils.valueOfFloat(hostControlRateArray[1].replace("%", "")));
+      }
 
       String[] customControlRateArray = controlRatePair.second.split("/");
-      page.putField("customControlRateOf3",
-          SpiderUtils.valueOfFloat(customControlRateArray[0].replace("%", "")));
-      page.putField("customControlRateOf10",
-          SpiderUtils.valueOfFloat(customControlRateArray[1].replace("%", "")));
+      if (customControlRateArray.length >= 2) {
+        page.putField("customControlRateOf3",
+            SpiderUtils.valueOfFloat(customControlRateArray[0].replace("%", "")));
+        page.putField("customControlRateOf10",
+            SpiderUtils.valueOfFloat(customControlRateArray[1].replace("%", "")));
+      }
     } catch (Throwable e) {
       SpiderUtils.log(e);
     }
 
+    // 如果页面复合条件，则继续抓取, matchID越小，优先级越高
+    List<String> requests = new ArrayList<>();
+    requests.add(UrlType.ANALYSIS.buildUrl(matchID));
+    // requests.add(UrlType.SCORE.buildUrl(matchID));
+    requests.add(UrlType.SCORE_ODD.buildUrl(matchID));
+    requests.add(UrlType.CORNER_ODD.buildUrl(matchID));
+    page.addTargetRequests(requests, Integer.MAX_VALUE - matchID);
+
     System.out.println("(Detail) => " + matchID);
     // System.out.println(page.getResultItems().getAll());
-
   }
 
 

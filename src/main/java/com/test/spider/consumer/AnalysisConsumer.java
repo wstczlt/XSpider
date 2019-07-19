@@ -49,8 +49,10 @@ public class AnalysisConsumer implements Consumer {
     }
 
     try { // league, 联赛名称
-      String leagueString = xpath.selNOne("//a[@style='color:#f00;']/text()").asString();
-      page.putField("league", leagueString.replace("资料", ""));
+      JXNode leagueNode = xpath.selNOne("//a[@style='color:#f00;']/text()");
+      if (leagueNode != null) {
+        page.putField("league", leagueNode.toString().replace("资料", ""));
+      }
     } catch (Throwable e) {
       SpiderUtils.log(e);
     }
