@@ -16,8 +16,6 @@ import com.test.train.utils.TrainUtils;
 
 public class TrainMain {
 
-  private static final int TEST_SET_COUNT = 1000; // 测试集大小
-
   public static void main(String[] args) {
     try {
       final List<Match> matches = MatchDao.loadAllMatch();
@@ -43,7 +41,7 @@ public class TrainMain {
 
   private static void test(TrainModel model, List<Map<String, Float>> testSet) throws Exception {
     double[] predictValues = model.predict(testSet);
-    final double positiveThreshold = 0.55f;
+    final double positiveThreshold = 0.52f;
     int aiBuyCount = 0, manBuyCount = 0; // AI出手购买次数, 人类无脑购买次数
     int aiHitCount = 0, manHitCount = 0; // AI正确次数，人类无脑正确次数
     if (predictValues.length != testSet.size()) {
@@ -79,7 +77,12 @@ public class TrainMain {
   private static Pair<List<Map<String, Float>>, List<Map<String, Float>>> buildDataSet(
       List<Match> matches) {
     // 生成训练集以及测试集
-    matches = new ArrayList<>(matches);
+    int testSetCount = 5000; // 近2000场
+    int trainSetCount = 1000; // 近1000场
+    int totalCount = testSetCount + trainSetCount;
+    if (matches.size() >= totalCount) {
+      matches = matches.subList(matches.size() - totalCount, matches.size());
+    }
     Collections.shuffle(matches); // 拷贝一份并打散, 有利于验证结果
     final List<Map<String, Float>> trainSet = new ArrayList<>();
     final List<Map<String, Float>> testSet = new ArrayList<>();
@@ -88,7 +91,7 @@ public class TrainMain {
       if (item.isEmpty()) {
         continue;
       }
-      if (i < TEST_SET_COUNT) {
+      if (i < trainSetCount) {
         testSet.add(item);
       } else {
         trainSet.add(item);

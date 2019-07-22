@@ -34,7 +34,12 @@ public abstract class TrainModel {
         .exec("python training/test.py " + nameOfTestX() + " " + nameOfModel());
     String output = IOUtils.toString(process.getInputStream());
     final String[] results = output.replace("\r", "").split("\n");
-    // System.out.println(Arrays.toString(results));
+//     System.out.println(Arrays.toString(results));
+//    return Arrays.stream(results).mapToDouble(value -> {
+//      String positiveValue = value.replace("[", "").replace("]", "").split(" ")[1];
+//      return Double.parseDouble(positiveValue);
+//    }).toArray();
+
     return Arrays.stream(results).mapToDouble(Double::parseDouble).toArray();
   }
 

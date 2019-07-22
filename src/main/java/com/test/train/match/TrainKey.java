@@ -156,13 +156,19 @@ public enum TrainKey {
 
   public static List<TrainKey> helpfulKeys() {
     List<TrainKey> trainKeys = new ArrayList<>();
-    for (TrainKey trainKey : values()) {
-      // 去除验证结果Key
-      if (trainKey.name().endsWith("_VALUE")) {
-        continue;
-      }
-      trainKeys.add(trainKey);
-    }
+    // trainKeys.add(DISTANCE_RECENT_BALL_COUNT);
+    // trainKeys.add(DISTANCE_RECENT_LOST_COUNT);
+    // trainKeys.add(DISTANCE_RECENT_CONTROL_RATE);
+    trainKeys.add(ORIGINAL_SCORE_ODD);
+    trainKeys.add(DELTA_SCORE_ODD);
+    trainKeys.add(ORIGINAL_VICTORY_ODD);
+    trainKeys.add(ORIGINAL_DRAW_ODD);
+    trainKeys.add(ORIGINAL_DEFEAT_ODD);
+    // trainKeys.add(DELTA_VICTORY_ODD);
+    // trainKeys.add(DELTA_DRAW_ODD);
+    // trainKeys.add(DELTA_DEFEAT_ODD);
+    // trainKeys.add(ORIGINAL_BIG_ODD);
+    // trainKeys.add(DELTA_BIG_ODD);
 
     return trainKeys;
   }
