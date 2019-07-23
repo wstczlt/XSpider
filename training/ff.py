@@ -28,19 +28,31 @@ def trainandTest(X, y, X_t):
     model.fit(X_train_std, y_train)
     # 对测试集进行预测
     ans = model.predict(X_test_std)
+    prob = model.predict_proba(X_test_std)[:, 1]
 
     cnt1 = 0
     cnt2 = 0
-    # print list(X_test.keys())
-    # print list(y_test.keys())
-    # print y_test.to_dict()
     ylist = y_test.values.tolist()
     for i in range(0, len(ans)):
         if ans[i] == ylist[i]:
             cnt1 += 1
         else:
             cnt2 += 1
-    print("Accuracy: %.2f %% " % (100 * cnt1 / (cnt1 + cnt2)))
+    total = (cnt1 + cnt2)
+    accuracy = (100 * cnt1 / (cnt1 + cnt2))
+    print("Normal Accuracy: " + str(accuracy) + "% , total: " + str(total))
+
+    cnt1 = 0
+    cnt2 = 0
+    for i in range(0, len(ans)):
+        if prob[i] >= 0.6:
+            if ans[i] == ylist[i]:
+                cnt1 += 1
+            else:
+                cnt2 += 1
+    total = (cnt1 + cnt2)
+    accuracy = (100 * cnt1 / (cnt1 + cnt2))
+    print("High Prob Accuracy: " + str(accuracy) + "% , total: " + str(total))
     # cnt1 = 0
     # cnt2 = 0
     # print y_test

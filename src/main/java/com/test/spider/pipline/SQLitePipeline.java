@@ -75,7 +75,7 @@ public class SQLitePipeline implements Pipeline {
   private List<String> mColumns = new ArrayList<>();
   private List<ResultItems> mResultItems = new ArrayList<>(); // 前期积累元素, 得到一个全量的key集合
 
-  private boolean mTableCreated = isTableCreated(); // 标记是否创建了数据表
+  private boolean mTableCreated = isExistTable(); // 标记是否创建了数据表
   private AtomicInteger mValueCount = new AtomicInteger(0);
 
   @Override
@@ -83,16 +83,11 @@ public class SQLitePipeline implements Pipeline {
     if (resultItems.isSkip()) { // 废弃的结果
       return;
     }
-    final Integer matchID = resultItems.get("matchID");
-    final Float originScoreOdd = resultItems.get("original_scoreOdd");
-    if (matchID != null && originScoreOdd != null) {
-      int cnt = mValueCount.getAndIncrement();
-      System.out.println(String.format("DATABASE: matchID=%d, valueCount=%d", matchID, cnt));
-    }
     if (!mTableCreated && mResultItems.size() < SpiderConfig.MAX_CACHE_ITEMS) {
       mResultItems.add(resultItems);
       return;
     }
+    ensureColumns();
     if (!mTableCreated) { // 创建数据表并把缓存数据写进去
       createTable();
       mTableCreated = true;
@@ -100,9 +95,17 @@ public class SQLitePipeline implements Pipeline {
       mResultItems.clear(); // 避免占内存
     }
     updateDatabase(resultItems);
+    final Integer matchID = resultItems.get("matchID");
+    final Float originScoreOdd = resultItems.get("original_scoreOddOfVictory");
+    if (matchID != null && originScoreOdd != null) {
+      int cnt = mValueCount.getAndIncrement();
+      System.out
+          .println(String.format("DATABASE: matchID=%d, valueCount=%d, scoreOddOfVictory=%.2f",
+              matchID, cnt, originScoreOdd));
+    }
   }
 
-  private boolean isTableCreated() {
+  private boolean isExistTable() {
     try {
       QueryRunner runner = new QueryRunner(getDataSource());
       Map<String, Object> map =
@@ -115,7 +118,6 @@ public class SQLitePipeline implements Pipeline {
 
   private void createTable() {
     try {
-      mColumns = obtainColumns();
       StringBuilder sb = new StringBuilder("CREATE TABLE football(matchID INTEGER PRIMARY KEY");
       for (String column : mColumns) {
         sb.append(", ").append(column).append(" TEXT");
@@ -145,16 +147,29 @@ public class SQLitePipeline implements Pipeline {
     }
   }
 
-  private List<String> obtainColumns() {
+  private void ensureColumns() {
+    if (mColumns != null && !mColumns.isEmpty()) {
+      return;
+    }
     Set<String> columnSet = new HashSet<>(MUST_HAVE_COLUMNS);
-    for (ResultItems items : mResultItems) { // 去重
-      columnSet.addAll(items.getAll().keySet());
+    if (mTableCreated) {
+      QueryRunner runner = new QueryRunner(getDataSource());
+      try {
+        Map<String, Object> map = runner.query("select * from football limit 1", new MapHandler());
+        columnSet.addAll(map.keySet());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    } else {
+      for (ResultItems items : mResultItems) { // 去重
+        columnSet.addAll(items.getAll().keySet());
+      }
     }
     columnSet.remove("matchID"); // matchID单独处理
     String[] columnArray = new String[columnSet.size()];
     columnSet.toArray(columnArray);
     Arrays.sort(columnArray); // 排序
-    return Arrays.asList(columnArray);
+    mColumns = Arrays.asList(columnArray);
   }
 
   private String buildInsertSQL(int matchID, ResultItems items) {
