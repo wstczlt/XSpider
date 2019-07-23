@@ -1,9 +1,14 @@
 package com.test.train;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
 
 import com.test.spider.tools.Pair;
 import com.test.train.match.Match;
@@ -17,6 +22,34 @@ import com.test.train.utils.TrainUtils;
 public class TrainMain {
 
   public static void main(String[] args) {
+    String A = "5587,2,2.25,2.3,2.1,2.3,2.1,2.15,2.2,2.1,2.27,2.23,2.27,2.32,2.25,1";
+    if (A.length() > 0) {
+      try {
+        List<String> lines = FileUtils.readLines(new File("training/odd.dat"));
+        Iterator<String> it = lines.iterator();
+        loop: while (it.hasNext()) {
+          String line = it.next();
+          String[] ss = line.split(",");
+          if (ss.length != 16) {
+            it.remove();
+            continue;
+          }
+          for (String s : ss) {
+            try {
+              Float.parseFloat(s);
+            } catch (Exception e) {
+              it.remove();
+              continue loop;
+            }
+          }
+        }
+        System.out.println(lines);
+        FileUtils.writeLines(new File("training/oddX.dat"), lines);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      return;
+    }
     try {
       final List<Match> matches = MatchDao.loadAllMatch();
       final Pair<List<Map<String, Float>>, List<Map<String, Float>>> dataSet =

@@ -17,6 +17,8 @@ public class TableModel {
   private static final String PREFIX_ORIGINAL = "original_"; // 初盘
   private static final String PREFIX_OPENING = "opening_"; // 比赛开始前的即时盘
   private static final String PREFIX_MIDDLE = "middle_"; // 中场盘
+  private static final String PREFIX_MIN_25 = "min25_"; // 25分钟盘
+  private static final String PREFIX_MIN_75 = "min75_"; // 75分钟盘
 
   private final TableType mType;
   private final JXDocument mDoc;
@@ -24,6 +26,8 @@ public class TableModel {
   private LineModel mOriginal; // 初盘
   private LineModel mOpening; // 即时盘
   private LineModel mMiddle; // 中场盘
+  private LineModel mMinOf25; // 25分钟盘
+  private LineModel mMin0f75; // 75分钟盘
 
   public TableModel(TableType type, String tableRawText) {
     mType = type;
@@ -36,7 +40,7 @@ public class TableModel {
   }
 
   public void fillPage(Page page) {
-    List<LineModel> lines = Arrays.asList(mOriginal, mOpening, mMiddle);
+    List<LineModel> lines = Arrays.asList(mOriginal, mOpening, mMiddle, mMinOf25, mMin0f75);
     for (LineModel line : lines) {
       if (line == null) {
         continue;
@@ -52,7 +56,9 @@ public class TableModel {
 
   private void init() {
     final List<JXNode> trs = mDoc.selN("//tr");
-    boolean firstMin = false;
+    boolean firstMin = false; // 首分钟
+    boolean first25 = false; // 首个25分钟，用于破蛋
+    boolean first75 = false; // 首个70分钟，用于大球
     for (int i = trs.size() - 1; i > 0; i--) { // 倒着遍历, index=0是标题，不要
       final LineModel line = new LineModel(trs.get(i), mType);
       if (i == trs.size() - 1) { // 初盘
@@ -65,6 +71,14 @@ public class TableModel {
         mOpening = line;
       } else if (line.isMiddle) {
         mMiddle = line;
+      } else if (!first25 && line.mMinute >= 25) {
+        mMinOf25 = line;
+        first25 = true;
+        line.isMin0f25 = true;
+      } else if (!first75 && line.mMinute >= 75) {
+        mMin0f75 = line;
+        first75 = true;
+        line.isMin0f75 = true;
       }
     }
   }
@@ -78,6 +92,8 @@ public class TableModel {
     boolean isOriginal; // 是否初盘
     boolean isOpening; // 是否即时盘
     boolean isMiddle; // 是否中场
+    boolean isMin0f25; // 是否中25分钟
+    boolean isMin0f75; // 是否中75分钟
     boolean isForbidden; // 是否封盘
 
     int mMinute; // 当前分钟
@@ -158,6 +174,12 @@ public class TableModel {
       }
       if (isMiddle) {
         return PREFIX_MIDDLE;
+      }
+      if (isMin0f25) {
+        return PREFIX_MIN_25;
+      }
+      if (isMin0f75) {
+        return PREFIX_MIN_75;
       }
 
       return "_";
