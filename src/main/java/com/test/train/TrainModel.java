@@ -1,11 +1,14 @@
 package com.test.train;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 
+import com.test.spider.SpiderUtils;
+import com.test.spider.tools.Pair;
 import com.test.train.match.TrainKey;
 import com.test.train.utils.TrainUtils;
 
@@ -28,19 +31,28 @@ public abstract class TrainModel {
   /**
    * 预测结果.
    */
-  public final double[] predict(List<Map<String, Float>> dataSet) throws Exception {
+  public final List<Pair<Double, Double>> predict(List<Map<String, Float>> dataSet) throws Exception {
     TrainUtils.writeDataSet(this, dataSet, false);
     Process process = Runtime.getRuntime()
         .exec("python training/test.py " + nameOfTestX() + " " + nameOfModel());
     String output = IOUtils.toString(process.getInputStream());
     final String[] results = output.replace("\r", "").split("\n");
-//     System.out.println(Arrays.toString(results));
-//    return Arrays.stream(results).mapToDouble(value -> {
-//      String positiveValue = value.replace("[", "").replace("]", "").split(" ")[1];
-//      return Double.parseDouble(positiveValue);
-//    }).toArray();
+    System.out.println(Arrays.toString(results));
+    List<Pair<Double, Double>> list = new ArrayList<>();
+    Arrays.stream(results).forEach(value -> {
+      Pair<Double, Double> line;
+      String[] arr = value.replace("[", "").replace("]", "").split(" ");
+      double probOf0 = SpiderUtils.valueOfFloat(arr[0]);
+      double probOf1 = SpiderUtils.valueOfFloat(arr[1]);
+      if (probOf0 > probOf1) {
+        line = new Pair<>(0d, probOf0);
+      } else {
+        line = new Pair<>(1d, probOf1);
+      }
+      list.add(line);
+    });
 
-    return Arrays.stream(results).mapToDouble(Double::parseDouble).toArray();
+    return list;
   }
 
   /**
@@ -57,13 +69,6 @@ public abstract class TrainModel {
    * 训练集的结果集的key
    */
   public abstract TrainKey keyOfY();
-
-  /**
-   * 判断是否是阳性样本.
-   */
-  public final boolean isPositive(Map<String, Float> valueMap) {
-    return valueMap.get(keyOfY().mKey) == 1;
-  }
 
   public final String nameOfX() {
     return "temp/" + "x_" + name() + ".dat";

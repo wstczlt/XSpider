@@ -16,6 +16,6 @@ x_data_std = scaler.fit_transform(x_data)
 
 # We evaluate the x and y by sklearn to get a sense of the coefficients.
 # reg = linear_model.LogisticRegression(solver='sag')
-reg = SVC(C=10, kernel='rbf', gamma=0.01, probability=True)
+reg = SVC(C=10, kernel='rbf', probability=True)
 reg.fit(x_data_std, y_data)
 joblib.dump(reg, sys.argv[3])

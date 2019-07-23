@@ -16,7 +16,7 @@ from xgboost import plot_importance
 
 
 def trainandTest(X, y, X_t):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=33)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
     ### feature_extraction
     vec = DictVectorizer(sparse=False)
     X_train_std = vec.fit_transform(X_train.to_dict(orient='record'))
@@ -89,8 +89,9 @@ if __name__ == '__main__':
     data = pd.read_csv(trainFilePath)
     X_test = pd.read_csv(testFilePath)
     ###############第二处调参：选择全部特征还是部分特征###########################
-    X_train = data[[f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10]]  # 全特征
+    # X_train = data[[f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10]]  # 全特征
     # X_train=data[[f10, f7, f5,f6]]
+    X_train=data[[f0, f9, f2]]
 
     y_train = data['y']
     trainandTest(X_train, y_train, X_test)

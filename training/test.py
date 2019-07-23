@@ -17,7 +17,7 @@ x_data_std = scaler.fit_transform(x_data)
 # We evaluate the x and y by sklearn to get a sense of the coefficients.
 # reg = linear_model.LogisticRegression(solver='liblinear')
 reg = joblib.load(sys.argv[2])
-y_data = reg.predict(x_data_std)
+y_data = reg.predict_proba(x_data_std)
 for y in y_data:
     print y
 

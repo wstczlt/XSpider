@@ -98,7 +98,9 @@ public enum TrainKey {
   DISTANCE_RECENT_CORNER_COUNT("DISTANCE_RECENT_CORNER_COUNT",
       match -> match.mHostCornerOf3 - match.mCustomCornerOf3),
 
-
+  // 亚盘转换为欧盘权值
+  ORIGINAL_SCORE_ODD_FIXED("ORIGINAL_SCORE_ODD_FIXED",
+      match -> (1 + match.mOriginalScoreOddOfVictory * 10.00f / (11 - match.mOriginalScoreOdd))),
   // 初盘让球盘口
   ORIGINAL_SCORE_ODD("ORIGINAL_SCORE_ODD", match -> match.mOriginalScoreOdd),
   // 初盘让球上盘水位
@@ -159,13 +161,13 @@ public enum TrainKey {
     // trainKeys.add(DISTANCE_RECENT_BALL_COUNT);
     // trainKeys.add(DISTANCE_RECENT_LOST_COUNT);
     // trainKeys.add(DISTANCE_RECENT_CONTROL_RATE);
-    trainKeys.add(ORIGINAL_SCORE_ODD);
-    trainKeys.add(DELTA_SCORE_ODD);
+    trainKeys.add(ORIGINAL_SCORE_ODD_FIXED);
+    // trainKeys.add(DELTA_SCORE_ODD);
     trainKeys.add(ORIGINAL_VICTORY_ODD);
     trainKeys.add(ORIGINAL_DRAW_ODD);
-    trainKeys.add(ORIGINAL_DEFEAT_ODD);
-    // trainKeys.add(DELTA_VICTORY_ODD);
-    // trainKeys.add(DELTA_DRAW_ODD);
+    // trainKeys.add(ORIGINAL_DEFEAT_ODD);
+    trainKeys.add(DELTA_VICTORY_ODD);
+    trainKeys.add(DELTA_DRAW_ODD);
     // trainKeys.add(DELTA_DEFEAT_ODD);
     // trainKeys.add(ORIGINAL_BIG_ODD);
     // trainKeys.add(DELTA_BIG_ODD);

@@ -5,16 +5,16 @@ import java.util.Date;
 
 public class SpiderConfig {
 
-  public static final String DATABASE_URL = "jdbc:sqlite:sqlite/football_1.db";
+  public static final String DATABASE_URL = "jdbc:sqlite:sqlite/football.db";
   public static final int DOWNLOAD_RETRY_COUNT = 1;
   public static final int THREAD_SLEEP_TIME = 1000;
   public static final String USER_AGENT =
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36";
 
   public static final int MATCH_ID_START = 1200000; // 起始ID
-  public static final int MATCH_ID_END = 1637322; // 结束ID
+  public static final int MATCH_ID_END = 1448926; // 结束ID
   public static final int MAX_CACHE_ITEMS = 1000; // 先攒数据，用于创建数据库的初始key
-  public static final int SPIDER_THREAD_COUNT = 50; // 线程数
+  public static final int SPIDER_THREAD_COUNT = 30; // 线程数
 
 //   public static final int MATCH_ID_START = 1662650; // 起始ID
 //   public static final int MATCH_ID_END = 1662660; // 结束ID
