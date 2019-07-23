@@ -47,6 +47,6 @@ public class ScoreConsumer implements Consumer {
     float originalVictoryOdd = SpiderUtils.valueOfFloat(tdNodes.get(7).toString());
     float originalDrewOdd = SpiderUtils.convertOdd(tdNodes.get(8).toString());
     float originalDefeatOdd = SpiderUtils.valueOfFloat(tdNodes.get(9).toString());
-    System.out.println("(Score New) => " + matchID);
+//    System.out.println("(Score New) => " + matchID);
   }
 }

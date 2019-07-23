@@ -53,7 +53,7 @@ public class SpiderUtils {
    * 输出错误日志.
    */
   public static void log(Throwable e) {
-    e.printStackTrace();
+//    e.printStackTrace();
   }
 
 

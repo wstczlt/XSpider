@@ -33,7 +33,7 @@ public class CornerOddConsumer implements Consumer {
       SpiderUtils.log(e);
     }
 
-    System.out.println("(Corner) => " + matchID);
+//    System.out.println("(Corner) => " + matchID);
     // System.out.println(page.getResultItems().getAll());
   }
 }

@@ -110,7 +110,7 @@ public class AnalysisConsumer implements Consumer {
     } catch (Throwable e) {
       SpiderUtils.log(e);
     }
-    System.out.println("(Analysis) => " + matchID);
+//    System.out.println("(Analysis) => " + matchID);
     // System.out.println(page.getResultItems().getAll());
 
 

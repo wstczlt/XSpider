@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
@@ -74,12 +75,19 @@ public class SQLitePipeline implements Pipeline {
   private List<String> mColumns = new ArrayList<>();
   private List<ResultItems> mResultItems = new ArrayList<>(); // 前期积累元素, 得到一个全量的key集合
 
-  private boolean mTableCreated; // 标记是否创建了数据表
+  private boolean mTableCreated = isTableCreated(); // 标记是否创建了数据表
+  private AtomicInteger mValueCount = new AtomicInteger(0);
 
   @Override
   public synchronized void process(ResultItems resultItems, Task task) {
     if (resultItems.isSkip()) { // 废弃的结果
       return;
+    }
+    final Integer matchID = resultItems.get("matchID");
+    final Float originScoreOdd = resultItems.get("original_scoreOdd");
+    if (matchID != null && originScoreOdd != null) {
+      int cnt = mValueCount.getAndIncrement();
+      System.out.println(String.format("DATABASE: matchID=%d, valueCount=%d", matchID, cnt));
     }
     if (!mTableCreated && mResultItems.size() < SpiderConfig.MAX_CACHE_ITEMS) {
       mResultItems.add(resultItems);
@@ -94,6 +102,17 @@ public class SQLitePipeline implements Pipeline {
     updateDatabase(resultItems);
   }
 
+  private boolean isTableCreated() {
+    try {
+      QueryRunner runner = new QueryRunner(getDataSource());
+      Map<String, Object> map =
+          runner.query("select count(*) as cnt from football", new MapHandler());
+      return ((Integer) map.get("cnt")) > 0;
+    } catch (Throwable e) {
+      return false;
+    }
+  }
+
   private void createTable() {
     try {
       mColumns = obtainColumns();
@@ -103,7 +122,7 @@ public class SQLitePipeline implements Pipeline {
       }
       sb.append(")");
       final QueryRunner runner = new QueryRunner(getDataSource());
-      runner.update("DROP TABLE if exists football");
+      // runner.update("DROP TABLE if exists football");
       runner.update(sb.toString());
     } catch (Throwable e) {
       e.printStackTrace();

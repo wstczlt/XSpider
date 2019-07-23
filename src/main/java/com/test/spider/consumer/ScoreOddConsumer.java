@@ -50,7 +50,7 @@ public class ScoreOddConsumer implements Consumer {
       SpiderUtils.log(e);
     }
 
-    System.out.println("(Score Odd) => " + matchID);
+    // System.out.println("(Score Odd) => " + matchID);
     // System.out.println(page.getResultItems().getAll());
   }
 }

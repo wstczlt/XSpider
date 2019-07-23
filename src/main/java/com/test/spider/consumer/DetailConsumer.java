@@ -3,6 +3,7 @@ package com.test.spider.consumer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.test.spider.SpiderConfig;
@@ -87,7 +88,8 @@ public class DetailConsumer implements Consumer {
       page.putField("hostNamePinyin", Pinyin.toPinyin(hostName, ""));
       page.putField("customName", customName);
       page.putField("customNamePinyin", Pinyin.toPinyin(customName, ""));
-      System.out.println("matchID = " + matchID + " => (" + hostName + " VS " + customName + ")");
+      // System.out.println("matchID = " + matchID + " => (" + hostName + " VS " + customName +
+      // ")");
     } catch (Throwable e) { // 缺少基本信息
       SpiderUtils.log(e);
       page.setSkip(true);
@@ -333,9 +335,12 @@ public class DetailConsumer implements Consumer {
     requests.add(UrlType.CORNER_ODD.buildUrl(matchID));
     page.addTargetRequests(requests, Integer.MAX_VALUE - matchID);
 
-    System.out.println("(Detail) => " + matchID);
+    // System.out.println("(Detail) => " + matchID);
     // System.out.println(page.getResultItems().getAll());
+    int cnt = mDetailCount.getAndIncrement();
+    System.out.println(String.format("GET: matchID=%d, valueCount=%d", matchID, cnt));
   }
 
 
+  private AtomicInteger mDetailCount = new AtomicInteger(0);
 }
