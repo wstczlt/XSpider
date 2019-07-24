@@ -99,6 +99,11 @@ public class SQLitePipeline implements Pipeline {
     updateDatabase(resultItems);
   }
 
+  private void openDatabase() {
+
+  }
+
+
   private boolean isExistTable() {
     try {
       QueryRunner runner = new QueryRunner(getDataSource());

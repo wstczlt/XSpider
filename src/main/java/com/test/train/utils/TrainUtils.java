@@ -26,6 +26,9 @@ public class TrainUtils {
     match.mMatchTime = Long.parseLong(String.valueOf(databaseMap.get("matchTime")));
     match.mHostNamePinyin = String.valueOf(databaseMap.get("hostNamePinyin"));
     match.mCustomNamePinyin = String.valueOf(databaseMap.get("customNamePinyin"));
+    match.mHostName = String.valueOf(databaseMap.get("hostName"));
+    match.mCustomName = String.valueOf(databaseMap.get("customName"));
+    match.mLeague = String.valueOf(databaseMap.get("league"));
     match.mHostScore = SpiderUtils.valueOfInt(databaseMap.get("hostScore"));
     match.mCustomScore = SpiderUtils.valueOfInt(databaseMap.get("customScore"));
 
@@ -180,5 +183,19 @@ public class TrainUtils {
         && match.mOriginalBigOdd > 0
         && match.mOriginalBigOddOfVictory > 0
         && match.mOriginalBigOddOfDefeat > 0;
+  }
+
+  public static List<Map<String, Float>> trainMaps(List<Match> matches) {
+    final List<Map<String, Float>> dataSet = new ArrayList<>();
+    for (int i = 0; i < matches.size(); i++) {
+      final Match match = matches.get(i);
+      final Map<String, Float> item = buildTrainMap(match);
+      if (item.isEmpty()) {
+        continue;
+      }
+      dataSet.add(item);
+    }
+
+    return dataSet;
   }
 }

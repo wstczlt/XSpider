@@ -1,12 +1,15 @@
 package com.test.spider.consumer;
 
+import static com.test.spider.SpiderConfig.DATE_FORMAT;
+import static com.test.spider.SpiderConfig.MAX_DATE;
+import static com.test.spider.SpiderConfig.MIN_DATE;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.promeg.pinyinhelper.Pinyin;
-import com.test.spider.SpiderConfig;
 import com.test.spider.SpiderUtils;
 import com.test.spider.model.UrlType;
 import com.test.spider.tools.Pair;
@@ -101,10 +104,10 @@ public class DetailConsumer implements Consumer {
       int matchTimeEnd = page.getRawText().indexOf("</span>", matchTimeStart);
       String matchTimeString = page.getRawText().substring(matchTimeStart, matchTimeEnd);
       matchTimeString = matchTimeString.substring("开赛时间：".length());
-      Date date = SpiderConfig.DATE_FORMAT.parse(matchTimeString);
+      Date date = DATE_FORMAT.parse(matchTimeString);
       // 要求在时间范围内
-      if (date.getTime() < SpiderConfig.MIN_DATE.getTime()
-          || date.getTime() > SpiderConfig.MAX_DATE.getTime()) {
+      if (date.getTime() < MIN_DATE.getTime()
+          || date.getTime() > MAX_DATE.getTime()) {
         // System.out.println("matchID = " + matchID + ", 时间超出范围 => " + matchTimeString);
         page.setSkip(true);
         return;

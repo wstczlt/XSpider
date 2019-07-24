@@ -1,5 +1,9 @@
 package com.test.spider;
 
+import static com.test.spider.SpiderConfig.DOWNLOAD_RETRY_COUNT;
+import static com.test.spider.SpiderConfig.THREAD_SLEEP_TIME;
+import static com.test.spider.SpiderConfig.USER_AGENT;
+
 import java.util.List;
 
 import com.test.spider.consumer.Consumer;
@@ -12,9 +16,9 @@ public class SpiderProcessor implements us.codecraft.webmagic.processor.PageProc
   private final Site mSite = Site.me()
       .setTimeOut(30 * 1000)
       .setRetryTimes(0) // 这个没用
-      .setCycleRetryTimes(SpiderConfig.DOWNLOAD_RETRY_COUNT)
-      .setSleepTime(SpiderConfig.THREAD_SLEEP_TIME)
-      .setUserAgent(SpiderConfig.USER_AGENT);
+      .setCycleRetryTimes(DOWNLOAD_RETRY_COUNT)
+      .setSleepTime(THREAD_SLEEP_TIME)
+      .setUserAgent(USER_AGENT);
 
   private final List<Consumer> mConsumers;
 

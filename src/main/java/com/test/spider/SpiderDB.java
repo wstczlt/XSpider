@@ -1,5 +1,7 @@
 package com.test.spider;
 
+import static com.test.spider.SpiderConfig.DATABASE_URL;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -13,7 +15,7 @@ public class SpiderDB {
       sDataSource = new BasicDataSource();
       // 基本设置
       sDataSource.setDriverClassName("org.sqlite.JDBC");
-      sDataSource.setUrl(SpiderConfig.DATABASE_URL);
+      sDataSource.setUrl(DATABASE_URL);
       // 高级设置
       sDataSource.setInitialSize(10);// 初始化连接
       sDataSource.setMinIdle(5);// 最小空闲连接

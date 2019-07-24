@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.test.spider.tools.Pair;
 import com.test.train.match.Match;
-import com.test.train.match.MatchDao;
+import com.test.train.match.MatchQueryHelper;
 import com.test.train.match.PredictResult;
 import com.test.train.model.BigBallOfMin75;
 import com.test.train.utils.TrainUtils;
@@ -18,9 +18,9 @@ public class TrainMain {
     final int totalRound = 10; // 测试轮数
     final int testSetCount = 1000; // 测试集长度
     final float[] thresholds = new float[] {0.55f, 0.56f, 0.57f, 0.58f, 0.59f, 0.60f}; // 高概率要求的阈值
-    final List<Match> matches = MatchDao.loadAllMatch();
+    final List<Match> matches = MatchQueryHelper.loadAll();
     final TrainModel model = new BigBallOfMin75(); // 训练模型
-    final List<Map<String, Float>> dataSet = createDataSet(matches);
+    final List<Map<String, Float>> dataSet = TrainUtils.trainMaps(matches);
 
     for (float threshold : thresholds) {
       trainTest(model, totalRound, testSetCount, threshold, dataSet);
@@ -41,22 +41,6 @@ public class TrainMain {
     }
 
     display(model, threshold, results);
-  }
-
-  private static List<Map<String, Float>> createDataSet(List<Match> matches) {
-    // 生成训练集以及测试集
-    Collections.shuffle(matches); // 拷贝一份并打散, 有利于验证结果
-    final List<Map<String, Float>> dataSet = new ArrayList<>();
-    for (int i = 0; i < matches.size(); i++) {
-      final Match match = matches.get(i);
-      final Map<String, Float> item = TrainUtils.buildTrainMap(match);
-      if (item.isEmpty()) {
-        continue;
-      }
-      dataSet.add(item);
-    }
-
-    return dataSet;
   }
 
   private static Pair<PredictResult, PredictResult> doTest(TrainModel model,

@@ -4,8 +4,11 @@ public class Match {
 
   public int mMatchID; // matchID
   public long mMatchTime; // 比赛时间
+  public String mHostName;
+  public String mCustomName;
   public String mHostNamePinyin; // 主队名称拼音
   public String mCustomNamePinyin; // 客队名称拼音
+  public String mLeague; // 联赛名称
   public int mHostScore; // 主队比分
   public int mCustomScore; // 客队比分
 
