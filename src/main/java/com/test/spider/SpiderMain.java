@@ -51,7 +51,7 @@ public class SpiderMain {
         SpiderConfig.MATCH_ID_START; matchID < SpiderConfig.MATCH_ID_END; matchID++) {
       // detail的处理优先级最低，这样可以保证每个matchID的几个关联页面都能被尽快处理
       // 从大到小执行(最新 => 最旧)
-      requests.add(new Request(UrlType.DETAIL.buildUrl(matchID)).setPriority(matchID));
+      requests.add(new Request(UrlType.SCORE_ODD.buildUrl(matchID)).setPriority(matchID));
     }
 
     return requests;

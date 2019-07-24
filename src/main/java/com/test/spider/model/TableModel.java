@@ -27,6 +27,9 @@ public class TableModel {
   private LineModel mOpening; // 即时盘
   private LineModel mMiddle; // 中场盘
   private LineModel mMinOf25; // 25分钟盘
+  private LineModel mMinOf30; // 30分钟盘
+  private LineModel mMinOf65; // 65分钟盘
+  private LineModel mMinOf70; // 70分钟盘
   private LineModel mMin0f75; // 75分钟盘
 
   public TableModel(TableType type, String tableRawText) {
@@ -40,7 +43,8 @@ public class TableModel {
   }
 
   public void fillPage(Page page) {
-    List<LineModel> lines = Arrays.asList(mOriginal, mOpening, mMiddle, mMinOf25, mMin0f75);
+    List<LineModel> lines = Arrays.asList(mOriginal, mOpening, mMiddle, mMinOf25, mMinOf30,
+        mMinOf65, mMinOf70, mMin0f75);
     for (LineModel line : lines) {
       if (line == null) {
         continue;
@@ -58,6 +62,9 @@ public class TableModel {
     final List<JXNode> trs = mDoc.selN("//tr");
     boolean firstMin = false; // 首分钟
     boolean first25 = false; // 首个25分钟，用于破蛋
+    boolean first30 = false;
+    boolean first65 = false;
+    boolean first70 = false;
     boolean first75 = false; // 首个70分钟，用于大球
     for (int i = trs.size() - 1; i > 0; i--) { // 倒着遍历, index=0是标题，不要
       final LineModel line = new LineModel(trs.get(i), mType);
@@ -75,6 +82,18 @@ public class TableModel {
         mMinOf25 = line;
         first25 = true;
         line.isMin0f25 = true;
+      } else if (!first30 && line.mMinute >= 30) {
+        mMinOf30 = line;
+        first30 = true;
+        line.isMin0f30 = true;
+      } else if (!first65 && line.mMinute >= 65) {
+        mMinOf65 = line;
+        first65 = true;
+        line.isMin0f65 = true;
+      } else if (!first70 && line.mMinute >= 70) {
+        mMinOf70 = line;
+        first70 = true;
+        line.isMin0f70 = true;
       } else if (!first75 && line.mMinute >= 75) {
         mMin0f75 = line;
         first75 = true;
@@ -93,6 +112,9 @@ public class TableModel {
     boolean isOpening; // 是否即时盘
     boolean isMiddle; // 是否中场
     boolean isMin0f25; // 是否中25分钟
+    boolean isMin0f30; // 是否中30分钟
+    boolean isMin0f65; // 是否中65分钟
+    boolean isMin0f70; // 是否中70分钟
     boolean isMin0f75; // 是否中75分钟
     boolean isForbidden; // 是否封盘
 
