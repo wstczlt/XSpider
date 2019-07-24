@@ -18,11 +18,15 @@ public class TableModel {
   private static final String PREFIX_OPENING = "opening_"; // 比赛开始前的即时盘
   private static final String PREFIX_MIDDLE = "middle_"; // 中场盘
   private static final String PREFIX_MIN_25 = "min25_"; // 25分钟盘
+  private static final String PREFIX_MIN_30 = "min30_"; // 30分钟盘
+  private static final String PREFIX_MIN_65 = "min65_"; // 65分钟盘
+  private static final String PREFIX_MIN_70 = "min70_"; // 70分钟盘
   private static final String PREFIX_MIN_75 = "min75_"; // 75分钟盘
 
   private final TableType mType;
   private final JXDocument mDoc;
 
+  private int mMaxMin; // 当前分钟数
   private LineModel mOriginal; // 初盘
   private LineModel mOpening; // 即时盘
   private LineModel mMiddle; // 中场盘
@@ -45,6 +49,11 @@ public class TableModel {
   public void fillPage(Page page) {
     List<LineModel> lines = Arrays.asList(mOriginal, mOpening, mMiddle, mMinOf25, mMinOf30,
         mMinOf65, mMinOf70, mMin0f75);
+    Integer timeMin = page.getResultItems().get("timeMin");
+    if (timeMin != null) { // 避免覆盖
+      mMaxMin = Math.max(timeMin, mMaxMin);
+    }
+    page.putField("timeMin", mMaxMin);
     for (LineModel line : lines) {
       if (line == null) {
         continue;
@@ -68,6 +77,7 @@ public class TableModel {
     boolean first75 = false; // 首个70分钟，用于大球
     for (int i = trs.size() - 1; i > 0; i--) { // 倒着遍历, index=0是标题，不要
       final LineModel line = new LineModel(trs.get(i), mType);
+      mMaxMin = Math.max(line.mMinute, mMaxMin); // 时间
       if (i == trs.size() - 1) { // 初盘
         line.isOriginal = true;
         mOriginal = line;
@@ -199,6 +209,15 @@ public class TableModel {
       }
       if (isMin0f25) {
         return PREFIX_MIN_25;
+      }
+      if (isMin0f30) {
+        return PREFIX_MIN_30;
+      }
+      if (isMin0f65) {
+        return PREFIX_MIN_65;
+      }
+      if (isMin0f70) {
+        return PREFIX_MIN_70;
       }
       if (isMin0f75) {
         return PREFIX_MIN_75;

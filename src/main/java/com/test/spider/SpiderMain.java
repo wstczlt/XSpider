@@ -2,6 +2,14 @@ package com.test.spider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 import com.test.spider.consumer.AnalysisConsumer;
 import com.test.spider.consumer.Consumer;
@@ -46,15 +54,24 @@ public class SpiderMain {
   }
 
   private static List<Request> collectRequests() {
+    List<Integer> matchIds = collectStaticMatchIds();
     List<Request> requests = new ArrayList<>();
-    for (int matchID =
-        SpiderConfig.MATCH_ID_START; matchID < SpiderConfig.MATCH_ID_END; matchID++) {
-      // detail的处理优先级最低，这样可以保证每个matchID的几个关联页面都能被尽快处理
-      // 从大到小执行(最新 => 最旧)
-      requests.add(new Request(UrlType.SCORE_ODD.buildUrl(matchID)).setPriority(matchID));
+    for (int matchID : matchIds) {
+      requests.add(new Request(UrlType.DETAIL.buildUrl(matchID)).setPriority(matchID));
     }
 
     return requests;
+  }
+
+  private static List<Integer> collectStaticMatchIds() {
+    List<Integer> matchIds = new ArrayList<>();
+    for (int matchID =
+        SpiderConfig.MATCH_ID_END; matchID > SpiderConfig.MATCH_ID_START; matchID--) {
+      // 从大到小执行(最新 => 最旧)
+      matchIds.add(matchID);
+    }
+
+    return matchIds;
   }
 
 }

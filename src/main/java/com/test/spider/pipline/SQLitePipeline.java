@@ -70,6 +70,8 @@ public class SQLitePipeline implements Pipeline {
     MUST_HAVE_COLUMNS.add("opening_cornerOddOfVictory");
     MUST_HAVE_COLUMNS.add("opening_cornerOddOfDefeat");
 
+    MUST_HAVE_COLUMNS.add("timeMin");
+
   }
 
   private List<String> mColumns = new ArrayList<>();
@@ -95,14 +97,6 @@ public class SQLitePipeline implements Pipeline {
       mResultItems.clear(); // 避免占内存
     }
     updateDatabase(resultItems);
-    final Integer matchID = resultItems.get("matchID");
-    final Float originScoreOdd = resultItems.get("original_scoreOddOfVictory");
-    if (matchID != null && originScoreOdd != null) {
-      int cnt = mValueCount.getAndIncrement();
-      System.out
-          .println(String.format("DATABASE: matchID=%d, valueCount=%d, scoreOddOfVictory=%.2f",
-              matchID, cnt, originScoreOdd));
-    }
   }
 
   private boolean isExistTable() {
@@ -123,6 +117,8 @@ public class SQLitePipeline implements Pipeline {
         sb.append(", ").append(column).append(" TEXT");
       }
       sb.append(")");
+      System.out.println("SQL: " + sb.toString());
+      // System.exit(0);
       final QueryRunner runner = new QueryRunner(getDataSource());
       // runner.update("DROP TABLE if exists football");
       runner.update(sb.toString());
@@ -141,6 +137,14 @@ public class SQLitePipeline implements Pipeline {
         runner.update(buildUpdateSQL(matchID, items));
       } else { // 做insert
         runner.update(buildInsertSQL(matchID, items));
+      }
+
+      final Float scoreOddOfVictory = items.get("original_scoreOddOfVictory");
+      if (scoreOddOfVictory != null && scoreOddOfVictory > 0) {
+        int cnt = mValueCount.getAndIncrement();
+        System.out
+            .println(String.format("DATABASE: matchID=%d, valueCount=%d, scoreOddOfVictory=%.2f",
+                matchID, cnt, scoreOddOfVictory));
       }
     } catch (Throwable e) {
       e.printStackTrace();
