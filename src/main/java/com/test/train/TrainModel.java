@@ -31,13 +31,14 @@ public abstract class TrainModel {
   /**
    * 预测结果.
    */
-  public final List<Pair<Double, Double>> predict(List<Map<String, Float>> dataSet) throws Exception {
+  public final List<Pair<Double, Double>> predict(List<Map<String, Float>> dataSet)
+      throws Exception {
     TrainUtils.writeDataSet(this, dataSet, false);
     Process process = Runtime.getRuntime()
         .exec("python training/test.py " + nameOfTestX() + " " + nameOfModel());
     String output = IOUtils.toString(process.getInputStream());
     final String[] results = output.replace("\r", "").split("\n");
-    System.out.println(Arrays.toString(results));
+    // System.out.println(Arrays.toString(results));
     List<Pair<Double, Double>> list = new ArrayList<>();
     Arrays.stream(results).forEach(value -> {
       Pair<Double, Double> line;
@@ -79,7 +80,7 @@ public abstract class TrainModel {
   }
 
   public final String nameOfTestX() {
-    return "temp/" + "textX_" + name() + ".dat";
+    return "temp/" + "testX_" + name() + ".dat";
   }
 
   public final String nameOfTestY() {

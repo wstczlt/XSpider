@@ -67,6 +67,11 @@ public class TrainUtils {
     match.mOpeningBigOddOfDefeat =
         SpiderUtils.valueOfFloat(databaseMap.get("opening_bigOddOfDefeat"));
 
+    match.mHostScoreMin0f75 =  SpiderUtils.valueOfInt(databaseMap.get("min75_hostScore"));
+    match.mCustomScoreMinOf75 =  SpiderUtils.valueOfInt(databaseMap.get("min75_customScore"));
+    match.mBigOddOfMinOfMin75 = SpiderUtils.valueOfFloat(databaseMap.get("min75_bigOdd"));
+    match.mBigOddOfVictoryOfMin75 = SpiderUtils.valueOfFloat(databaseMap.get("min75_bigOddOfVictory"));
+
     match.mHostScoreOf3 = SpiderUtils.valueOfFloat(databaseMap.get("hostScoreOf3"));
     match.mCustomScoreOf3 = SpiderUtils.valueOfFloat(databaseMap.get("customScoreOf3"));
 
@@ -78,6 +83,12 @@ public class TrainUtils {
 
     match.mHostCornerOf3 = SpiderUtils.valueOfFloat(databaseMap.get("hostCornerOf3"));
     match.mCustomCornerOf3 = SpiderUtils.valueOfFloat(databaseMap.get("customCornerOf3"));
+
+    match.mHostBestShoot = SpiderUtils.valueOfFloat(databaseMap.get("hostBestShoot"));
+    match.mCustomBestShoot = SpiderUtils.valueOfFloat(databaseMap.get("customBestShoot"));
+
+    match.mHostCornerScore = SpiderUtils.valueOfFloat(databaseMap.get("hostCornerScore"));
+    match.mCustomBestShoot = SpiderUtils.valueOfFloat(databaseMap.get("customCornerScore"));
 
     return match;
   }

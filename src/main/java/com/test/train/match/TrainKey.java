@@ -145,8 +145,25 @@ public enum TrainKey {
   // 开盘小球赔率
   OPENING_BIG_ODD_OF_DEFEAT("OPENING_BIG_ODD_OF_DEFEAT", match -> match.mOpeningBigOddOfDefeat),
   // 开盘大小球盘口变化
-  DELTA_BIG_ODD("DELTA_BIG_ODD", match -> match.mOpeningBigOdd - match.mOriginalBigOdd);
-
+  DELTA_BIG_ODD("DELTA_BIG_ODD", match -> match.mOpeningBigOdd - match.mOriginalBigOdd),
+  // 75分钟之后大球的值
+  BIG_BALL_OF_MIN75_VALUE("BIG_BALL_OF_MIN75_VALUE", match -> match.mHostScore + match.mCustomScore
+      - match.mHostScoreMin0f75 - match.mCustomScoreMinOf75 > 0 ? 1 : 0),
+  // 75分钟大小球盘口差距
+  BIG_BALL_ODD_DISTANCE_OF_MIN_75("BIG_BALL_ODD_DISTANCE_OF_MIN_75",
+      match -> match.mOriginalBigOdd - match.mBigOddOfMinOfMin75),
+  // 75分钟盘口让球差距
+  SCORE_ODD_DISTANCE_OF_MIN_75("SCORE_ODD_DISTANCE_OF_MIN_75",
+      match -> (match.mHostScoreMin0f75 - match.mCustomScore) + match.mOriginalScoreOdd),
+  // 75分钟大小球赔率
+  BIG_BALL_ODD_VICTORY_OF_MIN75("BIG_BALL_ODD_VICTORY_OF_MIN75",
+      match -> match.mBigOddOfVictoryOfMin75),
+  // 75分钟总射正次数
+  TOTAL_BEST_SHOOT_OF_MIN75("TOTAL_BEST_SHOOT_OF_MIN75",
+      match -> (match.mHostBestShoot + match.mCustomBestShoot) * 0.8f),
+  // 75分钟总角球次数
+  TOTAL_CORNER_OF_MIN75("TOTAL_CORNER_OF_MIN75",
+      match -> (match.mHostCornerScore + match.mCustomCornerScore) * 0.8f);
 
   public final String mKey;
   public final Calculator mCalculator;

@@ -38,6 +38,11 @@ public class Match {
   public float mOpeningBigOddOfVictory; // 即时盘大小球赔率
   public float mOpeningBigOddOfDefeat; // 即时盘大小球赔率
 
+  public int mHostScoreMin0f75; // 75分钟主队得分
+  public int mCustomScoreMinOf75; // 75分钟客队得分
+  public float mBigOddOfMinOfMin75; // 75分钟大小球盘口
+  public float mBigOddOfVictoryOfMin75; // 75分钟大球赔率
+
   public float mHostScoreOf3; // 主队近3场平均进球数
   public float mCustomScoreOf3; // 客队近3场进球数
 
@@ -49,5 +54,10 @@ public class Match {
 
   public float mHostCornerOf3; // 主队近3场角球次数
   public float mCustomCornerOf3; // 客队近3场角球次数
+
+  public float mHostBestShoot; // 主队射正次数
+  public float mCustomBestShoot; // 客队射正次数
+  public float mHostCornerScore; // 主队角球数
+  public float mCustomCornerScore; // 客队角球数
 
 }

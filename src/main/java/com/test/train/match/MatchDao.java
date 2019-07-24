@@ -43,7 +43,22 @@ import com.test.train.utils.TrainUtils;
 public class MatchDao {
 
   private static final String SQL_QUERY =
-      "select * from football where hostScore is not null AND customScore is not null AND original_scoreOdd is not null AND original_bigOdd is not null AND original_drawOdd is not null order by matchTime desc";
+      "select * from football where hostScore is not null " +
+          "AND customScore is not null " +
+          "AND original_scoreOdd is not null " +
+          "AND original_bigOdd is not null " +
+          "AND original_drawOdd is not null " +
+
+          "AND min75_hostScore is not null " +
+          "AND min75_customScore is not null " +
+          "AND min75_bigOdd is not null " +
+          "AND min75_bigOddOfVictory is not null " +
+
+          "AND hostBestShoot is not null " +
+          "AND customBestShoot is not null " +
+          "AND hostCornerScore is not null " +
+          "AND customCornerScore is not null " +
+          "order by matchTime desc limit 10000";
 
   public static List<Match> loadAllMatch() throws Exception {
     final List<Match> matches = new ArrayList<>();
