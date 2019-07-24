@@ -8,6 +8,7 @@ import static com.test.train.match.TrainKey.ORIGINAL_VICTORY_ODD;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.test.train.TrainModel;
 import com.test.train.match.TrainKey;
@@ -48,5 +49,10 @@ public class OddVictory extends TrainModel {
   @Override
   public TrainKey keyOfY() {
     return TrainKey.ODD_VICTORY_VALUE;
+  }
+
+  @Override
+  public float profit(Map<String, Float> values, float predictValue) {
+    return 0;
   }
 }

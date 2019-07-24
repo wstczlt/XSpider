@@ -54,11 +54,21 @@ public class MatchDao {
           "AND min75_bigOdd is not null " +
           "AND min75_bigOddOfVictory is not null " +
 
+          "AND min25_hostScore is not null " +
+          "AND min25_customScore is not null " +
+          "AND min25_bigOdd is not null " +
+          "AND min25_bigOddOfVictory is not null " +
+
+          "AND middle_hostScore is not null " +
+          "AND middle_customScore is not null " +
+          "AND middle_bigOdd is not null " +
+          "AND middle_bigOddOfVictory is not null " +
+
           "AND hostBestShoot is not null " +
           "AND customBestShoot is not null " +
           "AND hostCornerScore is not null " +
           "AND customCornerScore is not null " +
-          "order by matchTime desc limit 10000";
+          "order by matchTime desc limit 5000";
 
   public static List<Match> loadAllMatch() throws Exception {
     final List<Match> matches = new ArrayList<>();

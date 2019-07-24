@@ -15,9 +15,9 @@ import com.test.train.utils.TrainUtils;
 public class TrainMain {
 
   public static void main(String[] args) throws Exception {
-    final int totalRound = 3; // 测试轮数
-    final int testSetCount = 2000; // 测试集长度
-    final float[] thresholds = new float[] {0.55f, 0.60f, 0.65f, 0.7f, 0.75f, 0.80f}; // 高概率要求的阈值
+    final int totalRound = 10; // 测试轮数
+    final int testSetCount = 1000; // 测试集长度
+    final float[] thresholds = new float[] {0.55f, 0.56f, 0.57f, 0.58f, 0.59f, 0.60f}; // 高概率要求的阈值
     final List<Match> matches = MatchDao.loadAllMatch();
     final TrainModel model = new BigBallOfMin75(); // 训练模型
     final List<Map<String, Float>> dataSet = createDataSet(matches);
@@ -62,9 +62,9 @@ public class TrainMain {
   private static Pair<PredictResult, PredictResult> doTest(TrainModel model,
       List<Map<String, Float>> testSet, double positiveThreshold) throws Exception {
     List<Pair<Double, Double>> results = model.predict(testSet);
-    int normalTotalCount = 0, highProbTotalCount = 0, normalPositiveHitCount = 0,
+    int normalTotalCount = 0, highProbTotalCount = 0, normalPositiveHitCount = 0, normalProfit = 0,
         maxContinueHitCount = 0, maxContinueMissCount = 0;
-    int normalHitCount = 0, highProbHitCount = 0, highPositiveProbHitCount = 0,
+    int normalHitCount = 0, highProbHitCount = 0, highPositiveProbHitCount = 0, highPorbProfit = 0,
         highMaxContinueHitCount = 0, highMaxContinueMissCount = 0;
     if (results.size() != testSet.size()) {
       throw new RuntimeException();
@@ -73,6 +73,7 @@ public class TrainMain {
     boolean lastHit = false, highLastHit = false;
     for (int i = 0; i < results.size(); i++) {
       normalTotalCount++;
+      normalProfit += model.profit(testSet.get(i), results.get(i).first.floatValue());
       float realValue = testSet.get(i).get(model.keyOfY().mKey);
       float predictValue = results.get(i).first.floatValue();
       boolean thisHit = realValue == predictValue;
@@ -101,6 +102,7 @@ public class TrainMain {
       // 高概率
       if (results.get(i).second >= positiveThreshold) {
         highProbTotalCount++;
+        highPorbProfit += model.profit(testSet.get(i), results.get(i).first.floatValue());
         if (thisHit) { // 实际阳性
           highProbHitCount++;
           if (realValue == 1) { // 正向
@@ -127,11 +129,11 @@ public class TrainMain {
     }
 
     PredictResult normalResult =
-        new PredictResult(normalTotalCount, normalHitCount, normalPositiveHitCount, 0,
-            maxContinueHitCount, maxContinueMissCount);
+        new PredictResult(normalTotalCount, normalHitCount, normalPositiveHitCount,
+            normalProfit, maxContinueHitCount, maxContinueMissCount);
     PredictResult highProbResult =
-        new PredictResult(highProbTotalCount, highProbHitCount, highPositiveProbHitCount, 0,
-            highMaxContinueHitCount, highMaxContinueMissCount);
+        new PredictResult(highProbTotalCount, highProbHitCount, highPositiveProbHitCount,
+            highPorbProfit, highMaxContinueHitCount, highMaxContinueMissCount);
 
     return new Pair<>(normalResult, highProbResult);
   }
@@ -176,7 +178,7 @@ public class TrainMain {
         (int) (normalResult.mHitCount * 100 / normalResult.mTotalCount),
         normalResult.mMaxContinueHitCount,
         normalResult.mMaxContinueMissCount,
-        normalResult.mHitCount * 1.88f - normalResult.mTotalCount));
+        normalResult.mProfit));
 
     System.out
         .println(String.format(
@@ -187,7 +189,7 @@ public class TrainMain {
             (int) (highProbResult.mHitCount * 100 / highProbResult.mTotalCount),
             highProbResult.mMaxContinueHitCount,
             highProbResult.mMaxContinueMissCount,
-            highProbResult.mHitCount * 1.88f - highProbResult.mTotalCount));
+            highProbResult.mProfit));
 
     System.out.println();
     System.out.println();

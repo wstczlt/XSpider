@@ -38,7 +38,7 @@ public abstract class TrainModel {
         .exec("python training/test.py " + nameOfTestX() + " " + nameOfModel());
     String output = IOUtils.toString(process.getInputStream());
     final String[] results = output.replace("\r", "").split("\n");
-    // System.out.println(Arrays.toString(results));
+//    System.out.println(Arrays.toString(results));
     List<Pair<Double, Double>> list = new ArrayList<>();
     Arrays.stream(results).forEach(value -> {
       Pair<Double, Double> line;
@@ -57,6 +57,11 @@ public abstract class TrainModel {
   }
 
   /**
+   * 计算盈利.
+   */
+  public abstract float profit(Map<String, Float> values, float predictValue);
+
+  /**
    * 模型名称.
    */
   public abstract String name();
@@ -72,19 +77,19 @@ public abstract class TrainModel {
   public abstract TrainKey keyOfY();
 
   public final String nameOfX() {
-    return "temp/" + "x_" + name() + ".dat";
+    return "temp/" + name() + "_x" + ".dat";
   }
 
   public final String nameOfY() {
-    return "temp/" + "y_" + name() + ".dat";
+    return "temp/" + name() + "_y" + ".dat";
   }
 
   public final String nameOfTestX() {
-    return "temp/" + "testX_" + name() + ".dat";
+    return "temp/" + name() + "_x_test" + ".dat";
   }
 
   public final String nameOfTestY() {
-    return "temp/" + "testY_" + name() + ".dat";
+    return "temp/" + name() + "_y_test" + ".dat";
   }
 
   public final String nameOfModel() {

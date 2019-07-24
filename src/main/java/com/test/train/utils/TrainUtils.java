@@ -67,10 +67,23 @@ public class TrainUtils {
     match.mOpeningBigOddOfDefeat =
         SpiderUtils.valueOfFloat(databaseMap.get("opening_bigOddOfDefeat"));
 
-    match.mHostScoreMin0f75 =  SpiderUtils.valueOfInt(databaseMap.get("min75_hostScore"));
-    match.mCustomScoreMinOf75 =  SpiderUtils.valueOfInt(databaseMap.get("min75_customScore"));
+    match.mHostScoreMinOf75 = SpiderUtils.valueOfInt(databaseMap.get("min75_hostScore"));
+    match.mCustomScoreMinOf75 = SpiderUtils.valueOfInt(databaseMap.get("min75_customScore"));
     match.mBigOddOfMinOfMin75 = SpiderUtils.valueOfFloat(databaseMap.get("min75_bigOdd"));
-    match.mBigOddOfVictoryOfMin75 = SpiderUtils.valueOfFloat(databaseMap.get("min75_bigOddOfVictory"));
+    match.mBigOddOfVictoryOfMin75 =
+        SpiderUtils.valueOfFloat(databaseMap.get("min75_bigOddOfVictory"));
+
+    match.mHostScoreMinOf25 = SpiderUtils.valueOfInt(databaseMap.get("min25_hostScore"));
+    match.mCustomScoreMinOf25 = SpiderUtils.valueOfInt(databaseMap.get("min25_customScore"));
+    match.mBigOddOfMinOfMin25 = SpiderUtils.valueOfFloat(databaseMap.get("min25_bigOdd"));
+    match.mBigOddOfVictoryOfMin25 =
+        SpiderUtils.valueOfFloat(databaseMap.get("min25_bigOddOfVictory"));
+
+    match.mHostScoreOfMiddle = SpiderUtils.valueOfInt(databaseMap.get("middle_hostScore"));
+    match.mCustomScoreOfMiddle = SpiderUtils.valueOfInt(databaseMap.get("middle_customScore"));
+    match.mBigOddOfMinOfMiddle = SpiderUtils.valueOfFloat(databaseMap.get("middle_bigOdd"));
+    match.mBigOddOfVictoryOfMiddle =
+        SpiderUtils.valueOfFloat(databaseMap.get("middle_bigOddOfVictory"));
 
     match.mHostScoreOf3 = SpiderUtils.valueOfFloat(databaseMap.get("hostScoreOf3"));
     match.mCustomScoreOf3 = SpiderUtils.valueOfFloat(databaseMap.get("customScoreOf3"));
@@ -89,6 +102,7 @@ public class TrainUtils {
 
     match.mHostCornerScore = SpiderUtils.valueOfFloat(databaseMap.get("hostCornerScore"));
     match.mCustomBestShoot = SpiderUtils.valueOfFloat(databaseMap.get("customCornerScore"));
+
 
     return match;
   }

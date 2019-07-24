@@ -38,10 +38,20 @@ public class Match {
   public float mOpeningBigOddOfVictory; // 即时盘大小球赔率
   public float mOpeningBigOddOfDefeat; // 即时盘大小球赔率
 
-  public int mHostScoreMin0f75; // 75分钟主队得分
+  public int mHostScoreMinOf75; // 75分钟主队得分
   public int mCustomScoreMinOf75; // 75分钟客队得分
   public float mBigOddOfMinOfMin75; // 75分钟大小球盘口
   public float mBigOddOfVictoryOfMin75; // 75分钟大球赔率
+
+  public int mHostScoreMinOf25; // 25分钟主队得分
+  public int mCustomScoreMinOf25; // 25分钟客队得分
+  public float mBigOddOfMinOfMin25; // 25分钟大小球盘口
+  public float mBigOddOfVictoryOfMin25; // 25分钟大球赔率
+
+  public int mHostScoreOfMiddle; // 中场主队得分
+  public int mCustomScoreOfMiddle; // 中场客队得分
+  public float mBigOddOfMinOfMiddle; // 中场大小球盘口
+  public float mBigOddOfVictoryOfMiddle; // 中场大球赔率
 
   public float mHostScoreOf3; // 主队近3场平均进球数
   public float mCustomScoreOf3; // 客队近3场进球数

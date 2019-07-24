@@ -1,18 +1,18 @@
 package com.test.train.model;
 
+import static com.test.train.match.TrainKey.BIG_BALL_ODD_DEFEAT_OF_MIN75;
 import static com.test.train.match.TrainKey.BIG_BALL_ODD_DISTANCE_OF_MIN_75;
 import static com.test.train.match.TrainKey.BIG_BALL_ODD_VICTORY_OF_MIN75;
 import static com.test.train.match.TrainKey.BIG_BALL_OF_MIN75_VALUE;
 import static com.test.train.match.TrainKey.ORIGINAL_BIG_ODD;
-import static com.test.train.match.TrainKey.ORIGINAL_BIG_ODD_OF_VICTORY;
 import static com.test.train.match.TrainKey.ORIGINAL_SCORE_ODD;
-import static com.test.train.match.TrainKey.ORIGINAL_SCORE_ODD_OF_VICTORY;
 import static com.test.train.match.TrainKey.SCORE_ODD_DISTANCE_OF_MIN_75;
 import static com.test.train.match.TrainKey.TOTAL_BEST_SHOOT_OF_MIN75;
 import static com.test.train.match.TrainKey.TOTAL_CORNER_OF_MIN75;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.test.train.TrainModel;
 import com.test.train.match.TrainKey;
@@ -41,5 +41,18 @@ public class BigBallOfMin75 extends TrainModel {
   @Override
   public TrainKey keyOfY() {
     return BIG_BALL_OF_MIN75_VALUE;
+  }
+
+  @Override
+  public float profit(Map<String, Float> values, float predictValue) {
+    float realValue = values.get(keyOfY().mKey);
+    if (realValue != predictValue) {
+      return 0;
+    }
+    if (realValue == 1) { // 上盘赔率
+      return values.get(BIG_BALL_ODD_VICTORY_OF_MIN75.mKey);
+    } else {
+      return values.get(BIG_BALL_ODD_DEFEAT_OF_MIN75.mKey);
+    }
   }
 }
