@@ -24,8 +24,8 @@ public abstract class TrainModel {
     TrainUtils.writeDataSet(this, dataSet, true);
     Process process = Runtime.getRuntime()
         .exec("python training/train.py " + nameOfX() + " " + nameOfY() + " " + nameOfModel());
-    String result = IOUtils.toString(process.getInputStream());
-    System.out.println(result);
+    // String result = IOUtils.toString(process.getInputStream());
+    // System.out.println(result);
   }
 
   /**
