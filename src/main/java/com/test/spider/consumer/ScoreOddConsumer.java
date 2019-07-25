@@ -5,12 +5,19 @@ import org.seimicrawler.xpath.JXDocument;
 import com.test.spider.SpiderUtils;
 import com.test.spider.model.TableModel;
 import com.test.spider.model.UrlType;
+import com.test.spider.tools.Logger;
 
 import us.codecraft.webmagic.Page;
 
 // => http://score.nowscore.com/odds/3in1Odds.aspx?companyid=3&id=1662653
 // 皇冠指数集合
 public class ScoreOddConsumer implements Consumer {
+
+  private final Logger mLogger;
+
+  public ScoreOddConsumer(Logger logger) {
+    mLogger = logger;
+  }
 
   // 亚盘指数：初盘、即时盘、中场盘、00~100分钟盘口
   // 大小球指数: 初盘、即时盘、中场盘、00~100分钟盘口
@@ -50,7 +57,7 @@ public class ScoreOddConsumer implements Consumer {
       SpiderUtils.log(e);
     }
 
-    // System.out.println("(Score Odd) => " + matchID);
-    // System.out.println(page.getResultItems().getAll());
+    // mLogger.log("(Score Odd) => " + matchID);
+    // mLogger.log(page.getResultItems().getAll());
   }
 }

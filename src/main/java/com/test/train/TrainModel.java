@@ -38,7 +38,7 @@ public abstract class TrainModel {
         .exec("python training/test.py " + nameOfTestX() + " " + nameOfModel());
     String output = IOUtils.toString(process.getInputStream());
     final String[] results = output.replace("\r", "").split("\n");
-    // System.out.println(Arrays.toString(results));
+//     System.out.println(Arrays.toString(results));
     List<Pair<Double, Double>> list = new ArrayList<>();
     Arrays.stream(results).forEach(value -> {
       Pair<Double, Double> line;

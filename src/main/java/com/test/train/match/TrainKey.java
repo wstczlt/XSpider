@@ -160,13 +160,36 @@ public enum TrainKey {
       match -> match.mBigOddOfVictoryOfMin75),
   // 75分钟大小球赔率
   BIG_BALL_ODD_DEFEAT_OF_MIN75("BIG_BALL_ODD_DEFEAT_OF_MIN75",
-      match -> match.mOriginalBigOddOfDefeat),
+      match -> match.mBigOddOfDefeatOfMin75),
   // 75分钟总射正次数
   TOTAL_BEST_SHOOT_OF_MIN75("TOTAL_BEST_SHOOT_OF_MIN75",
       match -> (match.mHostBestShoot + match.mCustomBestShoot) * 0.8f),
   // 75分钟总角球次数
   TOTAL_CORNER_OF_MIN75("TOTAL_CORNER_OF_MIN75",
       match -> (match.mHostCornerScore + match.mCustomCornerScore) * 0.8f),
+
+
+  // 70分钟之后大球的值
+  BIG_BALL_OF_MIN70_VALUE("BIG_BALL_OF_MIN70_VALUE", match -> match.mHostScore + match.mCustomScore
+      - match.mHostScoreMinOf70 - match.mCustomScoreMinOf70 > 0 ? 1 : 0),
+  // 70分钟大小球盘口差距
+  BIG_BALL_ODD_DISTANCE_OF_MIN_70("BIG_BALL_ODD_DISTANCE_OF_MIN_70",
+      match -> match.mOriginalBigOdd - match.mBigOddOfMinOfMin75),
+  // 70分钟盘口让球差距
+  SCORE_ODD_DISTANCE_OF_MIN_70("SCORE_ODD_DISTANCE_OF_MIN_70",
+      match -> (match.mHostScoreMinOf70 - match.mCustomScoreMinOf70) + match.mOriginalScoreOdd),
+  // 70分钟大小球赔率
+  BIG_BALL_ODD_VICTORY_OF_MIN70("BIG_BALL_ODD_VICTORY_OF_MIN70",
+      match -> match.mBigOddOfVictoryOfMin70),
+  // 75分钟大小球赔率
+  BIG_BALL_ODD_DEFEAT_OF_MIN70("BIG_BALL_ODD_DEFEAT_OF_MIN70",
+      match -> match.mBigOddOfDefeatOfMin70),
+  // 75分钟总射正次数
+  TOTAL_BEST_SHOOT_OF_MIN70("TOTAL_BEST_SHOOT_OF_MIN70",
+      match -> (match.mHostBestShoot + match.mCustomBestShoot) * 0.73f),
+  // 75分钟总角球次数
+  TOTAL_CORNER_OF_MIN70("TOTAL_CORNER_OF_MIN70",
+      match -> (match.mHostCornerScore + match.mCustomCornerScore) * 0.73f),
 
 
   // 25分钟之后大球的值

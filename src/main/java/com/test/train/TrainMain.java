@@ -9,7 +9,7 @@ import com.test.spider.tools.Pair;
 import com.test.train.match.Match;
 import com.test.train.match.MatchQueryHelper;
 import com.test.train.match.PredictResult;
-import com.test.train.model.BigBallOfMin75;
+import com.test.train.model.BigBallOfMin70;
 import com.test.train.utils.TrainUtils;
 
 public class TrainMain {
@@ -19,7 +19,7 @@ public class TrainMain {
     final int testSetCount = 1000; // 测试集长度
     final float[] thresholds = new float[] {0.55f, 0.56f, 0.57f, 0.58f, 0.59f, 0.60f}; // 高概率要求的阈值
     final List<Match> matches = MatchQueryHelper.loadAll();
-    final TrainModel model = new BigBallOfMin75(); // 训练模型
+    final TrainModel model = new BigBallOfMin70(); // 训练模型
     final List<Map<String, Float>> dataSet = TrainUtils.trainMaps(matches);
 
     for (float threshold : thresholds) {

@@ -14,12 +14,19 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
 
 import com.test.spider.SpiderConfig;
+import com.test.spider.tools.Logger;
 
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 
 public class SQLitePipeline implements Pipeline {
+
+  private final Logger mLogger;
+
+  public SQLitePipeline(Logger logger) {
+    mLogger = logger;
+  }
 
   private static final Set<String> MUST_HAVE_COLUMNS = new HashSet<>();
   static {
@@ -122,7 +129,7 @@ public class SQLitePipeline implements Pipeline {
         sb.append(", ").append(column).append(" TEXT");
       }
       sb.append(")");
-      System.out.println("SQL: " + sb.toString());
+      mLogger.log("SQL: " + sb.toString());
       // System.exit(0);
       final QueryRunner runner = new QueryRunner(getDataSource());
       // runner.update("DROP TABLE if exists football");

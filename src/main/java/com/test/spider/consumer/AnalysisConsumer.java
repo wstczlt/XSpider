@@ -7,34 +7,18 @@ import org.seimicrawler.xpath.JXNode;
 
 import com.test.spider.SpiderUtils;
 import com.test.spider.model.UrlType;
+import com.test.spider.tools.Logger;
 
 import us.codecraft.webmagic.Page;
 
 // => "http://score.nowscore.com/analysis/1662654cn.html"
 public class AnalysisConsumer implements Consumer {
 
-  // matchID, 比赛ID
-  // league, 联赛名称
-  // hostLeagueRank, 主队联赛排名
-  // hostLeagueRateOfVictory, 主队联赛总胜率
-  // hostLeagueOnHostRank, 主队联赛主场排名
-  // hostLeagueOnHostRateOfVictory, 主队联赛主场总胜率
-  // customLeagueRank, 客队联赛排名
-  // customLeagueRateOfVictory, 客队联赛总胜率
-  // customLeagueOnCustomRank, 客队联赛客场排名
-  // customLeagueOnCustomRateOfVictory, 客队联赛客场总胜率
+  private final Logger mLogger;
 
-
-  // hostPreviousMatchDay, customPreviousMatchDay, 主客队上场比赛间隔天数
-  // hostNextMatchDay, customNextMatchDay, 主客队下场比赛间隔天数
-  // bifaOddOfVictory(胜), bifaOddOfDraw(平), bifaOddOfDefeat(负), 必发指数胜平负
-  // bifaHotOfVictory(胜), bifaHotOfDraw(平), bifaHotOfDefeat(负), 必发冷热指数胜平负
-
-
-  // 客队近10场胜率、让胜率、大球率
-  // customHistoryRateOfVictory(胜), customHistoryRateOfLetVictory(让胜), customHistoryRateOfBig(大球),
-  // 主队近10场胜率、让胜率、大球率
-  // hostHistoryRateOfVictory(胜), hostHistoryRateOfLetVictory(让胜), hostHistoryRateOfBig(大球),
+  public AnalysisConsumer(Logger logger) {
+    mLogger = logger;
+  }
 
   @Override
   public void accept(Page page) {
@@ -110,8 +94,8 @@ public class AnalysisConsumer implements Consumer {
     } catch (Throwable e) {
       SpiderUtils.log(e);
     }
-//    System.out.println("(Analysis) => " + matchID);
-    // System.out.println(page.getResultItems().getAll());
+//    mLogger.log("(Analysis) => " + matchID);
+    // mLogger.log(page.getResultItems().getAll());
 
 
 

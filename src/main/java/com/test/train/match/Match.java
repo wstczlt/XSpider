@@ -45,11 +45,19 @@ public class Match {
   public int mCustomScoreMinOf75; // 75分钟客队得分
   public float mBigOddOfMinOfMin75; // 75分钟大小球盘口
   public float mBigOddOfVictoryOfMin75; // 75分钟大球赔率
+  public float mBigOddOfDefeatOfMin75; // 75分钟小球赔率
+
+  public int mHostScoreMinOf70; // 70分钟主队得分
+  public int mCustomScoreMinOf70; // 70分钟客队得分
+  public float mBigOddOfMinOfMin70; // 70分钟大小球盘口
+  public float mBigOddOfVictoryOfMin70; // 70分钟大球赔率
+  public float mBigOddOfDefeatOfMin70; // 70分钟小球赔率
 
   public int mHostScoreMinOf25; // 25分钟主队得分
   public int mCustomScoreMinOf25; // 25分钟客队得分
   public float mBigOddOfMinOfMin25; // 25分钟大小球盘口
   public float mBigOddOfVictoryOfMin25; // 25分钟大球赔率
+  public float mBigOddOfDefeatOfMin25; // 25分钟小球赔率
 
   public int mHostScoreOfMiddle; // 中场主队得分
   public int mCustomScoreOfMiddle; // 中场客队得分

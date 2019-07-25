@@ -32,6 +32,7 @@ public class BigBallOfMin75 extends TrainModel {
     trainKeys.add(BIG_BALL_ODD_DISTANCE_OF_MIN_75); // 75分钟大小球和初盘差距
     trainKeys.add(SCORE_ODD_DISTANCE_OF_MIN_75); // 75分钟让球和初盘差距
     trainKeys.add(BIG_BALL_ODD_VICTORY_OF_MIN75); // 75分钟大球赔率
+    trainKeys.add(BIG_BALL_ODD_DEFEAT_OF_MIN75); // 75分钟大球赔率
     trainKeys.add(TOTAL_BEST_SHOOT_OF_MIN75); // 75分钟场上射正次数
     trainKeys.add(TOTAL_CORNER_OF_MIN75); // 75分钟场上角球次数
 

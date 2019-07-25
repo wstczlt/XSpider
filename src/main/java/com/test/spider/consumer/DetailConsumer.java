@@ -1,8 +1,6 @@
 package com.test.spider.consumer;
 
 import static com.test.spider.SpiderConfig.DATE_FORMAT;
-import static com.test.spider.SpiderConfig.MAX_DATE;
-import static com.test.spider.SpiderConfig.MIN_DATE;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.test.spider.SpiderUtils;
 import com.test.spider.model.UrlType;
+import com.test.spider.tools.Logger;
 import com.test.spider.tools.Pair;
 
 import us.codecraft.webmagic.Page;
@@ -20,56 +19,11 @@ import us.codecraft.webmagic.Page;
 // 只爬取已结束的比赛
 public class DetailConsumer implements Consumer {
 
-  // ----- 静态信息 ---
-  // matchID, 比赛ID
-  // matchTime, 比赛时间
-  // weather, 天气(原文未加工)
-  // hostName, 主队名称
-  // hostNamePinyin, 主队名称拼音, 方便匹配
-  // customName, 客队名称
-  // customNamePinyin, 客队名称拼音
-  // hostScore, 主队得分, 如果比赛已结束(未结束)
-  // customScore, 客队得分，如果比赛已结束
+  private final Logger mLogger;
 
-  // ----- 技术统计 ----
-  // hostCornerScore, 主队角球数
-  // customCornerScore, 客队角球数
-  // hostYellowCard, 主队黄卡数
-  // customYellowCard, 客队黄卡数
-  // hostRedCard, 主队红卡数
-  // customRedCard, 客队红卡数
-  // hostShoot, 主队射门数
-  // customShoot, 客队射门数
-  // hostBestShoot, 主队射正次数
-  // customBestShoot, 客队射正次数
-  // hostAttack, 主队进攻次数
-  // customAttach, 客队进攻次数
-  // hostBestAttack, 主队危险进攻
-  // customBestAttack, 客队危险进攻
-  // hostControlRate, 主队控球率
-  // customControlRate, 客队控球率
-
-  // ----- 历史技术统计 ---
-  // hostScoreOf3, 主队近3场平均进球数
-  // customScoreOf3, 客队近3场平均进球数
-  // hostScoreOf10, 主队近10场平均进球数
-  // customScoreOf10, 客队近10场平均进球数
-  // hostLossOf3, 主队近3场平均丢球数
-  // customLossOf3, 客队近3场平均丢球数
-  // hostLossOf10, 主队近10场平均丢球数
-  // customLossOf10, 客队近10场平均丢球数
-  // hostCornerOf3, 主队近3场平均脚球数
-  // customCornerOf3, 客队近3场平均角球数
-  // hostCornerOf10, 主队近10场平均角球数
-  // customCornerOf10, 客队近10场平均角球数
-  // hostYellowCardOf3, 主队近3场平均黄卡数
-  // customYellowCardOf3, 客队近3场平均黄卡数
-  // hostYellowCardOf10, 主队近10场平均黄卡数
-  // customYellowCardOf10, 客队近10场平均黄卡数
-  // hostControlRateOf3, 主队近3场平均控球率
-  // customControlRateOf3, 客队近3场平均控球率
-  // hostControlRateOf10, 主队近10场平均控球率
-  // customControlRateOf10, 客队近10场平均控球率
+  public DetailConsumer(Logger logger) {
+    mLogger = logger;
+  }
 
   @Override
   public void accept(Page page) {
@@ -81,7 +35,6 @@ public class DetailConsumer implements Consumer {
     if (matchID <= 0) {
       return;
     }
-
     try { // hostName, 主队名称; customName, 客队名称
       String hostName =
           page.getHtml().xpath("//div[@id=home]/a/span[@class=name]/text()").toString();
@@ -91,7 +44,7 @@ public class DetailConsumer implements Consumer {
       page.putField("hostNamePinyin", Pinyin.toPinyin(hostName, ""));
       page.putField("customName", customName);
       page.putField("customNamePinyin", Pinyin.toPinyin(customName, ""));
-      // System.out.println("matchID = " + matchID + " => (" + hostName + " VS " + customName +
+      // mLogger.log("matchID = " + matchID + " => (" + hostName + " VS " + customName +
       // ")");
     } catch (Throwable e) { // 缺少基本信息
       SpiderUtils.log(e);
@@ -105,13 +58,13 @@ public class DetailConsumer implements Consumer {
       String matchTimeString = page.getRawText().substring(matchTimeStart, matchTimeEnd);
       matchTimeString = matchTimeString.substring("开赛时间：".length());
       Date date = DATE_FORMAT.parse(matchTimeString);
-      // 要求在时间范围内
-      if (date.getTime() < MIN_DATE.getTime()
-          || date.getTime() > MAX_DATE.getTime()) {
-        // System.out.println("matchID = " + matchID + ", 时间超出范围 => " + matchTimeString);
-        page.setSkip(true);
-        return;
-      }
+      // // 要求在时间范围内
+      // if (date.getTime() < MIN_DATE.getTime()
+      // || date.getTime() > MAX_DATE.getTime()) {
+      // mLogger.log("matchID = " + matchID + ", 时间超出范围 => " + matchTimeString);
+      // page.setSkip(true);
+      // return;
+      // }
       page.putField("matchTime", date.getTime());
     } catch (Throwable e) { // 缺少基本信息
       SpiderUtils.log(e);
@@ -338,10 +291,10 @@ public class DetailConsumer implements Consumer {
     requests.add(UrlType.CORNER_ODD.buildUrl(matchID));
     page.addTargetRequests(requests, Integer.MAX_VALUE - matchID);
 
-    // System.out.println("(Detail) => " + matchID);
-    // System.out.println(page.getResultItems().getAll());
+    // mLogger.log("(Detail) => " + matchID);
+    // mLogger.log(page.getResultItems().getAll());
     int cnt = mDetailCount.getAndIncrement();
-    System.out.println(String.format("GET: matchID=%d, valueCount=%d", matchID, cnt));
+    mLogger.log(String.format("GET: matchID=%d, valueCount=%d", matchID, cnt));
   }
 
 

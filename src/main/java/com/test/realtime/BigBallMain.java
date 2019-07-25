@@ -1,6 +1,9 @@
 package com.test.realtime;
 
+import static com.test.spider.tools.Logger.EMPTY;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -14,29 +17,40 @@ import org.apache.http.util.EntityUtils;
 import org.apache.http.util.TextUtils;
 
 import com.test.spider.FootballSpider;
+import com.test.spider.SpiderConfig;
 import com.test.spider.SpiderUtils;
 import com.test.spider.tools.Pair;
 import com.test.train.TrainModel;
 import com.test.train.match.Match;
 import com.test.train.match.MatchQueryHelper;
-import com.test.train.model.BigBallOfMin75;
+import com.test.train.model.BigBallOfMin70;
 import com.test.train.utils.TrainUtils;
 
 public class BigBallMain {
 
-  private static final TrainModel TRAIN_MODEL = new BigBallOfMin75();
+  private static final TrainModel TRAIN_MODEL = new BigBallOfMin70();
 
   public static void main(String[] args) throws Exception {
-    loopMain();
+    while (true) {
+      loopMain();
+      Thread.sleep(30 * 1000L); // 30s一次
+    }
   }
 
   private static void loopMain() throws Exception {
     final List<Integer> matchIDs = collectRealTimeMatchIds();
     final String querySql = buildSql(matchIDs);
-    new FootballSpider(matchIDs).run();
-    System.out.println(querySql);
+    new FootballSpider(matchIDs, EMPTY).run();
     List<Match> matches = MatchQueryHelper.doQuery(querySql);
     List<Map<String, Float>> testSet = TrainUtils.trainMaps(matches);
+
+    System.out.println(); // 空行
+    System.out.println("Loop: " + SpiderConfig.DATE_FORMAT.format(new Date()));
+    if (matches.isEmpty()) {
+       System.out.println("       No match hit.");
+      return;
+    }
+
     doTest(matches, testSet);
   }
 
@@ -84,7 +98,7 @@ public class BigBallMain {
       matchString = matchString.replace("sData[", "").replace("]", "");
       matchIds.add(SpiderUtils.valueOfInt(matchString));
     }
-    System.out.println(matchIds);
+//    System.out.println(matchIds);
     return matchIds;
   }
 

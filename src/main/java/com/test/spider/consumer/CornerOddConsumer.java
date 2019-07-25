@@ -5,12 +5,19 @@ import org.seimicrawler.xpath.JXDocument;
 import com.test.spider.SpiderUtils;
 import com.test.spider.model.TableModel;
 import com.test.spider.model.UrlType;
+import com.test.spider.tools.Logger;
 
 import us.codecraft.webmagic.Page;
 
 // => http://score.nowscore.com/odds/3in1Odds.aspx?companyid=3&id=1662653
 // 皇冠指数集合
 public class CornerOddConsumer implements Consumer {
+
+  private final Logger mLogger;
+
+  public CornerOddConsumer(Logger logger) {
+    mLogger = logger;
+  }
 
   // 角球大小指数: 初盘、即时盘、中场盘、00~100分钟盘口
   @Override
@@ -33,7 +40,7 @@ public class CornerOddConsumer implements Consumer {
       SpiderUtils.log(e);
     }
 
-//    System.out.println("(Corner) => " + matchID);
-    // System.out.println(page.getResultItems().getAll());
+    // mLogger.log("(Corner) => " + matchID);
+    // mLogger.log(page.getResultItems().getAll());
   }
 }

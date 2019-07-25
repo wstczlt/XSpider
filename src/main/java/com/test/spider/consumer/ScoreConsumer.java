@@ -7,10 +7,17 @@ import org.seimicrawler.xpath.JXNode;
 
 import com.test.spider.SpiderUtils;
 import com.test.spider.model.UrlType;
+import com.test.spider.tools.Logger;
 
 import us.codecraft.webmagic.Page;
 
 public class ScoreConsumer implements Consumer {
+
+  private final Logger mLogger;
+
+  public ScoreConsumer(Logger logger) {
+    mLogger = logger;
+  }
 
   @Override
   public void accept(Page page) {
@@ -47,6 +54,6 @@ public class ScoreConsumer implements Consumer {
     float originalVictoryOdd = SpiderUtils.valueOfFloat(tdNodes.get(7).toString());
     float originalDrewOdd = SpiderUtils.convertOdd(tdNodes.get(8).toString());
     float originalDefeatOdd = SpiderUtils.valueOfFloat(tdNodes.get(9).toString());
-//    System.out.println("(Score New) => " + matchID);
+    // mLogger.log("(Score New) => " + matchID);
   }
 }
