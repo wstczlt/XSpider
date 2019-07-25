@@ -18,11 +18,11 @@ public class MatchQueryHelper {
           "AND original_scoreOdd is not null " +
           "AND original_bigOdd is not null " +
           "AND original_drawOdd is not null " +
-
-          "AND min75_hostScore is not null " +
-          "AND min75_customScore is not null " +
-          "AND min75_bigOdd is not null " +
-          "AND min75_bigOddOfVictory is not null " +
+//
+//          "AND min75_hostScore is not null " +
+//          "AND min75_customScore is not null " +
+//          "AND min75_bigOdd is not null " +
+//          "AND min75_bigOddOfVictory is not null " +
 
           "AND min70_hostScore is not null " +
           "AND min70_customScore is not null " +

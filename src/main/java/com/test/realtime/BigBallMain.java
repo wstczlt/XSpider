@@ -104,7 +104,7 @@ public class BigBallMain {
 
 
   private static String buildSql(List<Integer> matchIDs) {
-    String timeMinSql = " AND timeMin is not null AND timeMin >= 70 AND timeMin <= 78 ";
+    String timeMinSql = " AND timeMin is not null AND timeMin >= 65 AND timeMin <= 80 ";
     return MatchQueryHelper.SQL_QUERY_BASE + timeMinSql + MatchQueryHelper.buildSqlIn(matchIDs)
         + MatchQueryHelper.SQL_ORDER;
   }

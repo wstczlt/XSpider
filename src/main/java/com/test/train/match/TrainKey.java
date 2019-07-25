@@ -163,10 +163,10 @@ public enum TrainKey {
       match -> match.mBigOddOfDefeatOfMin75),
   // 75分钟总射正次数
   TOTAL_BEST_SHOOT_OF_MIN75("TOTAL_BEST_SHOOT_OF_MIN75",
-      match -> (match.mHostBestShoot + match.mCustomBestShoot) * 0.8f),
+      match -> (match.mHostBestShoot + match.mCustomBestShoot) * 1f),
   // 75分钟总角球次数
   TOTAL_CORNER_OF_MIN75("TOTAL_CORNER_OF_MIN75",
-      match -> (match.mHostCornerScore + match.mCustomCornerScore) * 0.8f),
+      match -> (match.mHostCornerScore + match.mCustomCornerScore) * 1f),
 
 
   // 70分钟之后大球的值
@@ -186,10 +186,10 @@ public enum TrainKey {
       match -> match.mBigOddOfDefeatOfMin70),
   // 75分钟总射正次数
   TOTAL_BEST_SHOOT_OF_MIN70("TOTAL_BEST_SHOOT_OF_MIN70",
-      match -> (match.mHostBestShoot + match.mCustomBestShoot) * 0.73f),
+      match -> (match.mHostBestShoot + match.mCustomBestShoot) * 1),
   // 75分钟总角球次数
   TOTAL_CORNER_OF_MIN70("TOTAL_CORNER_OF_MIN70",
-      match -> (match.mHostCornerScore + match.mCustomCornerScore) * 0.73f),
+      match -> (match.mHostCornerScore + match.mCustomCornerScore) * 1),
 
 
   // 25分钟之后大球的值
