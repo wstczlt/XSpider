@@ -18,11 +18,11 @@ public class MatchQueryHelper {
           "AND original_scoreOdd is not null " +
           "AND original_bigOdd is not null " +
           "AND original_drawOdd is not null " +
-//
-//          "AND min75_hostScore is not null " +
-//          "AND min75_customScore is not null " +
-//          "AND min75_bigOdd is not null " +
-//          "AND min75_bigOddOfVictory is not null " +
+          //
+          // "AND min75_hostScore is not null " +
+          // "AND min75_customScore is not null " +
+          // "AND min75_bigOdd is not null " +
+          // "AND min75_bigOddOfVictory is not null " +
 
           "AND min70_hostScore is not null " +
           "AND min70_customScore is not null " +
@@ -61,6 +61,9 @@ public class MatchQueryHelper {
     for (Map<String, Object> map : mapList) {
       final Match match = TrainUtils.buildMatch(map);
       matches.add(match);
+    }
+    if (matches.size() == 1) { // 单行数据无法运算
+      matches.add(matches.get(0));
     }
 
     return matches;

@@ -146,6 +146,9 @@ public class TrainUtils {
    */
   public static void writeDataSet(TrainModel ai, List<Map<String, Float>> dataSet, boolean train)
       throws Exception {
+    if (dataSet.isEmpty()) {
+      throw new RuntimeException();
+    }
     List<String> xValue = new ArrayList<>();
     List<String> yValue = new ArrayList<>();
     for (int i = 0; i < dataSet.size(); i++) {

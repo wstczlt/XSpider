@@ -9,7 +9,7 @@ public class SpiderConfig {
 
   public static final int DOWNLOAD_RETRY_COUNT = 1;
   public static final int THREAD_SLEEP_TIME = 1000;
-  public static final int TOTAL_THREAD_COUNT = 60; // 抓数据线程
+  public static final int TOTAL_THREAD_COUNT = 5; // 抓数据线程
   public static final int MAX_CACHE_ITEMS = 1000; // 先攒数据，用于创建数据库的初始key
 
   public static final int STATIC_ID_START = 1756889; // 起始ID

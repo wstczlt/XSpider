@@ -49,7 +49,7 @@ public class FootballSpider {
     final Spider spider = Spider.create(processor)
         .setScheduler(new PriorityScheduler())
         .setDownloader(new SpiderDownloader())
-        // .setDownloader(new SpiderDownloader().setProxyProvider(new SpiderProxy()))
+        .setDownloader(new SpiderDownloader().setProxyProvider(new SpiderProxy()))
         .thread(TOTAL_THREAD_COUNT);
     // build urls
     final List<Request> requests = collectRequests(mMatchIds);

@@ -154,9 +154,8 @@ public class SQLitePipeline implements Pipeline {
       final Float scoreOddOfVictory = items.get("original_scoreOddOfVictory");
       if (scoreOddOfVictory != null && scoreOddOfVictory > 0) {
         int cnt = mValueCount.getAndIncrement();
-        System.out
-            .println(String.format("DATABASE: matchID=%d, valueCount=%d, scoreOddOfVictory=%.2f",
-                matchID, cnt, scoreOddOfVictory));
+        mLogger.log(String.format("DATABASE: matchID=%d, valueCount=%d, scoreOddOfVictory=%.2f",
+            matchID, cnt, scoreOddOfVictory));
       }
     } catch (Throwable e) {
       e.printStackTrace();
