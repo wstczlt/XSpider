@@ -3,6 +3,7 @@ apply plugin: 'application'
 mainClassName = 'com.test.realtime.BigBallMain'
 
 repositories {
+    google()
     jcenter()
     mavenCentral()
 }
@@ -11,7 +12,6 @@ dependencies {
     compile "mysql:mysql-connector-java:5.1.37"
     compile "org.jsoup:jsoup:1.8.3"
     compile "com.fasterxml.jackson.core:jackson-databind:2.6.3"
-    compile "junit:junit:4.12"
 
     compile "us.codecraft:webmagic-core:0.7.3"
     compile "us.codecraft:webmagic-extension:0.7.3"

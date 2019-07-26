@@ -117,6 +117,7 @@ public class TrainUtils {
 
     match.mHostCornerScore = SpiderUtils.valueOfFloat(databaseMap.get("hostCornerScore"));
     match.mCustomBestShoot = SpiderUtils.valueOfFloat(databaseMap.get("customCornerScore"));
+    match.mTimeMin = SpiderUtils.valueOfInt(databaseMap.get("timeMin"));
 
 
     return match;

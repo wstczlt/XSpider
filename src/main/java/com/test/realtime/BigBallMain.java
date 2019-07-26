@@ -1,6 +1,6 @@
 package com.test.realtime;
 
-import static com.test.spider.tools.Logger.EMPTY;
+import static com.test.spider.tools.Logger.SYSTEM;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -31,24 +32,28 @@ public class BigBallMain {
   private static final TrainModel TRAIN_MODEL = new BigBallOfMin70();
 
   public static void main(String[] args) throws Exception {
-    while (true) {
-      loopMain();
-      Thread.sleep(30 * 1000L); // 30s一次
-    }
+    // while (true) {
+    loopMain();
+    // Thread.sleep(30 * 1000L); // 30s一次
+    // }
   }
 
   private static void loopMain() throws Exception {
     final List<Integer> matchIDs = collectRealTimeMatchIds();
     final String querySql = buildSql(matchIDs);
-    new FootballSpider(matchIDs, EMPTY).run();
-    List<Match> matches = MatchQueryHelper.doQuery(querySql);
+    new FootballSpider(matchIDs, SYSTEM).run();
+    List<Match> matches = MatchQueryHelper.doQuery(querySql).stream().filter(match -> {
+      return (new Date().getTime() - match.mMatchTime) <= 2 * 3600 * 1000; // 两小时内的比赛
+    }).collect(Collectors.toList());
     List<Map<String, Float>> testSet = TrainUtils.trainMaps(matches);
 
     System.out.println(); // 空行
     System.out.println("Loop: " + SpiderConfig.DATE_FORMAT.format(new Date()));
     if (matches.isEmpty()) {
-       System.out.println("       No match hit.");
+      System.out.println("       No match hit.");
       return;
+    } else {
+      System.out.println("       Match Count: " + matches.size());
     }
 
     doTest(matches, testSet);
@@ -79,9 +84,10 @@ public class BigBallMain {
     String league = !TextUtils.isEmpty(match.mLeague) ? match.mLeague : "未知";
 
     System.out.println(String.format("---> Model: %s", "大小球"));
-    System.out.println(String.format("     MatchID: %d", matchID));
+    System.out.println(String.format("     MatchID: %d, 分钟: %s", matchID, match.mTimeMin));
     System.out.println(String.format("     联赛: %s, %s VS %s", league, hostName, customName));
-    System.out.println(String.format("     盘口: %s, 概率: %.2f", value == 1 ? "大球" : "小球", prob));
+    System.out.println(String.format("     盘口: %s%.2f, 概率: %.2f", value == 1 ? "大球" : "小球",
+        match.mBigOddOfMinOfMin70, prob));
   }
 
   private static List<Integer> collectRealTimeMatchIds() throws Exception {
@@ -98,7 +104,7 @@ public class BigBallMain {
       matchString = matchString.replace("sData[", "").replace("]", "");
       matchIds.add(SpiderUtils.valueOfInt(matchString));
     }
-//    System.out.println(matchIds);
+    // System.out.println(matchIds);
     return matchIds;
   }
 

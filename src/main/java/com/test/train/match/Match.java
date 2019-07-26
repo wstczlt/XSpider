@@ -4,6 +4,7 @@ public class Match {
 
   public int mMatchID; // matchID
   public long mMatchTime; // 比赛时间
+  public int mTimeMin; // 当前分钟
   public String mHostName;
   public String mCustomName;
   public String mHostNamePinyin; // 主队名称拼音

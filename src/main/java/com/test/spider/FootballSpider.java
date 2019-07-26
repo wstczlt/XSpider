@@ -48,7 +48,7 @@ public class FootballSpider {
     // build spider
     final Spider spider = Spider.create(processor)
         .setScheduler(new PriorityScheduler())
-        .setDownloader(new SpiderDownloader())
+        // .setDownloader(new SpiderDownloader())
         .setDownloader(new SpiderDownloader().setProxyProvider(new SpiderProxy()))
         .thread(TOTAL_THREAD_COUNT);
     // build urls
