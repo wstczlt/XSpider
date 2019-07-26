@@ -1,7 +1,10 @@
 package com.test.realtime;
 
 import static com.test.spider.tools.Logger.SYSTEM;
-import static com.test.train.model.BigBallOfMin70.BIG_BALL_OF_MIN_70_RATE_MAP;
+import static com.test.train.match.QueryHelper.SQL_BASE;
+import static com.test.train.match.QueryHelper.SQL_MIDDLE;
+import static com.test.train.match.QueryHelper.SQL_MIN_70;
+import static com.test.train.model.BallOfMin70.BIG_BALL_OF_MIN_70_RATE_MAP;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,12 +28,12 @@ import com.test.spider.tools.Pair;
 import com.test.train.TrainModel;
 import com.test.train.match.Match;
 import com.test.train.match.QueryHelper;
-import com.test.train.model.BigBallOfMin70;
+import com.test.train.model.BallOfMin70;
 import com.test.train.utils.TrainUtils;
 
 public class BigBallMain {
 
-  private static final TrainModel TRAIN_MODEL = new BigBallOfMin70();
+  private static final TrainModel TRAIN_MODEL = new BallOfMin70();
 
   public static void main(String[] args) throws Exception {
     // while (true) {
@@ -48,6 +51,9 @@ public class BigBallMain {
         return false;
       }
 
+      if (match.mTimeMin < 68 || match.mTimeMin > 88) {
+        return false;
+      }
       long timeDis = System.currentTimeMillis() - match.mMatchTime; // 目前数据有误
       return timeDis > 3600 * 1000 && timeDis <= 2 * 3600 * 1000; // 大于1小时，小于2小时内的比赛
     }).sorted((o1, o2) -> o1.mLeague.compareTo(o2.mLeague)).collect(Collectors.toList());
@@ -122,7 +128,8 @@ public class BigBallMain {
 
   private static String buildSql(List<Integer> matchIDs) {
     String timeMinSql = " AND timeMin is not null AND timeMin >= 70 AND timeMin <= 85 ";
-    return QueryHelper.SQL_QUERY_BASE + timeMinSql + QueryHelper.buildSqlIn(matchIDs)
+    return SQL_BASE + SQL_MIDDLE + SQL_MIN_70
+        + QueryHelper.buildSqlIn(matchIDs)
         + QueryHelper.SQL_ORDER;
   }
 }

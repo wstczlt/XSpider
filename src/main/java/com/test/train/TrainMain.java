@@ -9,23 +9,23 @@ import com.test.spider.tools.Pair;
 import com.test.train.match.Match;
 import com.test.train.match.PredictResult;
 import com.test.train.match.QueryHelper;
-import com.test.train.model.OddVictory;
+import com.test.train.model.BallOfMin70;
 import com.test.train.utils.TrainUtils;
 
 public class TrainMain {
 
   public static void main(String[] args) throws Exception {
-    final int totalRound = 10; // 测试轮数
+    final int totalRound = 3; // 测试轮数
     final int testSetCount = 1000; // 测试集长度
     final float[] thresholds = new float[] {
-        0.50f,
-        0.51f, 0.52f, 0.53f, 0.54f, 0.55f,
+//        0.50f,
+//        0.51f, 0.52f, 0.53f, 0.54f, 0.55f,
         0.56f, 0.57f, 0.58f, 0.59f, 0.60f,
         0.61f, 0.62f, 0.63f, 0.64f, 0.65f}; // 高概率要求的阈值
-    final List<Match> matches = QueryHelper.loadAll();
-    final TrainModel model = new OddVictory(); // 训练模型
-    final List<Map<String, Float>> dataSet = TrainUtils.trainMaps(matches);
+    final TrainModel model = new BallOfMin70(); // 训练模型
 
+    final List<Match> matches = QueryHelper.doQuery(model.buildQuerySql());
+    final List<Map<String, Float>> dataSet = TrainUtils.trainMaps(matches);
     for (float threshold : thresholds) {
       trainTest(model, totalRound, testSetCount, threshold, dataSet);
       Thread.sleep(2000); // 等待资源释放

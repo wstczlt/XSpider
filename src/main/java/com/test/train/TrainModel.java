@@ -1,5 +1,8 @@
 package com.test.train;
 
+import static com.test.train.match.QueryHelper.SQL_ORDER;
+import static com.test.train.match.QueryHelper.SQL_BASE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +62,10 @@ public abstract class TrainModel {
     });
 
     return list;
+  }
+
+  public String buildQuerySql() {
+    return SQL_BASE + SQL_ORDER;
   }
 
   public float bestThreshold() { // 大于等于此概率, 才会选择这场比赛

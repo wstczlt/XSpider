@@ -1,9 +1,12 @@
 package com.test.train.model;
 
+import static com.test.train.match.QueryHelper.SQL_BASE;
+import static com.test.train.match.QueryHelper.SQL_MIDDLE;
+import static com.test.train.match.QueryHelper.SQL_MIN_25;
+import static com.test.train.match.QueryHelper.SQL_ORDER;
+import static com.test.train.match.QueryHelper.SQL_MIN25_ZERO_SCORE;
 import static com.test.train.match.TrainKey.BIG_BALL_ODD_DEFEAT_OF_MIN25;
-import static com.test.train.match.TrainKey.BIG_BALL_ODD_DEFEAT_OF_MIN70;
 import static com.test.train.match.TrainKey.BIG_BALL_ODD_VICTORY_OF_MIN25;
-import static com.test.train.match.TrainKey.BIG_BALL_ODD_VICTORY_OF_MIN70;
 import static com.test.train.match.TrainKey.BIG_BALL_OF_MIN25_VALUE;
 import static com.test.train.match.TrainKey.ORIGINAL_BIG_ODD;
 import static com.test.train.match.TrainKey.ORIGINAL_SCORE_ODD;
@@ -17,11 +20,17 @@ import java.util.Map;
 import com.test.train.TrainModel;
 import com.test.train.match.TrainKey;
 
-public class BigBallOfMin25 extends TrainModel {
+public class BallOfMin25 extends TrainModel {
 
   @Override
   public String name() {
     return "bigBallOfMin25";
+  }
+
+
+  @Override
+  public String buildQuerySql() {
+    return SQL_BASE + SQL_MIN_25 + SQL_MIDDLE + SQL_MIN25_ZERO_SCORE + SQL_ORDER;
   }
 
   @Override
