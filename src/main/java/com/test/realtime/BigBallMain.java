@@ -43,8 +43,13 @@ public class BigBallMain {
     final String querySql = buildSql(matchIDs);
     new FootballSpider(matchIDs, SYSTEM).run();
     List<Match> matches = MatchQueryHelper.doQuery(querySql).stream().filter(match -> {
-      return (new Date().getTime() - match.mMatchTime) <= 2 * 3600 * 1000; // 两小时内的比赛
-    }).collect(Collectors.toList());
+      if (TextUtils.isEmpty(match.mLeague)) { // 野鸡不要
+        return false;
+      }
+      // long timeDis = System.currentTimeMillis() - match.mMatchTime; // 目前数据有误
+      // return timeDis <= 2 * 3600 * 1000; // 两小时内的比赛
+      return true;
+    }).sorted((o1, o2) -> o1.mLeague.compareTo(o2.mLeague)).collect(Collectors.toList());
     List<Map<String, Float>> testSet = TrainUtils.trainMaps(matches);
 
     System.out.println(); // 空行
@@ -84,10 +89,12 @@ public class BigBallMain {
     String league = !TextUtils.isEmpty(match.mLeague) ? match.mLeague : "未知";
 
     System.out.println(String.format("---> Model: %s", "大小球"));
-    System.out.println(String.format("     MatchID: %d, 分钟: %s", matchID, match.mTimeMin));
+    System.out.println(String.format("     ID: %d, 分钟: %s", matchID, match.mTimeMin));
     System.out.println(String.format("     联赛: %s, %s VS %s", league, hostName, customName));
-    System.out.println(String.format("     盘口: %s%.2f, 概率: %.2f", value == 1 ? "大球" : "小球",
+    System.out.println(String.format("     盘口: %s, %.2f, 概率: %.2f", value == 1 ? "大" : "小",
         match.mBigOddOfMinOfMin70, prob));
+
+    System.out.println();
   }
 
   private static List<Integer> collectRealTimeMatchIds() throws Exception {

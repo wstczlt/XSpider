@@ -18,7 +18,7 @@ public class SpiderConfig {
 
 
 
-  public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-HH-dd HH:mm");
+  public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
   // public static final String MIN_DATE_STRING = "2016-01-01 00:00"; // 最小比赛时间
   // public static final String MAX_DATE_STRING = "2019-07-18 23:00"; // 最大比赛时间
