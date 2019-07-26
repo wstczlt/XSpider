@@ -44,7 +44,7 @@ public class MatchQueryHelper {
           "AND hostCornerScore is not null " +
           "AND customCornerScore is not null ";
 
-  public static String SQL_ORDER = "order by matchTime desc limit 5000";
+  public static String SQL_ORDER = "order by matchTime desc limit 10000";
 
   public static List<Match> loadAll() throws Exception {
     return doQuery(SQL_QUERY_BASE + SQL_ORDER);
@@ -61,9 +61,6 @@ public class MatchQueryHelper {
     for (Map<String, Object> map : mapList) {
       final Match match = TrainUtils.buildMatch(map);
       matches.add(match);
-    }
-    if (matches.size() == 1) { // 单行数据无法运算
-      matches.add(matches.get(0));
     }
 
     return matches;

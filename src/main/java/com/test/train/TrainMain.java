@@ -16,8 +16,10 @@ public class TrainMain {
 
   public static void main(String[] args) throws Exception {
     final int totalRound = 10; // 测试轮数
-    final int testSetCount = 1000; // 测试集长度
-    final float[] thresholds = new float[] {0.55f, 0.56f, 0.57f, 0.58f, 0.59f, 0.60f}; // 高概率要求的阈值
+    final int testSetCount = 2000; // 测试集长度
+    final float[] thresholds = new float[] {
+        0.56f, 0.57f, 0.58f, 0.59f, 0.60f,
+        0.61f, 0.62f, 0.63f, 0.64f, 0.65f,}; // 高概率要求的阈值
     final List<Match> matches = MatchQueryHelper.loadAll();
     final TrainModel model = new BigBallOfMin70(); // 训练模型
     final List<Map<String, Float>> dataSet = TrainUtils.trainMaps(matches);

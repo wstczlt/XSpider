@@ -46,10 +46,15 @@ public class BigBallMain {
       if (TextUtils.isEmpty(match.mLeague)) { // 野鸡不要
         return false;
       }
-      // long timeDis = System.currentTimeMillis() - match.mMatchTime; // 目前数据有误
-      // return timeDis <= 2 * 3600 * 1000; // 两小时内的比赛
+//      long timeDis = System.currentTimeMillis() - match.mMatchTime; // 目前数据有误
+//      // System.out.println(timeDis);
+//      return timeDis > 3600 * 1000 && timeDis <= 2 * 3600 * 1000; // 大于1小时，小于2小时内的比赛
+
       return true;
     }).sorted((o1, o2) -> o1.mLeague.compareTo(o2.mLeague)).collect(Collectors.toList());
+    if (matches.size() == 1) { // 单行数据无法运算
+      matches.add(matches.get(0));
+    }
     List<Map<String, Float>> testSet = TrainUtils.trainMaps(matches);
 
     System.out.println(); // 空行
@@ -83,17 +88,17 @@ public class BigBallMain {
   }
 
   private static void display(Match match, int value, float prob) {
-    int matchID = match.mMatchID;
+    // int matchID = match.mMatchID;
     String hostName = match.mHostName;
     String customName = match.mCustomName;
-    String league = !TextUtils.isEmpty(match.mLeague) ? match.mLeague : "未知";
+    String league = !TextUtils.isEmpty(match.mLeague) ? match.mLeague : "野鸡";
 
-    System.out.println(String.format("---> Model: %s", "大小球"));
-    System.out.println(String.format("     ID: %d, 分钟: %s", matchID, match.mTimeMin));
-    System.out.println(String.format("     联赛: %s, %s VS %s", league, hostName, customName));
-    System.out.println(String.format("     盘口: %s, %.2f, 概率: %.2f", value == 1 ? "大" : "小",
-        match.mBigOddOfMinOfMin70, prob));
-
+    System.out.println(
+        String.format("%d', [%s], %s VS %s", match.mTimeMin, league, hostName, customName));
+    System.out.println(String.format("     比分: %d : %d", match.mHostScore, match.mCustomScore));
+    System.out.println(String.format("     盘口: %s， 概率: %.2f",
+        ((value == 1 ? "大" : "小") + match.mBigOddOfMinOfMin70), prob));
+    System.out.println();
     System.out.println();
   }
 
@@ -117,7 +122,7 @@ public class BigBallMain {
 
 
   private static String buildSql(List<Integer> matchIDs) {
-    String timeMinSql = " AND timeMin is not null AND timeMin >= 65 AND timeMin <= 80 ";
+    String timeMinSql = " AND timeMin is not null AND timeMin >= 70 AND timeMin <= 85 ";
     return MatchQueryHelper.SQL_QUERY_BASE + timeMinSql + MatchQueryHelper.buildSqlIn(matchIDs)
         + MatchQueryHelper.SQL_ORDER;
   }
