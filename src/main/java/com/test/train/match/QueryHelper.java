@@ -10,10 +10,11 @@ import org.apache.commons.dbutils.handlers.MapListHandler;
 import com.test.spider.SpiderDB;
 import com.test.train.utils.TrainUtils;
 
-public class MatchQueryHelper {
+public class QueryHelper {
 
   public static final String SQL_QUERY_BASE =
-      "select * from football where hostScore is not null " +
+      "select * from football where league is not null " +
+          "AND hostScore is not null " +
           "AND customScore is not null " +
           "AND original_scoreOdd is not null " +
           "AND original_bigOdd is not null " +
@@ -24,27 +25,30 @@ public class MatchQueryHelper {
           // "AND min75_bigOdd is not null " +
           // "AND min75_bigOddOfVictory is not null " +
 
-          "AND min70_hostScore is not null " +
-          "AND min70_customScore is not null " +
+          "AND min70_hostScore >=0 " +
+          "AND min70_customScore >=0 " +
           "AND min70_bigOdd is not null " +
-          "AND min70_bigOddOfVictory is not null " +
+          "AND min70_bigOddOfVictory >=0 " +
+          "AND min70_bigOddOfDefeat >=0 " +
 
-          "AND min25_hostScore is not null " +
-          "AND min25_customScore is not null " +
+          "AND min25_hostScore >=0  " +
+          "AND min25_customScore >=0  " +
           "AND min25_bigOdd is not null " +
-          "AND min25_bigOddOfVictory is not null " +
+          "AND min25_bigOddOfVictory >=0 " +
+          "AND min25_bigOddOfDefeat >=0 " +
 
-          "AND middle_hostScore is not null " +
-          "AND middle_customScore is not null " +
+          "AND middle_hostScore >=0 " +
+          "AND middle_customScore >=0 " +
           "AND middle_bigOdd is not null " +
-          "AND middle_bigOddOfVictory is not null " +
+          "AND middle_bigOddOfVictory >=0 " +
+          "AND middle_bigOddOfDefeat >=0 " +
 
           "AND hostBestShoot is not null " +
           "AND customBestShoot is not null " +
           "AND hostCornerScore is not null " +
           "AND customCornerScore is not null ";
 
-  public static String SQL_ORDER = "order by matchTime desc limit 10000";
+  public static String SQL_ORDER = "order by matchTime desc limit 6000";
 
   public static List<Match> loadAll() throws Exception {
     return doQuery(SQL_QUERY_BASE + SQL_ORDER);

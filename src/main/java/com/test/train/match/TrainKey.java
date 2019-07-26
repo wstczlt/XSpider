@@ -181,13 +181,13 @@ public enum TrainKey {
   // 70分钟大小球赔率
   BIG_BALL_ODD_VICTORY_OF_MIN70("BIG_BALL_ODD_VICTORY_OF_MIN70",
       match -> match.mBigOddOfVictoryOfMin70),
-  // 75分钟大小球赔率
+  // 70分钟大小球赔率
   BIG_BALL_ODD_DEFEAT_OF_MIN70("BIG_BALL_ODD_DEFEAT_OF_MIN70",
       match -> match.mBigOddOfDefeatOfMin70),
-  // 75分钟总射正次数
+  // 70分钟总射正次数
   TOTAL_BEST_SHOOT_OF_MIN70("TOTAL_BEST_SHOOT_OF_MIN70",
       match -> (match.mHostBestShoot + match.mCustomBestShoot) * 1),
-  // 75分钟总角球次数
+  // 70分钟总角球次数
   TOTAL_CORNER_OF_MIN70("TOTAL_CORNER_OF_MIN70",
       match -> (match.mHostCornerScore + match.mCustomCornerScore) * 1),
 
@@ -204,7 +204,10 @@ public enum TrainKey {
       match -> (match.mHostScoreMinOf25 - match.mCustomScoreMinOf25) + match.mOriginalScoreOdd),
   // 25分钟大小球赔率
   BIG_BALL_ODD_VICTORY_OF_MIN25("BIG_BALL_ODD_VICTORY_OF_MIN25",
-      match -> match.mBigOddOfVictoryOfMin25);
+      match -> match.mBigOddOfVictoryOfMin25),
+  // 25分钟小球赔率
+  BIG_BALL_ODD_DEFEAT_OF_MIN25("BIG_BALL_ODD_DEFEAT_OF_MIN25",
+      match -> match.mBigOddOfDefeatOfMin25);
 
   public final String mKey;
   public final Calculator mCalculator;

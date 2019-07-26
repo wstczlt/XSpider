@@ -24,8 +24,9 @@ public abstract class TrainModel {
     TrainUtils.writeDataSet(this, dataSet, true);
     Process process = Runtime.getRuntime()
         .exec("python training/train.py " + nameOfX() + " " + nameOfY() + " " + nameOfModel());
-    // String result = IOUtils.toString(process.getInputStream());
+    String result = IOUtils.toString(process.getInputStream());
     // System.out.println(result);
+    process.destroyForcibly();
   }
 
   /**
@@ -37,9 +38,13 @@ public abstract class TrainModel {
     Process process = Runtime.getRuntime()
         .exec("python training/test.py " + nameOfTestX() + " " + nameOfModel());
     String output = IOUtils.toString(process.getInputStream());
+    process.destroyForcibly();
     final String[] results = output.replace("\r", "").split("\n");
-//     System.out.println(Arrays.toString(results));
     List<Pair<Double, Double>> list = new ArrayList<>();
+    if (results.length < 2) {
+      System.out.println(dataSet);
+      System.out.println("-> " + output);
+    }
     Arrays.stream(results).forEach(value -> {
       Pair<Double, Double> line;
       String[] arr = value.replace("[", "").replace("]", "").split(" ");

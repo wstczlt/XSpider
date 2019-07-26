@@ -11,6 +11,7 @@ import static com.test.train.match.TrainKey.TOTAL_BEST_SHOOT_OF_MIN70;
 import static com.test.train.match.TrainKey.TOTAL_CORNER_OF_MIN70;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,27 @@ import com.test.train.TrainModel;
 import com.test.train.match.TrainKey;
 
 public class BigBallOfMin70 extends TrainModel {
+
+  public static Map<Integer, String> BIG_BALL_OF_MIN_70_RATE_MAP = new HashMap<>();
+
+  static { // 训练测试结果
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(50, "60%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(51, "62%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(52, "64%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(53, "65%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(54, "66%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(55, "66%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(56, "68%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(57, "69%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(58, "70%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(59, "71%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(60, "72%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(61, "73%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(62, "74%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(63, "76%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(64, "78%");
+    BIG_BALL_OF_MIN_70_RATE_MAP.put(65, "80%");
+  }
 
   @Override
   public String name() {
@@ -42,6 +64,11 @@ public class BigBallOfMin70 extends TrainModel {
   @Override
   public TrainKey keyOfY() {
     return BIG_BALL_OF_MIN70_VALUE;
+  }
+
+  @Override
+  public float bestThreshold() {
+    return 0.50f; // 命中率=69% 左右
   }
 
   @Override

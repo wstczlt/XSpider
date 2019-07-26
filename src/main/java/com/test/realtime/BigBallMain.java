@@ -1,6 +1,7 @@
 package com.test.realtime;
 
 import static com.test.spider.tools.Logger.SYSTEM;
+import static com.test.train.model.BigBallOfMin70.BIG_BALL_OF_MIN_70_RATE_MAP;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,7 +24,7 @@ import com.test.spider.SpiderUtils;
 import com.test.spider.tools.Pair;
 import com.test.train.TrainModel;
 import com.test.train.match.Match;
-import com.test.train.match.MatchQueryHelper;
+import com.test.train.match.QueryHelper;
 import com.test.train.model.BigBallOfMin70;
 import com.test.train.utils.TrainUtils;
 
@@ -42,30 +43,27 @@ public class BigBallMain {
     final List<Integer> matchIDs = collectRealTimeMatchIds();
     final String querySql = buildSql(matchIDs);
     new FootballSpider(matchIDs, SYSTEM).run();
-    List<Match> matches = MatchQueryHelper.doQuery(querySql).stream().filter(match -> {
+    List<Match> matches = QueryHelper.doQuery(querySql).stream().filter(match -> {
       if (TextUtils.isEmpty(match.mLeague)) { // 野鸡不要
         return false;
       }
-//      long timeDis = System.currentTimeMillis() - match.mMatchTime; // 目前数据有误
-//      // System.out.println(timeDis);
-//      return timeDis > 3600 * 1000 && timeDis <= 2 * 3600 * 1000; // 大于1小时，小于2小时内的比赛
 
-      return true;
+      long timeDis = System.currentTimeMillis() - match.mMatchTime; // 目前数据有误
+      return timeDis > 3600 * 1000 && timeDis <= 2 * 3600 * 1000; // 大于1小时，小于2小时内的比赛
     }).sorted((o1, o2) -> o1.mLeague.compareTo(o2.mLeague)).collect(Collectors.toList());
     if (matches.size() == 1) { // 单行数据无法运算
       matches.add(matches.get(0));
     }
     List<Map<String, Float>> testSet = TrainUtils.trainMaps(matches);
-
     System.out.println(); // 空行
-    System.out.println("Loop: " + SpiderConfig.DATE_FORMAT.format(new Date()));
+    System.out.println("运行时间: " + SpiderConfig.DATE_FORMAT.format(new Date()));
     if (matches.isEmpty()) {
-      System.out.println("       No match hit.");
+      System.out.println("       没有合适的比赛");
       return;
     } else {
-      System.out.println("       Match Count: " + matches.size());
+      System.out.println("       可选比赛场次: " + matches.size());
     }
-
+    System.out.println(); // 空行
     doTest(matches, testSet);
   }
 
@@ -93,12 +91,14 @@ public class BigBallMain {
     String customName = match.mCustomName;
     String league = !TextUtils.isEmpty(match.mLeague) ? match.mLeague : "野鸡";
 
+    System.out.println();
     System.out.println(
         String.format("%d', [%s], %s VS %s", match.mTimeMin, league, hostName, customName));
     System.out.println(String.format("     比分: %d : %d", match.mHostScore, match.mCustomScore));
-    System.out.println(String.format("     盘口: %s， 概率: %.2f",
-        ((value == 1 ? "大" : "小") + match.mBigOddOfMinOfMin70), prob));
-    System.out.println();
+    System.out.println(String.format("     盘口: %s， 赔率: %.2f,  概率: %.2f[命中率: %s]",
+        ((value == 1 ? "大" : "小") + match.mBigOddOfMinOfMin70),
+        value == 1 ? match.mBigOddOfVictoryOfMin70 : match.mBigOddOfDefeatOfMin70,
+        prob, BIG_BALL_OF_MIN_70_RATE_MAP.get((int) (prob * 100))));
     System.out.println();
   }
 
@@ -120,12 +120,9 @@ public class BigBallMain {
     return matchIds;
   }
 
-
   private static String buildSql(List<Integer> matchIDs) {
     String timeMinSql = " AND timeMin is not null AND timeMin >= 70 AND timeMin <= 85 ";
-    return MatchQueryHelper.SQL_QUERY_BASE + timeMinSql + MatchQueryHelper.buildSqlIn(matchIDs)
-        + MatchQueryHelper.SQL_ORDER;
+    return QueryHelper.SQL_QUERY_BASE + timeMinSql + QueryHelper.buildSqlIn(matchIDs)
+        + QueryHelper.SQL_ORDER;
   }
-
-
 }
