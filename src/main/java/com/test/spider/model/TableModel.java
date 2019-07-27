@@ -8,7 +8,8 @@ import java.util.List;
 import org.seimicrawler.xpath.JXDocument;
 import org.seimicrawler.xpath.JXNode;
 
-import com.test.spider.SpiderUtils;
+import com.test.spider.tools.SpiderUtils;
+import com.test.utils.Utils;
 
 import us.codecraft.webmagic.Page;
 
@@ -164,17 +165,17 @@ public class TableModel {
         isMiddle = true;
         mMinute = 45;
       } else {
-        mMinute = SpiderUtils.valueOfInt(stringOfMin);
+        mMinute = Utils.valueOfInt(stringOfMin);
       }
       String scoreString = mTdStrings.get(1); // 比分
       String[] scoreStringPair = scoreString.split("-");
       if (scoreStringPair.length == 2) {
-        mHostScore = SpiderUtils.valueOfInt(scoreStringPair[0]);
-        mCustomScore = SpiderUtils.valueOfInt(scoreStringPair[1]);
+        mHostScore = Utils.valueOfInt(scoreStringPair[0]);
+        mCustomScore = Utils.valueOfInt(scoreStringPair[1]);
       }
 
-      mOddVictory = SpiderUtils.valueOfFloat(mTdStrings.get(2));
-      mOddDefeat = SpiderUtils.valueOfFloat(mTdStrings.get(4));
+      mOddVictory = Utils.valueOfFloat(mTdStrings.get(2));
+      mOddDefeat = Utils.valueOfFloat(mTdStrings.get(4));
       String oddString = mTdStrings.get(3); // 盘口
       if (oddString.equals("封")) { // 封盘，不要了
         isForbidden = true;
@@ -189,10 +190,10 @@ public class TableModel {
           mOdd = SpiderUtils.convertBallOdd(oddString);
           break;
         case EUROPE:
-          mOdd = SpiderUtils.valueOfFloat(oddString);
+          mOdd = Utils.valueOfFloat(oddString);
           break;
         case CORNER:
-          mOdd = SpiderUtils.valueOfFloat(oddString);
+          mOdd = Utils.valueOfFloat(oddString);
           break;
       }
     }

@@ -1,6 +1,6 @@
-package com.test.train.match;
+package com.test.train.tools;
 
-public class PredictResult {
+public class TestSummary {
 
   public final float mTotalCount; // 总数
   public final float mHitCount; // 命中次数
@@ -9,7 +9,7 @@ public class PredictResult {
   public final float mMaxContinueHitCount; // 最大连红次数
   public final float mMaxContinueMissCount; // 最大连黑次数
 
-  public PredictResult(float totalCount, float hitCount, float positiveHitCount, float profit,
+  public TestSummary(float totalCount, float hitCount, float positiveHitCount, float profit,
       float maxContinueHitCount, float maxContinueMissCount) {
     mTotalCount = totalCount;
     mHitCount = hitCount;

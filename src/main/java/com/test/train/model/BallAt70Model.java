@@ -1,24 +1,23 @@
 package com.test.train.model;
 
-import static com.test.train.match.QueryHelper.SQL_BASE;
-import static com.test.train.match.QueryHelper.SQL_MIN_70;
-import static com.test.train.match.QueryHelper.SQL_ORDER;
-import static com.test.train.match.TrainKey.BIG_BALL_ODD_DEFEAT_OF_MIN70;
-import static com.test.train.match.TrainKey.BIG_BALL_ODD_VICTORY_OF_MIN70_FIX;
-import static com.test.train.match.TrainKey.BIG_BALL_OF_MIN70_VALUE;
-import static com.test.train.match.TrainKey.ORIGINAL_BIG_ODD;
-import static com.test.train.match.TrainKey.ORIGINAL_SCORE_ODD_ABS;
-import static com.test.train.match.TrainKey.TOTAL_BEST_SHOOT_OF_MIN70;
-import static com.test.train.match.TrainKey.TOTAL_SCORE_OF_MIN_70;
+import static com.test.train.tools.MappedValue.BIG_BALL_ODD_VICTORY_OF_MIN70_FIX;
+import static com.test.train.tools.MappedValue.BIG_BALL_OF_MIN70_VALUE;
+import static com.test.train.tools.MappedValue.ORIGINAL_BIG_ODD;
+import static com.test.train.tools.MappedValue.ORIGINAL_SCORE_ODD_ABS;
+import static com.test.train.tools.MappedValue.TOTAL_BEST_SHOOT_OF_MIN70;
+import static com.test.train.tools.MappedValue.TOTAL_SCORE_OF_MIN_70;
+import static com.test.train.tools.QueryHelper.SQL_BASE;
+import static com.test.train.tools.QueryHelper.SQL_MIN_70;
+import static com.test.train.tools.QueryHelper.SQL_ORDER;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import com.test.train.match.TrainKey;
-import com.test.train.utils.TrainModel;
+import com.test.train.tools.Estimation;
+import com.test.train.tools.MappedValue;
+import com.test.train.tools.Match;
 
-public class BallAt70 extends TrainModel {
+public class BallAt70Model extends Model {
 
   @Override
   public String name() {
@@ -31,8 +30,8 @@ public class BallAt70 extends TrainModel {
   }
 
   @Override
-  public List<TrainKey> keyOfX() {
-    List<TrainKey> trainKeys = new ArrayList<>();
+  public List<MappedValue> valueOfX() {
+    List<MappedValue> trainKeys = new ArrayList<>();
     // trainKeys.add(IS_CUP_MATCH);
     // trainKeys.add(IS_YEJI_MATCH);
     trainKeys.add(ORIGINAL_BIG_ODD); // 大小球初盘
@@ -67,7 +66,7 @@ public class BallAt70 extends TrainModel {
   }
 
   @Override
-  public TrainKey keyOfY() {
+  public MappedValue valueOfY() {
     return BIG_BALL_OF_MIN70_VALUE;
   }
 
@@ -77,9 +76,9 @@ public class BallAt70 extends TrainModel {
   }
 
   @Override
-  public float profit(Map<String, Float> values, float predictValue) {
-    float realValue = values.get(keyOfY().mKey);
-    if (realValue != predictValue) {
+  public float calGain(Match match, Estimation est) {
+    float realValue = valueOfY().mMapper.cal(match);
+    if (realValue != est.mValue) {
       return -1;
     }
     if (realValue == 1) { // 出大球

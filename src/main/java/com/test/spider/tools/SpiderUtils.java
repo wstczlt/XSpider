@@ -1,11 +1,11 @@
-package com.test.spider;
+package com.test.spider.tools;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.test.spider.model.UrlType;
-import com.test.spider.tools.Pair;
+import com.test.utils.Pair;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.selector.Html;
@@ -123,20 +123,4 @@ public class SpiderUtils {
     return oddNumber != null ? oddNumber : 1f;
   }
 
-
-  public static int valueOfInt(Object str) {
-    try {
-      return Integer.parseInt(str != null ? str.toString() : "");
-    } catch (Throwable e) {
-      return -1;
-    }
-  }
-
-  public static float valueOfFloat(Object str) {
-    try {
-      return Float.parseFloat(str != null ? str.toString() : "");
-    } catch (Throwable e) {
-      return -1;
-    }
-  }
 }

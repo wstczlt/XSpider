@@ -2,18 +2,23 @@ package com.test.spider;
 
 import static com.test.spider.SpiderConfig.STATIC_ID_END;
 import static com.test.spider.SpiderConfig.STATIC_ID_START;
-import static com.test.spider.tools.Logger.EMPTY;
+import static com.test.utils.Logger.EMPTY;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.test.spider.tools.EmptyPredicate;
+import com.test.spider.tools.SpiderBuilder;
+
+import us.codecraft.webmagic.Spider;
 
 public class SpiderMain {
 
   public static void main(String[] args) {
     final List<Integer> matchIDs = collectStaticMatchIds();
-    new FootballSpider(matchIDs, EMPTY, new EmptyPredicate<>()).run();
+    final Spider spider = new SpiderBuilder(matchIDs, EMPTY, mojieMatch -> true).build();
+
+    spider.run();
+    spider.close();
   }
 
   private static List<Integer> collectStaticMatchIds() {

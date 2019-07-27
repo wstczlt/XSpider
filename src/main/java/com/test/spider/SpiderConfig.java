@@ -15,20 +15,9 @@ public class SpiderConfig {
   public static final int STATIC_ID_START = 1756889; // 起始ID
   public static final int STATIC_ID_END = 1756899; // 结束ID
   public static final String DATABASE_URL = "jdbc:sqlite:sqlite/football_x.db";
-
-
-
   public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-  // public static final String MIN_DATE_STRING = "2016-01-01 00:00"; // 最小比赛时间
-  // public static final String MAX_DATE_STRING = "2019-07-18 23:00"; // 最大比赛时间
-  //
-  // public static Date MIN_DATE = null;
-  // public static Date MAX_DATE = null;
-  // static {
-  // try {
-  // MIN_DATE = DATE_FORMAT.parse(MIN_DATE_STRING);
-  // MAX_DATE = DATE_FORMAT.parse(MAX_DATE_STRING);
-  // } catch (Throwable ignore) {}
-  // }
+  public static final String PROXY_STRING =
+      "58.218.214.170:9545 58.218.214.182:9571 58.218.214.170:9516 58.218.214.171:9869 58.218.214.169:9504 58.218.214.180:9788 58.218.214.180:9957 58.218.214.173:9897 58.218.214.171:9821 58.218.214.169:9659 58.218.214.180:9539 58.218.214.170:9867 58.218.214.170:9940 58.218.214.181:9591 58.218.214.173:9545 58.218.214.181:9562 58.218.214.168:9837 58.218.214.181:9893 58.218.214.168:9663 58.218.214.170:9631 58.218.214.172:9774 58.218.214.172:9969 58.218.214.168:9983 58.218.214.171:9897 58.218.214.172:9930 58.218.214.182:9668 58.218.214.171:9546 58.218.214.173:9821 58.218.214.171:9904 58.218.214.168:9998";
+
 }

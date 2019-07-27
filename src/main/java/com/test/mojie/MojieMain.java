@@ -13,8 +13,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.test.spider.SpiderUtils;
-import com.test.spider.tools.EmptyPredicate;
+import com.test.utils.Utils;
 
 public class MojieMain {
 
@@ -71,15 +70,15 @@ public class MojieMain {
       }
     }
     System.out.println("--->  主选胜平负结果");
-    doTest(ASIA_MAP, mojieMatch -> mojieMatch.mAsiaMap, new EmptyPredicate<>());
+    doTest(ASIA_MAP, mojieMatch -> mojieMatch.mAsiaMap, mojieMatch -> true);
     System.out.println();
 
     System.out.println("--->  亚盘结果");
-    doTest(ASIA_MAP, mojieMatch -> mojieMatch.mAsiaMap, new EmptyPredicate<>());
+    doTest(ASIA_MAP, mojieMatch -> mojieMatch.mAsiaMap, mojieMatch -> true);
     System.out.println();
 
     System.out.println("--->  大小球结果");
-    doTest(BIG_MAP, mojieMatch -> mojieMatch.mBigMap, new EmptyPredicate<>());
+    doTest(BIG_MAP, mojieMatch -> mojieMatch.mBigMap, mojieMatch -> true);
     System.out.println();
   }
 
@@ -123,7 +122,7 @@ public class MojieMain {
           continue;
         }
         String probabilityString = (String) supplier.get(mojieMatch).get("probability");
-        int probability = SpiderUtils.valueOfInt(probabilityString);
+        int probability = Utils.valueOfInt(probabilityString);
         JSONArray itemArray = (JSONArray) supplier.get(mojieMatch).get("prediction_info");
 
         Map<String, Object> result = (Map<String, Object>) itemArray.get(0);
@@ -135,7 +134,7 @@ public class MojieMain {
         }
 
         int hit = (int) result.get("hit");
-        float odd = SpiderUtils.valueOfFloat(result.get("odd"));
+        float odd = Utils.valueOfFloat(result.get("odd"));
         if (probability >= p) {
           totalCount++;
           profit = profit - 1; // 投资

@@ -1,8 +1,6 @@
-package com.test.spider.tools;
+package com.test.utils;
 
 public interface Logger {
-
-
 
   void log(String log);
 

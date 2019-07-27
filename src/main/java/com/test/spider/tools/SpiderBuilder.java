@@ -1,4 +1,4 @@
-package com.test.spider;
+package com.test.spider.tools;
 
 import static com.test.spider.SpiderConfig.TOTAL_THREAD_COUNT;
 
@@ -14,8 +14,7 @@ import com.test.spider.consumer.ScoreConsumer;
 import com.test.spider.consumer.ScoreOddConsumer;
 import com.test.spider.model.UrlType;
 import com.test.spider.pipline.SQLitePipeline;
-import com.test.spider.tools.Logger;
-import com.test.spider.tools.SpiderDownloader;
+import com.test.utils.Logger;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Request;
@@ -23,23 +22,19 @@ import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.scheduler.PriorityScheduler;
 
-public class FootballSpider {
+public class SpiderBuilder {
 
   private final List<Integer> mMatchIds;
   private final Logger mLogger;
   private final Predicate<Page> mPredicate;
 
-  public FootballSpider(List<Integer> matchIds, Logger logger, Predicate<Page> predicate) {
+  public SpiderBuilder(List<Integer> matchIds, Logger logger, Predicate<Page> predicate) {
     mMatchIds = matchIds;
     mLogger = logger;
     mPredicate = predicate;
   }
 
-  public void run() {
-    build().run();
-  }
-
-  private Spider build() {
+  public Spider build() {
     // build consumers
     final List<Consumer> consumers = new ArrayList<>();
     consumers.add(new DetailConsumer(mLogger, mPredicate));

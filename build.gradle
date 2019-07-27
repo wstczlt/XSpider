@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'application'
-mainClassName = 'com.test.realtime.RtBallOfMin70'
+mainClassName = 'com.test.runtime.RtMain'
 
 repositories {
     google()

@@ -1,4 +1,4 @@
-package com.test.spider;
+package com.test.spider.tools;
 
 import static com.test.spider.SpiderConfig.DATABASE_URL;
 

@@ -1,6 +1,6 @@
 package com.test.spider.pipline;
 
-import static com.test.spider.SpiderDB.getDataSource;
+import static com.test.spider.tools.SpiderDB.getDataSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
 
 import com.test.spider.SpiderConfig;
-import com.test.spider.tools.Logger;
+import com.test.utils.Logger;
 
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;

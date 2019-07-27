@@ -1,4 +1,4 @@
-package com.test.spider;
+package com.test.spider.tools;
 
 import static com.test.spider.SpiderConfig.DOWNLOAD_RETRY_COUNT;
 import static com.test.spider.SpiderConfig.THREAD_SLEEP_TIME;
