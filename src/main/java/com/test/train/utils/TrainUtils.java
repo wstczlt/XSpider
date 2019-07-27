@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.test.spider.SpiderUtils;
 import com.test.spider.tools.Pair;
-import com.test.train.TrainModel;
 import com.test.train.match.Match;
 import com.test.train.match.TrainKey;
 
@@ -83,25 +82,22 @@ public class TrainUtils {
     match.mMiddleBigOddOfDefeat =
         SpiderUtils.valueOfFloat(databaseMap.get("middle_bigOddOfDefeat"));
 
-    match.mHostScoreMinOf75 = SpiderUtils.valueOfInt(databaseMap.get("min75_hostScore"));
-    match.mCustomScoreMinOf75 = SpiderUtils.valueOfInt(databaseMap.get("min75_customScore"));
-    match.mBigOddOfMinOfMin75 = SpiderUtils.valueOfFloat(databaseMap.get("min75_bigOdd"));
-    match.mBigOddOfVictoryOfMin75 =
-        SpiderUtils.valueOfFloat(databaseMap.get("min75_bigOddOfVictory"));
-    match.mBigOddOfDefeatOfMin75 =
-        SpiderUtils.valueOfFloat(databaseMap.get("min75_bigOddOfDefeat"));
-
     match.mHostScoreMinOf70 = SpiderUtils.valueOfInt(databaseMap.get("min70_hostScore"));
     match.mCustomScoreMinOf70 = SpiderUtils.valueOfInt(databaseMap.get("min70_customScore"));
-    match.mBigOddOfMinOfMin70 = SpiderUtils.valueOfFloat(databaseMap.get("min70_bigOdd"));
+    match.mBigOddOfMin70 = SpiderUtils.valueOfFloat(databaseMap.get("min70_bigOdd"));
     match.mBigOddOfVictoryOfMin70 =
         SpiderUtils.valueOfFloat(databaseMap.get("min70_bigOddOfVictory"));
     match.mBigOddOfDefeatOfMin70 =
         SpiderUtils.valueOfFloat(databaseMap.get("min70_bigOddOfDefeat"));
+    match.mScoreOddOfMin70 = SpiderUtils.valueOfFloat(databaseMap.get("min70_scoreOdd"));
+    match.mScoreOddOfVictoryOfMin70 =
+        SpiderUtils.valueOfFloat(databaseMap.get("min70_scoreOddOfVictory"));
+    match.mScoreOddOfDefeatOfMin70 =
+        SpiderUtils.valueOfFloat(databaseMap.get("min70_scoreOddOfDefeat"));
 
     match.mHostScoreMinOf25 = SpiderUtils.valueOfInt(databaseMap.get("min25_hostScore"));
     match.mCustomScoreMinOf25 = SpiderUtils.valueOfInt(databaseMap.get("min25_customScore"));
-    match.mBigOddOfMinOfMin25 = SpiderUtils.valueOfFloat(databaseMap.get("min25_bigOdd"));
+    match.mBigOddOfMin25 = SpiderUtils.valueOfFloat(databaseMap.get("min25_bigOdd"));
     match.mBigOddOfVictoryOfMin25 =
         SpiderUtils.valueOfFloat(databaseMap.get("min25_bigOddOfVictory"));
     match.mBigOddOfDefeatOfMin25 =

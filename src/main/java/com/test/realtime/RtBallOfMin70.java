@@ -1,10 +1,9 @@
 package com.test.realtime;
 
-import static com.test.spider.tools.Logger.SYSTEM;
+import static com.test.spider.tools.Logger.EMPTY;
 import static com.test.train.match.QueryHelper.SQL_BASE;
 import static com.test.train.match.QueryHelper.SQL_MIDDLE;
 import static com.test.train.match.QueryHelper.SQL_MIN_70;
-import static com.test.train.model.BallOfMin70.BIG_BALL_OF_MIN_70_RATE_MAP;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,33 +24,45 @@ import com.test.spider.FootballSpider;
 import com.test.spider.SpiderConfig;
 import com.test.spider.SpiderUtils;
 import com.test.spider.tools.Pair;
-import com.test.train.TrainModel;
 import com.test.train.match.Match;
 import com.test.train.match.QueryHelper;
-import com.test.train.model.BallOfMin70;
+import com.test.train.model.BallAt70;
+import com.test.train.utils.TrainModel;
 import com.test.train.utils.TrainUtils;
 
-public class BigBallMain {
+public class RtBallOfMin70 {
 
-  private static final TrainModel TRAIN_MODEL = new BallOfMin70();
+  private static final TrainModel TRAIN_MODEL = new BallAt70();
 
   public static void main(String[] args) throws Exception {
-    // while (true) {
-    loopMain();
-    // Thread.sleep(30 * 1000L); // 30s一次
-    // }
+    final long minOneLoop = 60 * 1000; // 一圈不低于minOneLoop
+    long deltaOneLoop = 0;
+    while (true) {
+      try {
+        long start = System.currentTimeMillis();
+        loopMain();
+        deltaOneLoop = minOneLoop - (System.currentTimeMillis() - start);
+      } catch (Throwable ignore) {} finally {
+        if (deltaOneLoop > 0) {
+          Thread.sleep(deltaOneLoop);
+        }
+      }
+    }
   }
 
   private static void loopMain() throws Exception {
+    System.out.println(); // 空行
+    System.out.println("运行时间: " + SpiderConfig.DATE_FORMAT.format(new Date()));
+
     final List<Integer> matchIDs = collectRealTimeMatchIds();
     final String querySql = buildSql(matchIDs);
-    new FootballSpider(matchIDs, SYSTEM).run();
-    List<Match> matches = QueryHelper.doQuery(querySql).stream().filter(match -> {
-      if (TextUtils.isEmpty(match.mLeague)) { // 野鸡不要
-        return false;
-      }
+    new FootballSpider(matchIDs, EMPTY, page -> {
+      long matchTime = page.getResultItems().get("matchTime");
+      return System.currentTimeMillis() > matchTime + 3600 * 1000; // 最少开始1小时的比赛
+    }).run();
 
-      if (match.mTimeMin < 68 || match.mTimeMin > 88) {
+    List<Match> matches = QueryHelper.doQuery(querySql).stream().filter(match -> {
+      if (match.mTimeMin < 68 || match.mTimeMin > 85) {
         return false;
       }
       long timeDis = System.currentTimeMillis() - match.mMatchTime; // 目前数据有误
@@ -60,17 +71,11 @@ public class BigBallMain {
     if (matches.size() == 1) { // 单行数据无法运算
       matches.add(matches.get(0));
     }
-    List<Map<String, Float>> testSet = TrainUtils.trainMaps(matches);
+
+    System.out.println("       可选比赛场次: " + matches.size());
     System.out.println(); // 空行
-    System.out.println("运行时间: " + SpiderConfig.DATE_FORMAT.format(new Date()));
-    if (matches.isEmpty()) {
-      System.out.println("       没有合适的比赛");
-      return;
-    } else {
-      System.out.println("       可选比赛场次: " + matches.size());
-    }
-    System.out.println(); // 空行
-    doTest(matches, testSet);
+
+    doTest(matches, TrainUtils.trainMaps(matches));
   }
 
   private static void doTest(List<Match> matches, List<Map<String, Float>> testSet)
@@ -92,6 +97,9 @@ public class BigBallMain {
   }
 
   private static void display(Match match, int value, float prob) {
+    if (value != 1) { // 只展示大球
+      return;
+    }
     // int matchID = match.mMatchID;
     String hostName = match.mHostName;
     String customName = match.mCustomName;
@@ -101,10 +109,9 @@ public class BigBallMain {
     System.out.println(
         String.format("%d', [%s], %s VS %s", match.mTimeMin, league, hostName, customName));
     System.out.println(String.format("     比分: %d : %d", match.mHostScore, match.mCustomScore));
-    System.out.println(String.format("     盘口: %s， 赔率: %.2f,  概率: %.2f[命中率: %s]",
-        ((value == 1 ? "大" : "小") + match.mBigOddOfMinOfMin70),
-        value == 1 ? match.mBigOddOfVictoryOfMin70 : match.mBigOddOfDefeatOfMin70,
-        prob, BIG_BALL_OF_MIN_70_RATE_MAP.get((int) (prob * 100))));
+    System.out.println(String.format("     盘口: %s， 概率: %.2f[历史命中率: %s]",
+        ((value == 1 ? "大" : "小") + match.mBigOddOfMin70),
+        prob, ((int) (prob * 100 + 10)) + "%"));
     System.out.println();
   }
 

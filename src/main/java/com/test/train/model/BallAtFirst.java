@@ -1,34 +1,33 @@
 package com.test.train.model;
 
+import static com.test.train.match.TrainKey.BALL_DREW_VALUE;
 import static com.test.train.match.TrainKey.DELTA_BIG_ODD;
 import static com.test.train.match.TrainKey.DELTA_DEFEAT_ODD;
 import static com.test.train.match.TrainKey.DELTA_DRAW_ODD;
 import static com.test.train.match.TrainKey.DELTA_VICTORY_ODD;
-import static com.test.train.match.TrainKey.ODD_DRAW_VALUE;
-import static com.test.train.match.TrainKey.ODD_VICTORY_VALUE;
 import static com.test.train.match.TrainKey.ORIGINAL_BIG_ODD;
+import static com.test.train.match.TrainKey.ORIGINAL_BIG_ODD_OF_DEFEAT;
+import static com.test.train.match.TrainKey.ORIGINAL_BIG_ODD_OF_VICTORY;
 import static com.test.train.match.TrainKey.ORIGINAL_DEFEAT_ODD;
 import static com.test.train.match.TrainKey.ORIGINAL_DRAW_ODD;
 import static com.test.train.match.TrainKey.ORIGINAL_SCORE_ODD;
-import static com.test.train.match.TrainKey.ORIGINAL_SCORE_ODD_OF_DEFEAT;
-import static com.test.train.match.TrainKey.ORIGINAL_SCORE_ODD_OF_VICTORY;
 import static com.test.train.match.TrainKey.ORIGINAL_VICTORY_ODD;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.test.train.TrainModel;
+import com.test.train.utils.TrainModel;
 import com.test.train.match.TrainKey;
 
 /**
- * 让球胜训练模型.
+ * 大球训练模型.
  */
-public class OddOfOriginal extends TrainModel {
+public class BallAtFirst extends TrainModel {
 
   @Override
   public String name() {
-    return "oddVictory";
+    return "bigBall";
   }
 
   @Override
@@ -55,22 +54,22 @@ public class OddOfOriginal extends TrainModel {
 
   @Override
   public TrainKey keyOfY() {
-    return ODD_VICTORY_VALUE;
+    return TrainKey.BALL_VICTORY_VALUE;
   }
 
   @Override
   public float profit(Map<String, Float> values, float predictValue) {
-    boolean isDrew = values.get(ODD_DRAW_VALUE.mKey) == 1;
+    boolean isDrew = values.get(BALL_DREW_VALUE.mKey) == 1;
     float realValue = values.get(keyOfY().mKey);
     if (realValue != predictValue) { // 预测错误
       return 0;
     }
-    if (realValue == 1) { // 上盘赔率
-      return values.get(ORIGINAL_SCORE_ODD_OF_VICTORY.mKey);
+    if (realValue == 1) { // 大球赔率
+      return values.get(ORIGINAL_BIG_ODD_OF_VICTORY.mKey);
     } else if (isDrew) { // 走盘
       return 1;
-    } else { // 下盘
-      return values.get(ORIGINAL_SCORE_ODD_OF_DEFEAT.mKey);
+    } else { // 小球
+      return values.get(ORIGINAL_BIG_ODD_OF_DEFEAT.mKey);
     }
   }
 }

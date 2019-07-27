@@ -7,11 +7,13 @@ import static com.test.spider.tools.Logger.EMPTY;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.test.spider.tools.EmptyPredicate;
+
 public class SpiderMain {
 
   public static void main(String[] args) {
     final List<Integer> matchIDs = collectStaticMatchIds();
-    new FootballSpider(matchIDs, EMPTY).run();
+    new FootballSpider(matchIDs, EMPTY, new EmptyPredicate<>()).run();
   }
 
   private static List<Integer> collectStaticMatchIds() {

@@ -4,6 +4,7 @@ import static com.test.spider.SpiderConfig.TOTAL_THREAD_COUNT;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import com.test.spider.consumer.AnalysisConsumer;
 import com.test.spider.consumer.Consumer;
@@ -16,6 +17,7 @@ import com.test.spider.pipline.SQLitePipeline;
 import com.test.spider.tools.Logger;
 import com.test.spider.tools.SpiderDownloader;
 
+import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
@@ -25,10 +27,12 @@ public class FootballSpider {
 
   private final List<Integer> mMatchIds;
   private final Logger mLogger;
+  private final Predicate<Page> mPredicate;
 
-  public FootballSpider(List<Integer> matchIds, Logger logger) {
+  public FootballSpider(List<Integer> matchIds, Logger logger, Predicate<Page> predicate) {
     mMatchIds = matchIds;
     mLogger = logger;
+    mPredicate = predicate;
   }
 
   public void run() {
@@ -38,7 +42,7 @@ public class FootballSpider {
   private Spider build() {
     // build consumers
     final List<Consumer> consumers = new ArrayList<>();
-    consumers.add(new DetailConsumer(mLogger));
+    consumers.add(new DetailConsumer(mLogger, mPredicate));
     consumers.add(new ScoreConsumer(mLogger));
     consumers.add(new ScoreOddConsumer(mLogger));
     consumers.add(new AnalysisConsumer(mLogger));

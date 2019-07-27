@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.test.spider.SpiderUtils;
@@ -20,9 +21,11 @@ import us.codecraft.webmagic.Page;
 public class DetailConsumer implements Consumer {
 
   private final Logger mLogger;
+  private final Predicate<Page> mPredicate;
 
-  public DetailConsumer(Logger logger) {
+  public DetailConsumer(Logger logger, Predicate<Page> predicate) {
     mLogger = logger;
+    mPredicate = predicate;
   }
 
   @Override
@@ -58,6 +61,11 @@ public class DetailConsumer implements Consumer {
       String matchTimeString = page.getRawText().substring(matchTimeStart, matchTimeEnd);
       matchTimeString = matchTimeString.substring("开赛时间：".length());
       Date date = DATE_FORMAT.parse(matchTimeString);
+      // if (date.getTime() > System.currentTimeMillis()) {
+      // mLogger.log("matchID = " + matchID + ", 时间超出范围 => " + matchTimeString);
+      // page.setSkip(true);
+      // return;
+      // }
       // // 要求在时间范围内
       // if (date.getTime() < MIN_DATE.getTime()
       // || date.getTime() > MAX_DATE.getTime()) {
@@ -281,6 +289,11 @@ public class DetailConsumer implements Consumer {
       }
     } catch (Throwable e) {
       SpiderUtils.log(e);
+    }
+
+    if (!mPredicate.test(page)) {
+      page.setSkip(true);
+      return;
     }
 
     // 如果页面复合条件，则继续抓取, matchID越小，优先级越高

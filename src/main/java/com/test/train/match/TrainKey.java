@@ -1,7 +1,6 @@
 package com.test.train.match;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.http.util.TextUtils;
 
 /**
  * 用于AI模型训练的所有Key.
@@ -34,29 +33,8 @@ public enum TrainKey {
   ODD_DEFEAT_VALUE("ODD_DEFEAT_VALUE",
       match -> (match.mHostScore - match.mCustomScore + match.mOpeningScoreOdd) < 0 ? 1f : 0),
 
-  // 近3场交战历史，主胜率
-  HISTORY_HOST_VICTORY_RATE("HISTORY_HOST_VICTORY_RATE", new HistoryHostVictoryRateCal()),
-  // 近3场交战历史，主让胜率
-  HISTORY_HOST_ODD_VICTORY_RATE("HISTORY_HOST_ODD_VICTORY_RATE",
-      new HistoryHostOddVictoryRateCal()),
-  // 主队近3场胜率
-  RECENT_HOST_VICTORY_RATE("RECENT_HOST_VICTORY_RATE", new RecentHostVictoryRateCal()),
-  // 客队近3场胜率
-  RECENT_CUSTOM_VICTORY_RATE("RECENT_CUSTOM_VICTORY_RATE", new RecentHostVictoryRateCal()),
-  // 主队近3场胜率 - 客队近3场胜率
-  RECENT_DISTANCE_VICTORY_RATE("RECENT_DISTANCE_VICTORY_RATE",
-      match -> new RecentHostVictoryRateCal().compute(match)
-          - new RecentCustomVictoryRateCal().compute(match)),
-
-  // 主队近3场让胜率
-  RECENT_HOST_ODD_VICTORY_RATE("RECENT_HOST_ODD_VICTORY_RATE", new RecentHostOddVictoryRateCal()),
-  // 客队近3场让胜率
-  RECENT_CUSTOM_ODD_VICTORY_RATE("RECENT_CUSTOM_ODD_VICTORY_RATE",
-      new RecentCustomOddVictoryRateCal()),
-  // 主队近3场让胜率 - 客队近3场让胜率
-  RECENT_DISTANCE_ODD_VICTORY_RATE("RECENT_DISTANCE_ODD_VICTORY_RATE",
-      match -> new RecentHostOddVictoryRateCal().compute(match)
-          - new RecentCustomOddVictoryRateCal().compute(match)),
+  // 占位
+  EMPTY("EMPTY", match -> 1f),
 
   // 主队主场联赛排名
   HOST_LEAGUE_RANK("HOST_LEAGUE_RANK", match -> match.mHostLeagueRank),
@@ -98,11 +76,10 @@ public enum TrainKey {
   DISTANCE_RECENT_CORNER_COUNT("DISTANCE_RECENT_CORNER_COUNT",
       match -> match.mHostCornerOf3 - match.mCustomCornerOf3),
 
-  // 亚盘转换为欧盘权值
-  ORIGINAL_SCORE_ODD_FIXED("ORIGINAL_SCORE_ODD_FIXED",
-      match -> (1 + match.mOriginalScoreOddOfVictory * 10.00f / (11 - match.mOriginalScoreOdd))),
   // 初盘让球盘口
   ORIGINAL_SCORE_ODD("ORIGINAL_SCORE_ODD", match -> match.mOriginalScoreOdd),
+  // 让球盘口绝对值
+  ORIGINAL_SCORE_ODD_ABS("ORIGINAL_SCORE_ODD", match -> Math.abs(match.mOriginalScoreOdd)),
   // 初盘让球上盘水位
   ORIGINAL_SCORE_ODD_OF_VICTORY("ORIGINAL_SCORE_ODD_OF_VICTORY",
       match -> match.mOriginalScoreOddOfVictory),
@@ -147,19 +124,54 @@ public enum TrainKey {
   // 开盘大小球盘口变化
   DELTA_BIG_ODD("DELTA_BIG_ODD", match -> match.mOpeningBigOdd - match.mOriginalBigOdd),
 
+  // 是否杯赛
+  IS_CUP_MATCH("IS_CUP_MATCH",
+      match -> match.mLeague != null && match.mLeague.contains("杯") ? 1 : 0),
+
+  // 是否野鸡
+  IS_YEJI_MATCH("IS_YEJI_MATCH",
+      match -> TextUtils.isEmpty(match.mLeague) || match.mLeague.equals("null") ? 1 : 0),
+
   // 70分钟之后大球的值
   BIG_BALL_OF_MIN70_VALUE("BIG_BALL_OF_MIN70_VALUE", match -> match.mHostScore + match.mCustomScore
       - match.mHostScoreMinOf70 - match.mCustomScoreMinOf70 > 0 ? 1 : 0),
-  // 70分钟大小球盘口和初盘差距
-  BIG_BALL_ODD_DISTANCE_OF_MIN_70("BIG_BALL_ODD_DISTANCE_OF_MIN_70",
-      match -> (match.mHostScoreMinOf70 + match.mCustomScoreMinOf70) - match.mOriginalBigOdd),
-  // 70分钟盘口让球差距
-  SCORE_ODD_DISTANCE_OF_MIN_70("SCORE_ODD_DISTANCE_OF_MIN_70",
-      match -> (match.mHostScoreMinOf70 - match.mCustomScoreMinOf70) + match.mOriginalScoreOdd),
+  // 70分钟主队得分
+  HOST_SCORE_OF_MIN_70("HOST_SCORE_OF_MIN_70", match -> match.mHostScoreMinOf70),
+  // 70分钟客队得分
+  CUSTOM_SCORE_OF_MIN_70("CUSTOM_SCORE_OF_MIN_70", match -> match.mCustomScoreMinOf70),
+  // 70分钟大小球盘口
+  BIG_BALL_ODD_OF_MIN_70("BIG_BALL_ODD_OF_MIN_70", match -> match.mBigOddOfMin70),
   // 70分钟大小球赔率
   BIG_BALL_ODD_VICTORY_OF_MIN70("BIG_BALL_ODD_VICTORY_OF_MIN70",
       match -> match.mBigOddOfVictoryOfMin70),
+  BIG_BALL_ODD_VICTORY_OF_MIN70_FIX("BIG_BALL_ODD_VICTORY_OF_MIN70_FIX",
+      match -> {
+        float delta = match.mBigOddOfMin70 - (int) match.mBigOddOfMin70; // 取整
+        if (delta == 0) { // 当前比分+1球的盘口
+          return match.mBigOddOfVictoryOfMin70 * 0.5f;
+        } else if (delta == 0.75) {
+          return match.mBigOddOfVictoryOfMin70 * 0.7f;
+        } else {
+          return match.mBigOddOfVictoryOfMin70;
+        }
+      }),
 
+  // 大小球加权变化
+  BIG_BALL_ODD_DELTA_OF_MIN70("BIG_BALL_ODD_DELTA_OF_MIN70",
+      match -> match.mOriginalBigOdd * 1.00f / match.mOriginalBigOddOfVictory -
+          match.mBigOddOfMin70 * 1.00f / match.mBigOddOfVictoryOfMin70),
+
+  // 70分钟让球盘口
+  SCORE_ODD_OF_MIN_70("SCORE_ODD_OF_MIN_70", match -> match.mScoreOddOfMin70),
+  // 70分钟让球盘口
+  SCORE_ODD_VICTORY_OF_MIN_70("SCORE_ODD_VICTORY_OF_MIN_70",
+      match -> match.mScoreOddOfVictoryOfMin70),
+  // 70分钟大小球盘口和初盘差距
+  BIG_BALL_ODD_DISTANCE_OF_MIN_70("BIG_BALL_ODD_DISTANCE_OF_MIN_70",
+      match -> (match.mHostScoreMinOf70 + match.mCustomScoreMinOf70) - match.mOriginalBigOdd),
+  // 70分钟盘口让球和初盘差距
+  SCORE_ODD_DISTANCE_OF_MIN_70("SCORE_ODD_DISTANCE_OF_MIN_70",
+      match -> (match.mHostScoreMinOf70 - match.mCustomScoreMinOf70) + match.mOriginalScoreOdd),
   // 70分钟大小球盘口和中场的差距
   BIG_BALL_ODD_DISTANCE_TO_MIDDLE_OF_MIN_70("BIG_BALL_ODD_DISTANCE_TO_MIDDLE_OF_MIN_70",
       match -> (match.mHostScoreMinOf70 + match.mCustomScoreMinOf70) - match.mBigOddOfMiddle),
@@ -168,16 +180,19 @@ public enum TrainKey {
       match -> ((match.mHostScoreMinOf70 - match.mHostScoreOfMiddle)
           - (match.mCustomScoreMinOf70 - match.mCustomScoreOfMiddle)) + match.mMiddleScoreOdd),
 
+  TOTAL_SCORE_OF_MIN_70("TOTAL_SCORE_OF_MIN_70",
+      match -> match.mHostScoreMinOf70 + match.mCustomScoreMinOf70),
 
   // 70分钟大小球赔率
   BIG_BALL_ODD_DEFEAT_OF_MIN70("BIG_BALL_ODD_DEFEAT_OF_MIN70",
       match -> match.mBigOddOfDefeatOfMin70),
+
   // 70分钟总射正次数
   TOTAL_BEST_SHOOT_OF_MIN70("TOTAL_BEST_SHOOT_OF_MIN70",
-      match -> (match.mHostBestShoot + match.mCustomBestShoot) * 1),
+      match -> (match.mHostBestShoot + match.mCustomBestShoot) * 0.7f),
   // 70分钟总角球次数
   TOTAL_CORNER_OF_MIN70("TOTAL_CORNER_OF_MIN70",
-      match -> (match.mHostCornerScore + match.mCustomCornerScore) * 1),
+      match -> (match.mHostCornerScore + match.mCustomCornerScore) * 0.7f),
 
   // 25分钟之后大球的值
   BIG_BALL_OF_MIN25_VALUE("BIG_BALL_OF_MIN25_VALUE",
@@ -192,9 +207,18 @@ public enum TrainKey {
   // 25分钟大小球赔率
   BIG_BALL_ODD_VICTORY_OF_MIN25("BIG_BALL_ODD_VICTORY_OF_MIN25",
       match -> match.mBigOddOfVictoryOfMin25),
+
+  // 大小球加权变化
+  BIG_BALL_ODD_DELTA_OF_MIN25("BIG_BALL_ODD_DELTA_OF_MIN25",
+      match -> match.mOriginalBigOdd * 1.00f / match.mOriginalBigOddOfVictory -
+          match.mBigOddOfMin25 * 1.00f / match.mBigOddOfVictoryOfMin25),
   // 25分钟小球赔率
   BIG_BALL_ODD_DEFEAT_OF_MIN25("BIG_BALL_ODD_DEFEAT_OF_MIN25",
-      match -> match.mBigOddOfDefeatOfMin25);
+      match -> match.mBigOddOfDefeatOfMin25),
+
+  // 25分钟总射正次数
+  TOTAL_BEST_SHOOT_OF_MIN25("TOTAL_BEST_SHOOT_OF_MIN25",
+      match -> (match.mHostBestShoot + match.mCustomBestShoot) * 0.3f);
 
   public final String mKey;
   public final Calculator mCalculator;
@@ -202,66 +226,5 @@ public enum TrainKey {
   TrainKey(java.lang.String key, Calculator calculator) {
     mKey = key;
     mCalculator = calculator;
-  }
-
-  public static List<TrainKey> helpfulKeys() {
-    List<TrainKey> trainKeys = new ArrayList<>();
-    // trainKeys.add(DISTANCE_RECENT_BALL_COUNT);
-    // trainKeys.add(DISTANCE_RECENT_LOST_COUNT);
-    // trainKeys.add(DISTANCE_RECENT_CONTROL_RATE);
-    trainKeys.add(ORIGINAL_SCORE_ODD_FIXED);
-    // trainKeys.add(DELTA_SCORE_ODD);
-    trainKeys.add(ORIGINAL_VICTORY_ODD);
-    trainKeys.add(ORIGINAL_DRAW_ODD);
-    // trainKeys.add(ORIGINAL_DEFEAT_ODD);
-    trainKeys.add(DELTA_VICTORY_ODD);
-    trainKeys.add(DELTA_DRAW_ODD);
-    // trainKeys.add(DELTA_DEFEAT_ODD);
-    // trainKeys.add(ORIGINAL_BIG_ODD);
-    // trainKeys.add(DELTA_BIG_ODD);
-
-    return trainKeys;
-  }
-
-  static class HistoryHostVictoryRateCal implements Calculator {
-    @Override
-    public float compute(Match match) {
-      return 0;
-    }
-  }
-
-  static class HistoryHostOddVictoryRateCal implements Calculator {
-    @Override
-    public float compute(Match match) {
-      return 0;
-    }
-  }
-
-  static class RecentHostVictoryRateCal implements Calculator {
-    @Override
-    public float compute(Match match) {
-      return 0;
-    }
-  }
-
-  static class RecentCustomVictoryRateCal implements Calculator {
-    @Override
-    public float compute(Match match) {
-      return 0;
-    }
-  }
-
-  static class RecentHostOddVictoryRateCal implements Calculator {
-    @Override
-    public float compute(Match match) {
-      return 0;
-    }
-  }
-
-  static class RecentCustomOddVictoryRateCal implements Calculator {
-    @Override
-    public float compute(Match match) {
-      return 0;
-    }
   }
 }

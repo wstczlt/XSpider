@@ -1,7 +1,7 @@
-package com.test.train;
+package com.test.train.utils;
 
-import static com.test.train.match.QueryHelper.SQL_ORDER;
 import static com.test.train.match.QueryHelper.SQL_BASE;
+import static com.test.train.match.QueryHelper.SQL_ORDER;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +48,18 @@ public abstract class TrainModel {
       System.out.println(dataSet);
       System.out.println("-> " + output);
     }
+
+    // Arrays.stream(results).forEach(value -> {
+    // Pair<Double, Double> line;
+    // double ret = SpiderUtils.valueOfFloat(value);
+    // if (ret >= 0.5f) {
+    // line = new Pair<>(1d, ret);
+    // } else {
+    // line = new Pair<>(0d, ret);
+    // }
+    // list.add(line);
+    // });
+
     Arrays.stream(results).forEach(value -> {
       Pair<Double, Double> line;
       String[] arr = value.replace("[", "").replace("]", "").split(" ");
@@ -69,7 +81,7 @@ public abstract class TrainModel {
   }
 
   public float bestThreshold() { // 大于等于此概率, 才会选择这场比赛
-    return 0.5f;
+    return 0.50f;
   }
 
   /**

@@ -19,7 +19,7 @@ public class QueryHelper {
           "AND original_scoreOdd is not null " +
           "AND original_scoreOddOfVictory >0 " +
           "AND original_scoreOddOfDefeat >0 " +
-          "AND original_bigOdd is not null " +
+          "AND original_bigOdd > 0 " +
           "AND original_bigOddOfVictory >0 " +
           "AND original_bigOddOfDefeat >0 " +
           "AND original_drawOdd >0 " +
@@ -29,17 +29,18 @@ public class QueryHelper {
           "AND opening_scoreOdd is not null " +
           "AND opening_scoreOddOfVictory >0 " +
           "AND opening_scoreOddOfDefeat >0 " +
-          "AND opening_bigOdd is not null " +
+          "AND opening_bigOdd > 0 " +
           "AND opening_bigOddOfVictory >0 " +
           "AND opening_bigOddOfDefeat >0 " +
           "AND opening_drawOdd >0 " +
           "AND opening_victoryOdd >0 " +
           "AND opening_defeatOdd >0 " +
 
-          "AND hostBestShoot is not null " +
-          "AND customBestShoot is not null " +
-          "AND hostCornerScore is not null " +
-          "AND customCornerScore is not null ";
+          "AND hostBestShoot >=0 " +
+          "AND customBestShoot >=0 " +
+
+          "AND hostCornerScore >=0 " +
+          "AND customCornerScore >=0 ";
 
   public static final String SQL_MIN_25 =
       "AND min25_hostScore >=0  " +

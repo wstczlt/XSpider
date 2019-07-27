@@ -9,20 +9,20 @@ import com.test.spider.tools.Pair;
 import com.test.train.match.Match;
 import com.test.train.match.PredictResult;
 import com.test.train.match.QueryHelper;
-import com.test.train.model.BallOfMin70;
+import com.test.train.model.BallAt25;
+import com.test.train.utils.TrainModel;
 import com.test.train.utils.TrainUtils;
 
 public class TrainMain {
 
   public static void main(String[] args) throws Exception {
-    final int totalRound = 3; // 测试轮数
+    final int totalRound = 5; // 测试轮数
     final int testSetCount = 1000; // 测试集长度
     final float[] thresholds = new float[] {
-//        0.50f,
-//        0.51f, 0.52f, 0.53f, 0.54f, 0.55f,
-        0.56f, 0.57f, 0.58f, 0.59f, 0.60f,
-        0.61f, 0.62f, 0.63f, 0.64f, 0.65f}; // 高概率要求的阈值
-    final TrainModel model = new BallOfMin70(); // 训练模型
+        // 0.50f,
+        // 0.51f, 0.52f, 0.53f, 0.54f, 0.55f,
+        0.55f, 0.58f, 0.61f, 0.64f, 0.67f, 0.70f}; // 高概率要求的阈值
+    final TrainModel model = new BallAt25(); // 训练模型
 
     final List<Match> matches = QueryHelper.doQuery(model.buildQuerySql());
     final List<Map<String, Float>> dataSet = TrainUtils.trainMaps(matches);
@@ -61,12 +61,14 @@ public class TrainMain {
     int continueHit = 0, continueMiss = 0, highContinueHit = 0, highContinueMiss = 0;
     boolean lastHit = false, highLastHit = false;
     for (int i = 0; i < results.size(); i++) {
-      normalTotalCount++;
-      normalProfit += model.profit(testSet.get(i), results.get(i).first.floatValue());
+
       float realValue = testSet.get(i).get(model.keyOfY().mKey);
       float predictValue = results.get(i).first.floatValue();
+
+      normalTotalCount++;
+      normalProfit += model.profit(testSet.get(i), results.get(i).first.floatValue());
       boolean thisHit = realValue == predictValue;
-      if (thisHit) { // 实际阳性
+      if (thisHit) { // 实际命中
         normalHitCount++;
         if (realValue == 1) { // 正向
           normalPositiveHitCount++;

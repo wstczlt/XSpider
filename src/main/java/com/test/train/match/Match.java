@@ -30,7 +30,6 @@ public class Match {
   public float mMiddleScoreOddOfVictory; // 亚盘中场盘让球盘口
   public float mMiddleScoreOddOfDefeat; // 亚盘中场盘让球盘口
 
-
   public float mOriginalVictoryOdd; // 欧指初盘胜赔
   public float mOriginalDrawOdd; // 欧指初盘平赔
   public float mOriginalDefeatOdd; // 欧指初盘负赔
@@ -51,21 +50,18 @@ public class Match {
   public float mMiddleBigOddOfVictory; // 中场盘大小球赔率
   public float mMiddleBigOddOfDefeat; // 中场盘大小球赔率
 
-  public int mHostScoreMinOf75; // 75分钟主队得分
-  public int mCustomScoreMinOf75; // 75分钟客队得分
-  public float mBigOddOfMinOfMin75; // 75分钟大小球盘口
-  public float mBigOddOfVictoryOfMin75; // 75分钟大球赔率
-  public float mBigOddOfDefeatOfMin75; // 75分钟小球赔率
-
   public int mHostScoreMinOf70; // 70分钟主队得分
   public int mCustomScoreMinOf70; // 70分钟客队得分
-  public float mBigOddOfMinOfMin70; // 70分钟大小球盘口
+  public float mBigOddOfMin70; // 70分钟大小球盘口
   public float mBigOddOfVictoryOfMin70; // 70分钟大球赔率
   public float mBigOddOfDefeatOfMin70; // 70分钟小球赔率
+  public float mScoreOddOfMin70; // 70'让球盘口
+  public float mScoreOddOfVictoryOfMin70; // 70'让球盘口上盘赔率
+  public float mScoreOddOfDefeatOfMin70; // 70’让球盘口下盘赔率
 
   public int mHostScoreMinOf25; // 25分钟主队得分
   public int mCustomScoreMinOf25; // 25分钟客队得分
-  public float mBigOddOfMinOfMin25; // 25分钟大小球盘口
+  public float mBigOddOfMin25; // 25分钟大小球盘口
   public float mBigOddOfVictoryOfMin25; // 25分钟大球赔率
   public float mBigOddOfDefeatOfMin25; // 25分钟小球赔率
 

@@ -2,8 +2,7 @@
 import numpy as np
 import sys
 from sklearn.externals import joblib
-from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVC
+from sklearn import linear_model
 
 # sys.argv[1] = 训练集X，文件名
 # sys.argv[2] = 训练集Y，文件名
@@ -11,11 +10,11 @@ from sklearn.svm import SVC
 x_data = np.loadtxt(sys.argv[1]).astype(np.float32)
 y_data = np.loadtxt(sys.argv[2]).astype(np.float32)
 
-scaler = StandardScaler()
-x_data_std = scaler.fit_transform(x_data)
 
 # We evaluate the x and y by sklearn to get a sense of the coefficients.
-# reg = linear_model.LogisticRegression(solver='sag')
-reg = SVC(C=10, kernel='rbf', probability=True)
-reg.fit(x_data_std, y_data)
+reg = linear_model.LogisticRegression(solver='sag')
+# reg = linear_model.LinearRegression(fit_intercept=False)
+reg.fit(x_data, y_data)
+
+# print ("Coefficients of sklearn: K=%s, b=%f" % (reg.coef_, reg.intercept_))
 joblib.dump(reg, sys.argv[3])
