@@ -5,7 +5,7 @@ import org.seimicrawler.xpath.JXDocument;
 import com.test.spider.model.TableModel;
 import com.test.spider.model.UrlType;
 import com.test.spider.tools.SpiderUtils;
-import com.test.utils.Logger;
+import com.test.tools.Logger;
 
 import us.codecraft.webmagic.Page;
 

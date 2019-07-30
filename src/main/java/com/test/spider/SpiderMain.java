@@ -2,7 +2,7 @@ package com.test.spider;
 
 import static com.test.spider.SpiderConfig.STATIC_ID_END;
 import static com.test.spider.SpiderConfig.STATIC_ID_START;
-import static com.test.utils.Logger.EMPTY;
+import static com.test.tools.Logger.EMPTY;
 
 import java.util.ArrayList;
 import java.util.List;

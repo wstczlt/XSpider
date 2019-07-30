@@ -11,9 +11,9 @@ import java.util.function.Predicate;
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.test.spider.model.UrlType;
 import com.test.spider.tools.SpiderUtils;
-import com.test.utils.Logger;
-import com.test.utils.Pair;
-import com.test.utils.Utils;
+import com.test.tools.Logger;
+import com.test.tools.Pair;
+import com.test.tools.Utils;
 
 import us.codecraft.webmagic.Page;
 

@@ -9,7 +9,7 @@ import org.seimicrawler.xpath.JXDocument;
 import org.seimicrawler.xpath.JXNode;
 
 import com.test.spider.tools.SpiderUtils;
-import com.test.utils.Utils;
+import com.test.tools.Utils;
 
 import us.codecraft.webmagic.Page;
 

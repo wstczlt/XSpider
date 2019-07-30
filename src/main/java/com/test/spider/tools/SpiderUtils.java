@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.test.spider.model.UrlType;
-import com.test.utils.Pair;
+import com.test.tools.Pair;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.selector.Html;

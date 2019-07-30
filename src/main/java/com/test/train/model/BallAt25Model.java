@@ -1,23 +1,22 @@
 package com.test.train.model;
 
-import static com.test.train.tools.MappedValue.BIG_BALL_ODD_DELTA_OF_MIN25;
-import static com.test.train.tools.MappedValue.BIG_BALL_OF_MIN25_VALUE;
-import static com.test.train.tools.MappedValue.ORIGINAL_BIG_ODD;
-import static com.test.train.tools.MappedValue.ORIGINAL_SCORE_ODD_ABS;
-import static com.test.train.tools.MappedValue.TOTAL_BEST_SHOOT_OF_MIN25;
-import static com.test.train.tools.QueryHelper.SQL_BASE;
-import static com.test.train.tools.QueryHelper.SQL_MIDDLE;
-import static com.test.train.tools.QueryHelper.SQL_MIN25_ZERO_SCORE;
-import static com.test.train.tools.QueryHelper.SQL_MIN_25;
-import static com.test.train.tools.QueryHelper.SQL_ORDER;
+import static com.test.train.tools.Mappers.ORIGINAL_BIG_ODD;
+import static com.test.train.tools.Mappers.ORIGINAL_SCORE_ODD_ABS;
+import static com.test.train.tools.MatchQuery.SQL_BASE;
+import static com.test.train.tools.MatchQuery.SQL_MIDDLE;
+import static com.test.train.tools.MatchQuery.SQL_MIN_25;
+import static com.test.train.tools.MatchQuery.SQL_ORDER;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.test.train.tools.Estimation;
-import com.test.train.tools.MappedValue;
+import com.test.train.tools.Mappers.Mapper;
 import com.test.train.tools.Match;
 
+/**
+ * 上半场大小球模型
+ */
 public class BallAt25Model extends Model {
 
   @Override
@@ -25,33 +24,38 @@ public class BallAt25Model extends Model {
     return "bigBallOfMin25";
   }
 
-
   @Override
   public String buildQuerySql() {
-    return SQL_BASE + SQL_MIN_25 + SQL_MIDDLE + SQL_MIN25_ZERO_SCORE + SQL_ORDER;
+    return SQL_BASE + SQL_MIN_25 + SQL_MIDDLE + SQL_ORDER;
   }
 
   @Override
-  public List<MappedValue> valueOfX() {
-    List<MappedValue> trainKeys = new ArrayList<>();
+  public List<Mapper> mapOfX() {
+    List<Mapper> trainKeys = new ArrayList<>();
     trainKeys.add(ORIGINAL_BIG_ODD); // 大小球初盘
     trainKeys.add(ORIGINAL_SCORE_ODD_ABS); // 让球初盘绝对值
 
-    trainKeys.add(BIG_BALL_ODD_DELTA_OF_MIN25); // 25分钟大小球盘口变化趋势
-    // trainKeys.add(BIG_BALL_ODD_VICTORY_OF_MIN25_FIX);
-
-    trainKeys.add(TOTAL_BEST_SHOOT_OF_MIN25); // 25'总射正
+    // 25'总射正
+    trainKeys.add(match -> (match.mHostBestShoot + match.mCustomBestShoot) * 0.3f);
+    // 25'总进球数
+    trainKeys.add(match -> match.mHostScoreMinOf25 + match.mCustomScoreMinOf25);
     return trainKeys;
   }
 
   @Override
-  public MappedValue valueOfY() {
-    return BIG_BALL_OF_MIN25_VALUE;
+  public Mapper mapOfY() {
+    return match -> match.mHostScoreOfMiddle + match.mCustomScoreOfMiddle
+        - match.mHostScoreMinOf25 - match.mCustomScoreMinOf25 > 0 ? 1f : 0;
+  }
+
+  @Override
+  public float bestThreshold() {
+    return 0.55f; // 命中率=69% 左右
   }
 
   @Override
   public float calGain(Match match, Estimation est) {
-    float realValue = valueOfY().mMapper.cal(match);
+    float realValue = mapOfY().val(match);
     if (realValue != est.mValue) {
       return -1;
     }

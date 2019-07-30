@@ -1,4 +1,4 @@
-package com.test.utils;
+package com.test.tools;
 
 public class Utils {
   public static int valueOfInt(Object str) {

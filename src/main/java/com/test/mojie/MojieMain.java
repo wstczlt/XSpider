@@ -13,7 +13,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.test.utils.Utils;
+import com.test.tools.Utils;
 
 public class MojieMain {
 

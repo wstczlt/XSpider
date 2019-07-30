@@ -8,18 +8,18 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.test.train.model.Model;
-import com.test.utils.Pair;
+import com.test.tools.Pair;
 
 /**
  * 数据集.
  */
-public class DataSet {
+public class TrainInputs {
 
   private final Model mModel;
   public final List<Match> mMatches;
   private final boolean mIsTrain; // train 是否是训练集, false为测试集.
 
-  public DataSet(Model model, List<Match> matches, boolean isTrain) {
+  public TrainInputs(Model model, List<Match> matches, boolean isTrain) {
     mModel = model;
     mMatches = matches;
     mIsTrain = isTrain;
@@ -34,7 +34,7 @@ public class DataSet {
     List<String> yValue = new ArrayList<>();
     for (int i = 0; i < matches.size(); i++) {
       Match match = matches.get(i);
-      Pair<String, String> trainLine = writeLine(match, mModel.valueOfX(), mModel.valueOfY());
+      Pair<String, String> trainLine = writeLine(match, mModel.mapOfX(), mModel.mapOfY());
       xValue.add(trainLine.first);
       yValue.add(trainLine.second);
     }
@@ -53,14 +53,14 @@ public class DataSet {
 
 
   private static Pair<String, String> writeLine(Match match,
-      List<MappedValue> keyOfX, MappedValue keyOfY) {
+      List<Mappers.Mapper> keyOfX, Mappers.Mapper keyOfY) {
     List<String> list = new ArrayList<>();
-    for (MappedValue trainKey : keyOfX) {
-      list.add(String.format("%.2f", trainKey.mMapper.cal(match)));
+    for (Mappers.Mapper trainKey : keyOfX) {
+      list.add(String.format("%.2f", trainKey.val(match)));
     }
 
     String trainLineX = StringUtils.join(list, "   ");
-    String trainLineY = String.format("%.2f", keyOfY.mMapper.cal(match));
+    String trainLineY = String.format("%.2f", keyOfY.val(match));
 
     return new Pair<>(trainLineX, trainLineY);
   }

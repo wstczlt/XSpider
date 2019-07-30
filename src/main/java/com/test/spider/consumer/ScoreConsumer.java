@@ -7,8 +7,8 @@ import org.seimicrawler.xpath.JXNode;
 
 import com.test.spider.model.UrlType;
 import com.test.spider.tools.SpiderUtils;
-import com.test.utils.Logger;
-import com.test.utils.Utils;
+import com.test.tools.Logger;
+import com.test.tools.Utils;
 
 import us.codecraft.webmagic.Page;
 

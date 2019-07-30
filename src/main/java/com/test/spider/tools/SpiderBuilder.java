@@ -14,7 +14,7 @@ import com.test.spider.consumer.ScoreConsumer;
 import com.test.spider.consumer.ScoreOddConsumer;
 import com.test.spider.model.UrlType;
 import com.test.spider.pipline.SQLitePipeline;
-import com.test.utils.Logger;
+import com.test.tools.Logger;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Request;

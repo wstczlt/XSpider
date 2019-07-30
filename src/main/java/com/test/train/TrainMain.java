@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.test.train.model.BallAt25Model;
 import com.test.train.model.Model;
-import com.test.train.tools.DataSet;
+import com.test.train.model.OddOriginalModel;
 import com.test.train.tools.Estimation;
 import com.test.train.tools.Match;
-import com.test.train.tools.QueryHelper;
-import com.test.train.tools.TestSummary;
-import com.test.utils.Pair;
+import com.test.train.tools.MatchQuery;
+import com.test.train.tools.TrainInputs;
+import com.test.train.tools.TrainSummary;
+import com.test.tools.Pair;
 
 public class TrainMain {
 
@@ -23,10 +23,10 @@ public class TrainMain {
       0.55f, 0.58f, 0.61f, 0.64f, 0.67f, 0.70f}; // 高概率要求的阈值
 
   public static void main(String[] args) throws Exception {
-    final Model model = new BallAt25Model(); // 训练模型
+    final Model model = new OddOriginalModel(); // 训练模型
 
 
-    final List<Match> matches = QueryHelper.doQuery(model.buildQuerySql());
+    final List<Match> matches = MatchQuery.doQuery(model.buildQuerySql());
     for (float threshold : THRESHOLDS) {
       trainTest(model, threshold, matches);
       Thread.sleep(1000); // 等待资源释放
@@ -35,14 +35,14 @@ public class TrainMain {
 
   private static void trainTest(Model model, float threshold, List<Match> matches)
       throws Exception {
-    final List<Pair<TestSummary, TestSummary>> results = new ArrayList<>();
+    final List<Pair<TrainSummary, TrainSummary>> results = new ArrayList<>();
     for (int i = 0; i < TOTAL_ROUND; i++) {
       Collections.shuffle(matches);
       List<Match> trainMatches = matches.subList(0, matches.size() - TEST_SET_COUNT);
       List<Match> testMatches = matches.subList(matches.size() - TEST_SET_COUNT, matches.size());
 
-      DataSet trainData = new DataSet(model, trainMatches, true);
-      DataSet testData = new DataSet(model, testMatches, false);
+      TrainInputs trainData = new TrainInputs(model, trainMatches, true);
+      TrainInputs testData = new TrainInputs(model, testMatches, false);
       // 训练
       model.train(trainData);
       results.add(doTest(model, testData, threshold));
@@ -51,8 +51,8 @@ public class TrainMain {
     display(model, threshold, results);
   }
 
-  private static Pair<TestSummary, TestSummary> doTest(Model model,
-      DataSet data, double threshold) throws Exception {
+  private static Pair<TrainSummary, TrainSummary> doTest(Model model,
+      TrainInputs data, double threshold) throws Exception {
     List<Estimation> estimations = model.estimate(data);
     int normalTotalCount = 0, highProbTotalCount = 0, normalPositiveHitCount = 0, normalProfit = 0,
         maxContinueHitCount = 0, maxContinueMissCount = 0;
@@ -116,25 +116,25 @@ public class TrainMain {
       }
     }
 
-    TestSummary normalResult =
-        new TestSummary(normalTotalCount, normalHitCount, normalPositiveHitCount,
+    TrainSummary normalResult =
+        new TrainSummary(normalTotalCount, normalHitCount, normalPositiveHitCount,
             normalProfit, maxContinueHitCount, maxContinueMissCount);
-    TestSummary highProbResult =
-        new TestSummary(highProbTotalCount, highProbHitCount, highPositiveProbHitCount,
+    TrainSummary highProbResult =
+        new TrainSummary(highProbTotalCount, highProbHitCount, highPositiveProbHitCount,
             highPorbProfit, highMaxContinueHitCount, highMaxContinueMissCount);
 
     return new Pair<>(normalResult, highProbResult);
   }
 
   private static void display(Model model, float threshold,
-      List<Pair<TestSummary, TestSummary>> results) {
+      List<Pair<TrainSummary, TrainSummary>> results) {
     int totalRound = results.size();
     float totalCount = 0, hitCount = 0, positiveHitCount = 0, profit = 0, continueHitCount = 0,
         continueMissCount = 0;
     float totalCountOfHigh = 0, hitCountOfHigh = 0, positiveHitCountOfHigh = 0, profitOfHigh = 0,
         highContinueHitCount = 0, highContinueMissCount = 0;
 
-    for (Pair<TestSummary, TestSummary> pair : results) {
+    for (Pair<TrainSummary, TrainSummary> pair : results) {
       totalCount += pair.first.mTotalCount;
       hitCount += pair.first.mHitCount;
       positiveHitCount += pair.first.mPositiveHitCount;
@@ -149,11 +149,11 @@ public class TrainMain {
       highContinueHitCount += pair.second.mMaxContinueHitCount;
       highContinueMissCount += pair.second.mMaxContinueMissCount;
     }
-    TestSummary normalResult = new TestSummary(totalCount / totalRound, hitCount / totalRound,
+    TrainSummary normalResult = new TrainSummary(totalCount / totalRound, hitCount / totalRound,
         positiveHitCount / totalRound, profit / totalRound,
         continueHitCount / totalRound, continueMissCount / totalRound);
-    TestSummary highProbResult =
-        new TestSummary(totalCountOfHigh / totalRound, hitCountOfHigh / totalRound,
+    TrainSummary highProbResult =
+        new TrainSummary(totalCountOfHigh / totalRound, hitCountOfHigh / totalRound,
             positiveHitCountOfHigh / totalRound, profitOfHigh / totalRound,
             highContinueHitCount / totalRound, highContinueMissCount / totalRound);
 

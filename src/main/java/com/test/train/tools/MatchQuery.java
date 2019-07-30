@@ -1,5 +1,8 @@
 package com.test.train.tools;
 
+import static com.test.tools.Utils.valueOfFloat;
+import static com.test.tools.Utils.valueOfInt;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,9 +11,8 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 
 import com.test.spider.tools.SpiderDB;
-import com.test.utils.Utils;
 
-public class QueryHelper {
+public class MatchQuery {
 
   public static final String SQL_BASE =
       "select * from football where 1=1 " +
@@ -38,7 +40,6 @@ public class QueryHelper {
 
           "AND hostBestShoot >=0 " +
           "AND customBestShoot >=0 " +
-
           "AND hostCornerScore >=0 " +
           "AND customCornerScore >=0 ";
 
@@ -114,113 +115,116 @@ public class QueryHelper {
    */
   private static Match buildMatch(Map<String, Object> databaseMap) {
     Match match = new Match();
-    match.mMatchID = Utils.valueOfInt(databaseMap.get("matchID"));
+    match.mMatchID = valueOfInt(databaseMap.get("matchID"));
     match.mMatchTime = Long.parseLong(String.valueOf(databaseMap.get("matchTime")));
     match.mHostNamePinyin = String.valueOf(databaseMap.get("hostNamePinyin"));
     match.mCustomNamePinyin = String.valueOf(databaseMap.get("customNamePinyin"));
     match.mHostName = String.valueOf(databaseMap.get("hostName"));
     match.mCustomName = String.valueOf(databaseMap.get("customName"));
     match.mLeague = String.valueOf(databaseMap.get("league"));
-    match.mHostScore = Utils.valueOfInt(databaseMap.get("hostScore"));
-    match.mCustomScore = Utils.valueOfInt(databaseMap.get("customScore"));
+    match.mHostScore = valueOfInt(databaseMap.get("hostScore"));
+    match.mCustomScore = valueOfInt(databaseMap.get("customScore"));
 
-    match.mHostLeagueRank = Utils.valueOfInt(databaseMap.get("hostLeagueRank"));
+    match.mHostLeagueRank = valueOfInt(databaseMap.get("hostLeagueRank"));
     match.mHostLeagueOnHostRank =
-        Utils.valueOfInt(databaseMap.get("hostLeagueOnHostRank"));
-    match.mCustomLeagueRank = Utils.valueOfInt(databaseMap.get("customLeagueRank"));
+        valueOfInt(databaseMap.get("hostLeagueOnHostRank"));
+    match.mCustomLeagueRank = valueOfInt(databaseMap.get("customLeagueRank"));
     match.mCustomLeagueOnCustomRank =
-        Utils.valueOfInt(databaseMap.get("customLeagueOnCustomRank"));
+        valueOfInt(databaseMap.get("customLeagueOnCustomRank"));
 
-    match.mOriginalScoreOdd = Utils.valueOfFloat(databaseMap.get("original_scoreOdd"));
+    match.mOriginalScoreOdd = valueOfFloat(databaseMap.get("original_scoreOdd"));
     match.mOriginalScoreOddOfVictory =
-        Utils.valueOfFloat(databaseMap.get("original_scoreOddOfVictory"));
+        valueOfFloat(databaseMap.get("original_scoreOddOfVictory"));
     match.mOriginalScoreOddOfDefeat =
-        Utils.valueOfFloat(databaseMap.get("original_scoreOddOfDefeat"));
+        valueOfFloat(databaseMap.get("original_scoreOddOfDefeat"));
 
-    match.mOpeningScoreOdd = Utils.valueOfFloat(databaseMap.get("opening_scoreOdd"));
+    match.mOpeningScoreOdd = valueOfFloat(databaseMap.get("opening_scoreOdd"));
     match.mOpeningScoreOddOfVictory =
-        Utils.valueOfFloat(databaseMap.get("opening_scoreOddOfVictory"));
+        valueOfFloat(databaseMap.get("opening_scoreOddOfVictory"));
     match.mOpeningScoreOddOfDefeat =
-        Utils.valueOfFloat(databaseMap.get("opening_scoreOddOfDefeat"));
+        valueOfFloat(databaseMap.get("opening_scoreOddOfDefeat"));
 
-    match.mMiddleScoreOdd = Utils.valueOfFloat(databaseMap.get("middle_scoreOdd"));
+    match.mMiddleScoreOdd = valueOfFloat(databaseMap.get("middle_scoreOdd"));
     match.mMiddleScoreOddOfVictory =
-        Utils.valueOfFloat(databaseMap.get("middle_scoreOddOfVictory"));
+        valueOfFloat(databaseMap.get("middle_scoreOddOfVictory"));
     match.mMiddleScoreOddOfDefeat =
-        Utils.valueOfFloat(databaseMap.get("middle_scoreOddOfDefeat"));
+        valueOfFloat(databaseMap.get("middle_scoreOddOfDefeat"));
 
     match.mOriginalVictoryOdd =
-        Utils.valueOfFloat(databaseMap.get("original_victoryOdd"));
-    match.mOriginalDrawOdd = Utils.valueOfFloat(databaseMap.get("original_drawOdd"));
-    match.mOriginalDefeatOdd = Utils.valueOfFloat(databaseMap.get("original_defeatOdd"));
-    match.mOpeningVictoryOdd = Utils.valueOfFloat(databaseMap.get("opening_victoryOdd"));
-    match.mOpeningDrawOdd = Utils.valueOfFloat(databaseMap.get("opening_drawOdd"));
-    match.mOpeningDefeatOdd = Utils.valueOfFloat(databaseMap.get("opening_defeatOdd"));
+        valueOfFloat(databaseMap.get("original_victoryOdd"));
+    match.mOriginalDrawOdd = valueOfFloat(databaseMap.get("original_drawOdd"));
+    match.mOriginalDefeatOdd = valueOfFloat(databaseMap.get("original_defeatOdd"));
+    match.mOpeningVictoryOdd = valueOfFloat(databaseMap.get("opening_victoryOdd"));
+    match.mOpeningDrawOdd = valueOfFloat(databaseMap.get("opening_drawOdd"));
+    match.mOpeningDefeatOdd = valueOfFloat(databaseMap.get("opening_defeatOdd"));
 
-    match.mOriginalBigOdd = Utils.valueOfFloat(databaseMap.get("original_bigOdd"));
+    match.mOriginalBigOdd = valueOfFloat(databaseMap.get("original_bigOdd"));
     match.mOriginalBigOddOfVictory =
-        Utils.valueOfFloat(databaseMap.get("original_bigOddOfVictory"));
+        valueOfFloat(databaseMap.get("original_bigOddOfVictory"));
     match.mOriginalBigOddOfDefeat =
-        Utils.valueOfFloat(databaseMap.get("original_bigOddOfDefeat"));
+        valueOfFloat(databaseMap.get("original_bigOddOfDefeat"));
 
-    match.mOpeningBigOdd = Utils.valueOfFloat(databaseMap.get("opening_bigOdd"));
+    match.mOpeningBigOdd = valueOfFloat(databaseMap.get("opening_bigOdd"));
     match.mOpeningBigOddOfVictory =
-        Utils.valueOfFloat(databaseMap.get("opening_bigOddOfVictory"));
+        valueOfFloat(databaseMap.get("opening_bigOddOfVictory"));
     match.mOpeningBigOddOfDefeat =
-        Utils.valueOfFloat(databaseMap.get("opening_bigOddOfDefeat"));
+        valueOfFloat(databaseMap.get("opening_bigOddOfDefeat"));
 
-    match.mMiddleBigOdd = Utils.valueOfFloat(databaseMap.get("middle_bigOdd"));
+    match.mMiddleBigOdd = valueOfFloat(databaseMap.get("middle_bigOdd"));
     match.mMiddleBigOddOfVictory =
-        Utils.valueOfFloat(databaseMap.get("middle_bigOddOfVictory"));
+        valueOfFloat(databaseMap.get("middle_bigOddOfVictory"));
     match.mMiddleBigOddOfDefeat =
-        Utils.valueOfFloat(databaseMap.get("middle_bigOddOfDefeat"));
+        valueOfFloat(databaseMap.get("middle_bigOddOfDefeat"));
 
-    match.mHostScoreMinOf70 = Utils.valueOfInt(databaseMap.get("min70_hostScore"));
-    match.mCustomScoreMinOf70 = Utils.valueOfInt(databaseMap.get("min70_customScore"));
-    match.mBigOddOfMin70 = Utils.valueOfFloat(databaseMap.get("min70_bigOdd"));
+    match.mHostScoreMinOf70 = valueOfInt(databaseMap.get("min70_hostScore"));
+    match.mCustomScoreMinOf70 = valueOfInt(databaseMap.get("min70_customScore"));
+    match.mBigOddOfMin70 = valueOfFloat(databaseMap.get("min70_bigOdd"));
     match.mBigOddOfVictoryOfMin70 =
-        Utils.valueOfFloat(databaseMap.get("min70_bigOddOfVictory"));
+        valueOfFloat(databaseMap.get("min70_bigOddOfVictory"));
     match.mBigOddOfDefeatOfMin70 =
-        Utils.valueOfFloat(databaseMap.get("min70_bigOddOfDefeat"));
-    match.mScoreOddOfMin70 = Utils.valueOfFloat(databaseMap.get("min70_scoreOdd"));
+        valueOfFloat(databaseMap.get("min70_bigOddOfDefeat"));
+    match.mScoreOddOfMin70 = valueOfFloat(databaseMap.get("min70_scoreOdd"));
     match.mScoreOddOfVictoryOfMin70 =
-        Utils.valueOfFloat(databaseMap.get("min70_scoreOddOfVictory"));
+        valueOfFloat(databaseMap.get("min70_scoreOddOfVictory"));
     match.mScoreOddOfDefeatOfMin70 =
-        Utils.valueOfFloat(databaseMap.get("min70_scoreOddOfDefeat"));
+        valueOfFloat(databaseMap.get("min70_scoreOddOfDefeat"));
 
-    match.mHostScoreMinOf25 = Utils.valueOfInt(databaseMap.get("min25_hostScore"));
-    match.mCustomScoreMinOf25 = Utils.valueOfInt(databaseMap.get("min25_customScore"));
-    match.mBigOddOfMin25 = Utils.valueOfFloat(databaseMap.get("min25_bigOdd"));
+    match.mHostScoreMinOf25 = valueOfInt(databaseMap.get("min25_hostScore"));
+    match.mCustomScoreMinOf25 = valueOfInt(databaseMap.get("min25_customScore"));
+    match.mBigOddOfMin25 = valueOfFloat(databaseMap.get("min25_bigOdd"));
     match.mBigOddOfVictoryOfMin25 =
-        Utils.valueOfFloat(databaseMap.get("min25_bigOddOfVictory"));
+        valueOfFloat(databaseMap.get("min25_bigOddOfVictory"));
     match.mBigOddOfDefeatOfMin25 =
-        Utils.valueOfFloat(databaseMap.get("min25_bigOddOfDefeat"));
+        valueOfFloat(databaseMap.get("min25_bigOddOfDefeat"));
 
-    match.mHostScoreOfMiddle = Utils.valueOfInt(databaseMap.get("middle_hostScore"));
-    match.mCustomScoreOfMiddle = Utils.valueOfInt(databaseMap.get("middle_customScore"));
-    match.mBigOddOfMiddle = Utils.valueOfFloat(databaseMap.get("middle_bigOdd"));
+    match.mHostScoreOfMiddle = valueOfInt(databaseMap.get("middle_hostScore"));
+    match.mCustomScoreOfMiddle = valueOfInt(databaseMap.get("middle_customScore"));
+    match.mBigOddOfMiddle = valueOfFloat(databaseMap.get("middle_bigOdd"));
     match.mBigOddOfVictoryOfMiddle =
-        Utils.valueOfFloat(databaseMap.get("middle_bigOddOfVictory"));
+        valueOfFloat(databaseMap.get("middle_bigOddOfVictory"));
 
-    match.mHostScoreOf3 = Utils.valueOfFloat(databaseMap.get("hostScoreOf3"));
-    match.mCustomScoreOf3 = Utils.valueOfFloat(databaseMap.get("customScoreOf3"));
+    match.mHostScoreOf3 = valueOfFloat(databaseMap.get("hostScoreOf3"));
+    match.mCustomScoreOf3 = valueOfFloat(databaseMap.get("customScoreOf3"));
 
-    match.mHostLossOf3 = Utils.valueOfFloat(databaseMap.get("hostLossOf3"));
-    match.mCustomLossOf3 = Utils.valueOfFloat(databaseMap.get("customLossOf3"));
+    match.mHostLossOf3 = valueOfFloat(databaseMap.get("hostLossOf3"));
+    match.mCustomLossOf3 = valueOfFloat(databaseMap.get("customLossOf3"));
 
-    match.mHostControlRateOf3 = Utils.valueOfFloat(databaseMap.get("hostControlRateOf3"));
-    match.mCustomControlRateOf3 = Utils.valueOfFloat(databaseMap.get("customControlRateOf3"));
+    match.mHostControlRateOf3 = valueOfFloat(databaseMap.get("hostControlRateOf3"));
+    match.mCustomControlRateOf3 = valueOfFloat(databaseMap.get("customControlRateOf3"));
 
-    match.mHostCornerOf3 = Utils.valueOfFloat(databaseMap.get("hostCornerOf3"));
-    match.mCustomCornerOf3 = Utils.valueOfFloat(databaseMap.get("customCornerOf3"));
+    match.mHostCornerOf3 = valueOfFloat(databaseMap.get("hostCornerOf3"));
+    match.mCustomCornerOf3 = valueOfFloat(databaseMap.get("customCornerOf3"));
 
-    match.mHostBestShoot = Utils.valueOfFloat(databaseMap.get("hostBestShoot"));
-    match.mCustomBestShoot = Utils.valueOfFloat(databaseMap.get("customBestShoot"));
+    match.mHostBestShoot = valueOfFloat(databaseMap.get("hostBestShoot"));
+    match.mCustomBestShoot = valueOfFloat(databaseMap.get("customBestShoot"));
 
-    match.mHostCornerScore = Utils.valueOfFloat(databaseMap.get("hostCornerScore"));
-    match.mCustomBestShoot = Utils.valueOfFloat(databaseMap.get("customCornerScore"));
-    match.mTimeMin = Utils.valueOfInt(databaseMap.get("timeMin"));
+    match.mHostCornerScore = valueOfFloat(databaseMap.get("hostCornerScore"));
+    match.mCustomBestShoot = valueOfFloat(databaseMap.get("customCornerScore"));
+    match.mTimeMin = valueOfInt(databaseMap.get("timeMin"));
 
+    match.mHistoryVictoryRateOfHost = valueOfFloat(databaseMap.get("historyVictoryRateOfHost"));
+    match.mRecentVictoryRateOfHost = valueOfFloat(databaseMap.get("recentVictoryRateOfHost"));
+    match.mRecentVictoryRateOfCustom = valueOfFloat(databaseMap.get("recentVictoryRateOfCustom"));
 
     return match;
   }

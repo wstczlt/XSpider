@@ -1,6 +1,7 @@
 package com.test.runtime;
 
-import static com.test.utils.Logger.EMPTY;
+import static com.test.tools.Logger.EMPTY;
+import static com.test.tools.Logger.SYSTEM;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,18 +18,18 @@ import org.apache.http.util.EntityUtils;
 
 import com.test.spider.SpiderConfig;
 import com.test.spider.tools.SpiderBuilder;
-import com.test.train.tools.DataSet;
+import com.test.train.tools.TrainInputs;
 import com.test.train.tools.Estimation;
 import com.test.train.tools.Match;
-import com.test.train.tools.QueryHelper;
-import com.test.utils.Utils;
+import com.test.train.tools.MatchQuery;
+import com.test.tools.Utils;
 
 import us.codecraft.webmagic.Spider;
 
 public class RtMain {
 
   private static final Rt[] RTS = new Rt[] {
-      new RtBallAt70()
+      new RtBallAt25(), new RtBallAt70()
   };
 
   public static void main(String[] args) throws Exception {
@@ -71,15 +72,15 @@ public class RtMain {
 
   private static void loopOne(Rt rt, List<Integer> matchIDs) throws Exception {
     final String querySql = rt.buildSql(matchIDs);
-    List<Match> matches = QueryHelper.doQuery(querySql).stream().filter(rt)
+    List<Match> matches = MatchQuery.doQuery(querySql).stream().filter(rt)
         .sorted((o1, o2) -> o1.mLeague.compareTo(o2.mLeague)).collect(Collectors.toList());
 
-    DataSet testData = new DataSet(rt.model(), matches, false);
-    testData.prepare(); // 写入数据
-    List<Estimation> results = rt.model().estimate(testData);
+    TrainInputs input = new TrainInputs(rt.model(), matches, false);
+    input.prepare(); // 写入数据
+    List<Estimation> results = rt.model().estimate(input);
 
     for (int i = 0; i < results.size(); i++) {
-      rt.display(testData.mMatches.get(i), results.get(i));
+      rt.display(input.mMatches.get(i), results.get(i));
     }
   }
 

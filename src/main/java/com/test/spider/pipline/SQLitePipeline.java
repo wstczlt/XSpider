@@ -14,7 +14,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
 
 import com.test.spider.SpiderConfig;
-import com.test.utils.Logger;
+import com.test.tools.Logger;
 
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;

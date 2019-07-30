@@ -1,22 +1,22 @@
 package com.test.train.model;
 
-import static com.test.train.tools.MappedValue.BIG_BALL_ODD_VICTORY_OF_MIN70_FIX;
-import static com.test.train.tools.MappedValue.BIG_BALL_OF_MIN70_VALUE;
-import static com.test.train.tools.MappedValue.ORIGINAL_BIG_ODD;
-import static com.test.train.tools.MappedValue.ORIGINAL_SCORE_ODD_ABS;
-import static com.test.train.tools.MappedValue.TOTAL_BEST_SHOOT_OF_MIN70;
-import static com.test.train.tools.MappedValue.TOTAL_SCORE_OF_MIN_70;
-import static com.test.train.tools.QueryHelper.SQL_BASE;
-import static com.test.train.tools.QueryHelper.SQL_MIN_70;
-import static com.test.train.tools.QueryHelper.SQL_ORDER;
+import static com.test.train.tools.Mappers.BIG_BALL_OF_MIN70_VALUE;
+import static com.test.train.tools.Mappers.ORIGINAL_BIG_ODD;
+import static com.test.train.tools.Mappers.ORIGINAL_SCORE_ODD_ABS;
+import static com.test.train.tools.MatchQuery.SQL_BASE;
+import static com.test.train.tools.MatchQuery.SQL_MIN_70;
+import static com.test.train.tools.MatchQuery.SQL_ORDER;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.test.train.tools.Estimation;
-import com.test.train.tools.MappedValue;
+import com.test.train.tools.Mappers;
 import com.test.train.tools.Match;
 
+/**
+ * 70分钟，再追一球的大球模型.
+ */
 public class BallAt70Model extends Model {
 
   @Override
@@ -30,43 +30,30 @@ public class BallAt70Model extends Model {
   }
 
   @Override
-  public List<MappedValue> valueOfX() {
-    List<MappedValue> trainKeys = new ArrayList<>();
-    // trainKeys.add(IS_CUP_MATCH);
-    // trainKeys.add(IS_YEJI_MATCH);
+  public List<Mappers.Mapper> mapOfX() {
+    List<Mappers.Mapper> trainKeys = new ArrayList<>();
     trainKeys.add(ORIGINAL_BIG_ODD); // 大小球初盘
     trainKeys.add(ORIGINAL_SCORE_ODD_ABS); // 让球初盘绝对值
-    trainKeys.add(BIG_BALL_ODD_VICTORY_OF_MIN70_FIX);// 70'大小球赔率
-    trainKeys.add(TOTAL_SCORE_OF_MIN_70); // 70'总进球
-    trainKeys.add(TOTAL_BEST_SHOOT_OF_MIN70); // 70' 总射门
-
-    // trainKeys.add(BIG_BALL_ODD_OF_MIN_70); // 大小球70'
-    // trainKeys.add(SCORE_ODD_OF_MIN_70); // 让球70'
-
-    // trainKeys.add(ORIGINAL_BIG_ODD_OF_VICTORY); // 初盘大小球赔率
-    // trainKeys.add(BIG_BALL_ODD_VICTORY_OF_MIN70);// 70'大小球赔率
-
-    // trainKeys.add(TrainKey.HOST_SCORE_OF_MIN_70);
-    // trainKeys.add(TrainKey.CUSTOM_SCORE_OF_MIN_70);
-
-    // trainKeys.add(BIG_BALL_ODD_DISTANCE_OF_MIN_70); // 70分钟大小球和初盘差距
-    // trainKeys.add(SCORE_ODD_DISTANCE_OF_MIN_70); // 70分钟让球和初盘差距
-    // trainKeys.add(BIG_BALL_ODD_DISTANCE_TO_MIDDLE_OF_MIN_70); // 70分钟大小球和中场差距
-    // trainKeys.add(SCORE_ODD_DISTANCE_TO_MIDDLE_OF_MIN_70); // 70分钟让球和中场差距
-
-    // trainKeys.add(RECENT_HOST_BALL_COUNT); // 主队近3场进球数
-    // trainKeys.add(RECENT_CUSTOM_BALL_COUNT); // 客队近3场进球数
-
-    // trainKeys.add(BIG_BALL_ODD_VICTORY_OF_MIN70); // 70分钟大球赔率
-    // trainKeys.add(BIG_BALL_ODD_DEFEAT_OF_MIN70); // 70分钟大球赔率
-    // trainKeys.add(TOTAL_BEST_SHOOT_OF_MIN70); // 70分钟场上射正次数
-    // trainKeys.add(TOTAL_CORNER_OF_MIN70); // 70分钟场上角球次数
+    // 大球赔率权值
+    trainKeys.add(match -> {
+      float delta = match.mBigOddOfMin70 - (int) match.mBigOddOfMin70; // 取整
+      if (delta == 0) { // 当前比分+1球的盘口
+        return match.mBigOddOfVictoryOfMin70 * 0.5f;
+      } else if (delta == 0.75) {
+        return match.mBigOddOfVictoryOfMin70 * 0.7f;
+      } else {
+        return match.mBigOddOfVictoryOfMin70;
+      }
+    });
+    // 70'大小球赔率
+    trainKeys.add(match -> match.mHostScoreMinOf70 + match.mCustomScoreMinOf70); // 70'总进球
+    trainKeys.add(match -> (match.mHostBestShoot + match.mCustomBestShoot) * 0.7f); // 70' 总射门
 
     return trainKeys;
   }
 
   @Override
-  public MappedValue valueOfY() {
+  public Mappers.Mapper mapOfY() {
     return BIG_BALL_OF_MIN70_VALUE;
   }
 
@@ -77,7 +64,7 @@ public class BallAt70Model extends Model {
 
   @Override
   public float calGain(Match match, Estimation est) {
-    float realValue = valueOfY().mMapper.cal(match);
+    float realValue = mapOfY().val(match);
     if (realValue != est.mValue) {
       return -1;
     }

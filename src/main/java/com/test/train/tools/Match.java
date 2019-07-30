@@ -87,4 +87,8 @@ public class Match {
   public float mHostCornerScore; // 主队角球数
   public float mCustomCornerScore; // 客队角球数
 
+  public float mHistoryVictoryRateOfHost; // 主队历史交锋让胜率
+  public float mRecentVictoryRateOfHost; // 主队近期让胜率;
+  public float mRecentVictoryRateOfCustom; // 客队近期让胜率
+
 }

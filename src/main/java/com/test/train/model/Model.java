@@ -1,19 +1,16 @@
 package com.test.train.model;
 
-import static com.test.train.tools.QueryHelper.SQL_BASE;
-import static com.test.train.tools.QueryHelper.SQL_ORDER;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-import com.test.train.tools.DataSet;
 import com.test.train.tools.Estimation;
-import com.test.train.tools.MappedValue;
+import com.test.train.tools.Mappers.Mapper;
 import com.test.train.tools.Match;
-import com.test.utils.Utils;
+import com.test.train.tools.TrainInputs;
+import com.test.tools.Utils;
 
 /**
  * 足球AI模型基类.
@@ -23,7 +20,7 @@ public abstract class Model {
   /**
    * 训练.
    */
-  public final void train(DataSet testData) throws Exception {
+  public final void train(TrainInputs testData) throws Exception {
     testData.prepare(); // 写入数据
     exec("python training/train.py " + nameOfX() + " " + nameOfY() + " " + nameOfModel());
   }
@@ -31,16 +28,14 @@ public abstract class Model {
   /**
    * 预测结果.
    */
-  public final List<Estimation> estimate(DataSet trainData) throws Exception {
+  public final List<Estimation> estimate(TrainInputs trainData) throws Exception {
     trainData.prepare(); // 写入数据
     String output = exec("python training/test.py " + nameOfTestX() + " " + nameOfModel());
 
     return readResult(output);
   }
 
-  public String buildQuerySql() {
-    return SQL_BASE + SQL_ORDER;
-  }
+  public abstract String buildQuerySql();
 
   public float bestThreshold() { // 大于等于此概率, 才会选择这场比赛
     return 0.50f;
@@ -59,12 +54,12 @@ public abstract class Model {
   /**
    * 需要训练的数据集X.
    */
-  public abstract List<MappedValue> valueOfX();
+  public abstract List<Mapper> mapOfX();
 
   /**
    * 训练集的结果集的Y.
    */
-  public abstract MappedValue valueOfY();
+  public abstract Mapper mapOfY();
 
   public final String nameOfX() {
     return "temp/" + name() + "_x" + ".dat";
