@@ -1,8 +1,8 @@
 package com.test.tools;
 
-public interface Logger {
+import com.moczul.ok2curl.logger.Loggable;
 
-  void log(String log);
+public interface Logger extends Loggable {
 
   Logger EMPTY = log -> {
     // empty

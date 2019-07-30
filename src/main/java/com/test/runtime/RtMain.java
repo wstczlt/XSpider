@@ -1,7 +1,6 @@
 package com.test.runtime;
 
 import static com.test.tools.Logger.EMPTY;
-import static com.test.tools.Logger.SYSTEM;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,11 +17,11 @@ import org.apache.http.util.EntityUtils;
 
 import com.test.spider.SpiderConfig;
 import com.test.spider.tools.SpiderBuilder;
-import com.test.train.tools.TrainInputs;
+import com.test.tools.Utils;
 import com.test.train.tools.Estimation;
 import com.test.train.tools.Match;
 import com.test.train.tools.MatchQuery;
-import com.test.tools.Utils;
+import com.test.train.tools.TrainInputs;
 
 import us.codecraft.webmagic.Spider;
 
@@ -99,7 +98,7 @@ public class RtMain {
       matchString = matchString.replace("sData[", "").replace("]", "");
       matchIds.add(Utils.valueOfInt(matchString));
     }
-    // System.out.println(matchIds);
+    System.out.println(matchIds);
     return matchIds;
   }
 
