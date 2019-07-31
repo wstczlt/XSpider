@@ -2,6 +2,11 @@ package com.test.dragon.job;
 
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.test.dragon.tools.Job;
+
 import okhttp3.Request;
 
 // 获取场上基本数据情况
@@ -30,7 +35,51 @@ public class MatchDataJob extends Job {
   }
 
   @Override
-  public void handleResponse(String text, Map<String, String> items) {
+  public void handleResponse(String text, Map<String, String> items) throws Exception {
+    JSONObject json = JSON.parseObject(text);
+    if (json == null) {
+      items.put(SKIP, "true");
+      return;
+    }
+    JSONArray listItemsTech = (JSONArray) json.get("listItemsTech");
+    for (int i = 0; i < listItemsTech.size(); i++) {
+      JSONObject item = listItemsTech.getJSONObject(i);
+      if ("角球".equals(item.getString("Name"))) {
+        items.put(HOST_CORNER_SCORE, item.getString("HomeData"));
+        items.put(CUSTOM_CORNER_SCORE, item.getString("AwayData"));
+      }
+      if ("半场角球".equals(item.getString("Name"))) {
+        items.put(MIDDLE_HOST_CORNER_SCORE, item.getString("HomeData"));
+        items.put(MIDDLE_CUSTOM_CORNER_SCORE, item.getString("AwayData"));
+      }
+      if ("射正".equals(item.getString("Name"))) {
+        items.put(HOST_BEST_SHOOT, item.getString("HomeData"));
+        items.put(CUSTOM_BEST_SHOOT, item.getString("AwayData"));
+      }
+      if ("黄牌".equals(item.getString("Name"))) {
+        items.put(HOST_YELLOW_CARD, item.getString("HomeData"));
+        items.put(CUSTOM_YELLOW_CARD, item.getString("AwayData"));
+      }
+      if ("控球率".equals(item.getString("Name"))) {
+        items.put(HOST_CONTROL_RATE, item.getString("HomeData").replace("%", ""));
+        items.put(CUSTOM_CONTROL_RATE, item.getString("AwayData").replace("%", ""));
+      }
+    }
+
+    JSONObject JTL = json.getJSONObject("JTL");
+    if (JTL != null) {
+      items.put(HOST_SCORE_OF_3, JTL.getString("Goals_h3"));
+      items.put(CUSTOM_SCORE_OF_3, JTL.getString("Goals_g3"));
+      items.put(HOST_LOSS_OF_3, JTL.getString("LossGoals_h3"));
+      items.put(CUSTOM_LOSS_OF_3, JTL.getString("LossGoals_g3"));
+      items.put(HOST_CORNER_OF_3, JTL.getString("Corner_h3"));
+      items.put(CUSTOM_CORNER_OF_3, JTL.getString("Corner_g3"));
+      items.put(HOST_YELLOW_CARD_OF_3, JTL.getString("Yellow_h3"));
+      items.put(CUSTOM_YELLOW_CARD_OF_3, JTL.getString("Yellow_g3"));
+      items.put(HOST_CONTROL_RATE_OF_3, JTL.getString("ControlPrecent_h3"));
+      items.put(CUSTOM_CONTROL_RATE_OF_3, JTL.getString("ControlPrecent_g3"));
+    }
+
     // System.out.println(text);
   }
 }

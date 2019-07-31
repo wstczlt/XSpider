@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class StaticMatchSupplier implements Supplier<List<Integer>> {
+public class StaticSupplier implements Supplier<List<Integer>> {
 
   private final List<Integer> mMatchIDs;
 
-  public StaticMatchSupplier(int matchStartID, int matchEndID) {
+  public StaticSupplier(int matchStartID, int matchEndID) {
     mMatchIDs = makeList(matchStartID, matchEndID);
   }
 

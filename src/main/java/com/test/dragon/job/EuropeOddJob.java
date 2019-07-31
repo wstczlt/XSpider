@@ -2,6 +2,11 @@ package com.test.dragon.job;
 
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.test.dragon.tools.Job;
+import com.test.dragon.tools.OddItem;
+
 import okhttp3.Request;
 
 // 全场欧指
@@ -26,6 +31,14 @@ public class EuropeOddJob extends Job {
 
   @Override
   public void handleResponse(String text, Map<String, String> items) {
-//    System.out.println(text);
+    JSONArray json = JSON.parseArray(text);
+    if (json == null) {
+      items.put(SKIP, "true");
+      return;
+    }
+    OddItem item = new OddItem(OddItem.OddType.EUROPE, json);
+    item.fill(items);
+
+    // System.out.println(text);
   }
 }

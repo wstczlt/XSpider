@@ -12,17 +12,17 @@ import okhttp3.OkHttpClient;
 
 public class Dragon {
 
-  private final long mSleep;
+  private final long mMinRunTime;
   private final OkHttpClient mClient;
   private final ExecutorService mPool;
   private final DragonProcessor mDragonProcessor;
   private final Supplier<List<Integer>> mMatchSupplier;
 
-  public Dragon(OkHttpClient client, ExecutorService pool, long sleep,
+  public Dragon(OkHttpClient client, ExecutorService pool, long minRunTime,
       DragonProcessor processor, Supplier<List<Integer>> matchSupplier) {
     mClient = client;
     mPool = pool;
-    mSleep = sleep;
+    mMinRunTime = minRunTime;
     mDragonProcessor = processor;
     mMatchSupplier = matchSupplier;
   }
@@ -31,7 +31,7 @@ public class Dragon {
     final long startTime = System.currentTimeMillis();
     final List<Integer> matchIDs = mMatchSupplier.get();
     for (int matchID : matchIDs) {
-      mPool.submit(new DragonTask(matchID, mClient, mDragonProcessor, mSleep));
+      mPool.submit(new DragonTask(matchID, mClient, mDragonProcessor, mMinRunTime));
     }
 
     mPool.shutdown();

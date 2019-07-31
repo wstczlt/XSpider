@@ -1,9 +1,10 @@
 package com.test.dragon.job;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import com.github.promeg.pinyinhelper.Pinyin;
+import com.test.dragon.tools.DragonUtils;
+import com.test.dragon.tools.Job;
 
 import okhttp3.Request;
 
@@ -35,7 +36,7 @@ public class MatchBasicJob extends Job {
   }
 
   @Override
-  public void handleResponse(String text, Map<String, String> items) {
+  public void handleResponse(String text, Map<String, String> items) throws Exception {
     String[] attrs = text.split("\\^");
     if (attrs.length != 31) {
       items.put(SKIP, String.valueOf(true));
@@ -46,15 +47,20 @@ public class MatchBasicJob extends Job {
     items.put(HOST_NAME_PINYIN, Pinyin.toPinyin(attrs[0], ""));
     items.put(CUSTOM_NAME, attrs[1]);
     items.put(CUSTOM_NAME_PINYIN, Pinyin.toPinyin(attrs[1], ""));
-    items.put(MATCH_TIME, attrs[5]);
+    items.put(MATCH_TIME, "" + DragonUtils.valueOfDate(attrs[5]));
     items.put(LEAGUE, attrs[15]);
     items.put(HOST_LEAGUE_RANK, attrs[6]);
     items.put(CUSTOM_LEAGUE_RANK, attrs[7]);
     items.put(HOST_SCORE, attrs[10]);
     items.put(CUSTOM_SCORE, attrs[11]);
+    items.put(TEMPERATURE, attrs[19]);
+    items.put(WEATHER, attrs[20]);
+    items.put(MIDDLE_HOST_SCORE, attrs[26]);
+    items.put(MIDDLE_CUSTOM_SCORE, attrs[27]);
 
 
-    System.out.println(Arrays.toString(attrs));
+    // System.out.println(items);
+    // System.out.println(Arrays.toString(attrs));
 
 
     // System.out.println(attrs[0]); // 主队
@@ -65,4 +71,6 @@ public class MatchBasicJob extends Job {
     // System.out.println(attrs[attrs.length - 11]); // 天气
     // System.out.println(attrs.length);
   }
+
+
 }

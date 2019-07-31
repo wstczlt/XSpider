@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.test.dragon.job.BallOddJob;
+import com.test.dragon.job.BeforeOddJob;
 import com.test.dragon.job.EuropeOddJob;
-import com.test.dragon.job.HalfBallOddJob;
-import com.test.dragon.job.HalfScoreOddJob;
-import com.test.dragon.job.Job;
 import com.test.dragon.job.MatchBasicJob;
 import com.test.dragon.job.MatchDataJob;
 import com.test.dragon.job.ScoreOddJob;
@@ -23,23 +21,21 @@ import okhttp3.Response;
  */
 public class DragonTask implements Runnable {
 
-  private final int mMatchID;
   private final OkHttpClient mClient;
   private final DragonProcessor mProcessor;
-  private final long mSleep;
-
+  private final long mMinRunTime;
   private final List<Job> mJobs;
 
-  public DragonTask(int matchID, OkHttpClient client, DragonProcessor processor, long sleep) {
-    mMatchID = matchID;
+  public DragonTask(int matchID, OkHttpClient client, DragonProcessor processor, long minRunTime) {
     mClient = client;
     mProcessor = processor;
-    mSleep = sleep;
+    mMinRunTime = minRunTime;
     mJobs = buildJobs(matchID);
   }
 
   @Override
   public void run() {
+    final long timeStart = System.currentTimeMillis();
     final Map<String, String> items = new HashMap<>();
     for (Job job : mJobs) {
       executeJob(items, job);
@@ -50,12 +46,15 @@ public class DragonTask implements Runnable {
     }
 
     if (!isSkip(items)) { // 如果被标记为Skip则忽略不处理
-      mProcessor.process(mMatchID, items);
+      mProcessor.process(items);
     }
 
-    if (mSleep > 0) { // 每轮都暂停一下, 避免刷爆接口
+    long timeUsed = System.currentTimeMillis() - timeStart;
+    long sleep = mMinRunTime - timeUsed;
+
+    if (sleep > 0) { // 每轮都暂停一下, 避免刷爆接口
       try {
-        Thread.sleep(mSleep);
+        Thread.sleep(sleep);
       } catch (Exception ignore) {}
     }
   }
@@ -88,11 +87,13 @@ public class DragonTask implements Runnable {
     List<Job> jobs = new ArrayList<>();
     jobs.add(new MatchBasicJob(matchID));
     jobs.add(new MatchDataJob(matchID));
+    jobs.add(new BeforeOddJob(matchID));
     jobs.add(new ScoreOddJob(matchID));
     jobs.add(new BallOddJob(matchID));
-    jobs.add(new HalfScoreOddJob(matchID));
-    jobs.add(new HalfBallOddJob(matchID));
     jobs.add(new EuropeOddJob(matchID));
+    // jobs.add(new HalfScoreOddJob(matchID));
+    // jobs.add(new HalfBallOddJob(matchID));
+
 
     return jobs;
   }

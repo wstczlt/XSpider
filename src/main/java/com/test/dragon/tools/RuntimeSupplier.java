@@ -13,12 +13,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class RuntimeMatchSupplier implements Supplier<List<Integer>> {
+public class RuntimeSupplier implements Supplier<List<Integer>> {
 
   private final OkHttpClient mClient;
   private List<Integer> mMatchIDs;
 
-  public RuntimeMatchSupplier(OkHttpClient client) {
+  public RuntimeSupplier(OkHttpClient client) {
     mClient = client;
   }
 

@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class DragonProxySelector extends ProxySelector {
+public class DragonProxy extends ProxySelector {
 
   private static final String PROXY_STRING = "";
 
   private final List<String> mProxySet = new ArrayList<>();
   private final Map<String, String> mUsedProxy = new HashMap<>();
 
-  public DragonProxySelector() {
+  public DragonProxy() {
     String[] proxyArray = PROXY_STRING.split("\\s");
     mProxySet.addAll(Arrays.asList(proxyArray));
   }

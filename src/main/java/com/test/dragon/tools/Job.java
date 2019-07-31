@@ -1,6 +1,4 @@
-package com.test.dragon.job;
-
-import com.test.dragon.tools.Keys;
+package com.test.dragon.tools;
 
 import java.util.Map;
 
@@ -16,5 +14,5 @@ public abstract class Job implements Keys {
 
   public abstract Request.Builder newRequestBuilder();
 
-  public abstract void handleResponse(String text,  Map<String, String> items);
+  public abstract void handleResponse(String text, Map<String, String> items) throws Exception;
 }

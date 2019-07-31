@@ -13,193 +13,74 @@ public interface Keys {
   String MATCH_TIME = "matchTime";
   String HOST_LEAGUE_RANK = "hostLeagueRank";
   String CUSTOM_LEAGUE_RANK = "customLeagueRank";
+  String TEMPERATURE = "temperature";
+  String WEATHER = "weather";
+
   String HOST_SCORE = "hostScore";
   String CUSTOM_SCORE = "customScore";
+  String MIDDLE_HOST_SCORE = "middle_hostScore";
+  String MIDDLE_CUSTOM_SCORE = "middle_customScore";
+
+  String HOST_CORNER_SCORE = "hostCornerScore";
+  String CUSTOM_CORNER_SCORE = "customCornerScore";
+  String MIDDLE_HOST_CORNER_SCORE = "middle_hostCornerScore";
+  String MIDDLE_CUSTOM_CORNER_SCORE = "middle_customCornerScore";
+
+  String HOST_BEST_SHOOT = "hostBestShoot";
+  String CUSTOM_BEST_SHOOT = "customBestShoot";
+  String HOST_YELLOW_CARD = "hostYellowCard";
+  String CUSTOM_YELLOW_CARD = "customYellowCard";
+
+  String HOST_CONTROL_RATE = "hostControlRate";
+  String CUSTOM_CONTROL_RATE = "customControlRate";
+
+  String HOST_SCORE_OF_3 = "hostScoreOf3";
+  String CUSTOM_SCORE_OF_3 = "customScoreOf3";
+  String HOST_LOSS_OF_3 = "hostLossOf3";
+  String CUSTOM_LOSS_OF_3 = "customLossOf3";
+  String HOST_CORNER_OF_3 = "hostCornerOf3";
+  String CUSTOM_CORNER_OF_3 = "customCornerOf3";
+  String HOST_YELLOW_CARD_OF_3 = "hostYellowCardOf3";
+  String CUSTOM_YELLOW_CARD_OF_3 = "customYellowCardOf3";
+  String HOST_CONTROL_RATE_OF_3 = "hostControlRateOf3";
+  String CUSTOM_CONTROL_RATE_OF_3 = "customControlRateOf3";
+
+  String BF_LR_HOST = "bf_lr_home"; // 主队必发冷热
+  String BF_LR_DREW = "bf_lr_drew"; // 和局必发冷热
+  String BF_LR_CUSTOM = "bf_lr_custom"; // 客队必发冷热
+
+  String TIME_MIN = "timeMin";
+
+  String ORIGINAL_VICTORY_ODD = "original_victoryOdd";
+  String ORIGINAL_DEFEAT_ODD = "original_defeatOdd";
+  String ORIGINAL_DRAW_ODD = "original_drawOdd";
+  String OPENING_VICTORY_ODD = "opening_victoryOdd";
+  String OPENING_DEFEAT_ODD = "opening_defeatOdd";
+  String OPENING_DRAW_ODD = "opening_drawOdd";
+
+  String ORIGINAL_BIG_ODD = "original_bigOdd";
+  String ORIGINAL_BIG_ODD_OF_VICTORY = "original_bigOddOfVictory";
+  String ORIGINAL_BIG_ODD_OF_DEFEAT = "original_bigOddOfDefeat";
+  String OPENING_BIG_ODD = "opening_bigOdd";
+  String OPENING_BIG_ODD_OF_VICTORY = "opening_bigOddOfVictory";
+  String OPENING_BIG_ODD_OF_DEFEAT = "opening_bigOddOfDefeat";
+
+  String ORIGINAL_SCORE_ODD = "original_scoreOdd";
+  String ORIGINAL_SCORE_ODD_OF_VICTORY = "original_scoreOddOfVictory";
+  String ORIGINAL_SCORE_ODD_OF_DEFEAT = "original_scoreOddOfDefeat";
+
+  String OPENING_SCORE_ODD = "opening_scoreOdd";
+  String OPENING_SCORE_ODD_OF_VICTORY = "opening_scoreOddOfVictory";
+  String OPENING_SCORE_ODD_OF_DEFEAT = "opening_scoreOddOfDefeat";
+
+  // companyID : 105 = 竞彩, 1 = 澳门, 3 = Crown, 8 = Bet365
+  String ODD_COMPANY_FIRST_VICTORY_ = "odd_company_first_victory_";
+  String ODD_COMPANY_FIRST_DREW_ = "odd_company_first_drew_";
+  String ODD_COMPANY_FIRST_DEFEAT_ = "odd_company_first_defeat_";
+
+  String ODD_COMPANY_OPEN_VICTORY_ = "odd_company_open_victory_";
+  String ODD_COMPANY_OPEN_DREW_ = "odd_company_open_drew_";
+  String ODD_COMPANY_OPEN_DEFEAT_ = "odd_company_open_defeat_";
 
 
-  // customAttach
-  // customBestAttack
-  // customBestShoot
-  // customControlRate
-  // customControlRateOf10
-  // customControlRateOf3
-  // customCornerOf10
-  // customCornerOf3
-  // customCornerScore
-  // customLeagueOnCustomRank
-  // customLeagueOnCustomRateOfVictory
-
-  // customLeagueRateOfVictory
-  // customLossOf10
-  // customLossOf3
-
-  // customRedCard
-  // customScore
-  // customScoreOf10
-  // customScoreOf3
-  // customShoot
-  // customYellowCard
-  // customYellowCardOf10
-  // customYellowCardOf3
-  // hostAttack
-  // hostBestAttack
-  // hostBestShoot
-  // hostControlRate
-  // hostControlRateOf10
-  // hostControlRateOf3
-  // hostCornerOf10
-  // hostCornerOf3
-  // hostCornerScore
-  // hostLeagueOnHostRank
-  // hostLeagueOnHostRateOfVictory
-
-  // hostLeagueRateOfVictory
-  // hostLossOf10
-  // hostLossOf3
-
-  // hostRedCard
-  // hostScore
-  // hostScoreOf10
-  // hostScoreOf3
-  // hostShoot
-  // hostYellowCard
-  // hostYellowCardOf10
-  // hostYellowCardOf3
-
-  // middle_bigOdd
-  // middle_bigOddOfDefeat
-  // middle_bigOddOfVictory
-  // middle_cornerOdd
-  // middle_cornerOddOfDefeat
-  // middle_cornerOddOfVictory
-  // middle_customCornerScore
-  // middle_customScore
-  // middle_defeatOdd
-  // middle_drawOdd
-  // middle_hostCornerScore
-  // middle_hostScore
-  // middle_scoreOdd
-  // middle_scoreOddOfDefeat
-  // middle_scoreOddOfVictory
-  // middle_victoryOdd
-  // min25_bigOdd
-  // min25_bigOddOfDefeat
-  // min25_bigOddOfVictory
-  // min25_cornerOdd
-  // min25_cornerOddOfDefeat
-  // min25_cornerOddOfVictory
-  // min25_customCornerScore
-  // min25_customScore
-  // min25_defeatOdd
-  // min25_drawOdd
-  // min25_hostCornerScore
-  // min25_hostScore
-  // min25_scoreOdd
-  // min25_scoreOddOfDefeat
-  // min25_scoreOddOfVictory
-  // min25_victoryOdd
-  // min30_bigOdd
-  // min30_bigOddOfDefeat
-  // min30_bigOddOfVictory
-  // min30_cornerOdd
-  // min30_cornerOddOfDefeat
-  // min30_cornerOddOfVictory
-  // min30_customCornerScore
-  // min30_customScore
-  // min30_defeatOdd
-  // min30_drawOdd
-  // min30_hostCornerScore
-  // min30_hostScore
-  // min30_scoreOdd
-  // min30_scoreOddOfDefeat
-  // min30_scoreOddOfVictory
-  // min30_victoryOdd
-  // min65_bigOdd
-  // min65_bigOddOfDefeat
-  // min65_bigOddOfVictory
-  // min65_cornerOdd
-  // min65_cornerOddOfDefeat
-  // min65_cornerOddOfVictory
-  // min65_customCornerScore
-  // min65_customScore
-  // min65_defeatOdd
-  // min65_drawOdd
-  // min65_hostCornerScore
-  // min65_hostScore
-  // min65_scoreOdd
-  // min65_scoreOddOfDefeat
-  // min65_scoreOddOfVictory
-  // min65_victoryOdd
-  // min70_bigOdd
-  // min70_bigOddOfDefeat
-  // min70_bigOddOfVictory
-  // min70_cornerOdd
-  // min70_cornerOddOfDefeat
-  // min70_cornerOddOfVictory
-  // min70_customCornerScore
-  // min70_customScore
-  // min70_defeatOdd
-  // min70_drawOdd
-  // min70_hostCornerScore
-  // min70_hostScore
-  // min70_scoreOdd
-  // min70_scoreOddOfDefeat
-  // min70_scoreOddOfVictory
-  // min70_victoryOdd
-  // min75_bigOdd
-  // min75_bigOddOfDefeat
-  // min75_bigOddOfVictory
-  // min75_cornerOdd
-  // min75_cornerOddOfDefeat
-  // min75_cornerOddOfVictory
-  // min75_customCornerScore
-  // min75_customScore
-  // min75_defeatOdd
-  // min75_drawOdd
-  // min75_hostCornerScore
-  // min75_hostScore
-  // min75_scoreOdd
-  // min75_scoreOddOfDefeat
-  // min75_scoreOddOfVictory
-  // min75_victoryOdd
-  // opening_bigOdd
-  // opening_bigOddOfDefeat
-  // opening_bigOddOfVictory
-  // opening_cornerOdd
-  // opening_cornerOddOfDefeat
-  // opening_cornerOddOfVictory
-  // opening_customCornerScore
-  // opening_customScore
-  // opening_defeatOdd
-  // opening_drawOdd
-  // opening_hostCornerScore
-  // opening_hostScore
-  // opening_scoreOdd
-  // opening_scoreOddOfDefeat
-  // opening_scoreOddOfVictory
-  // opening_victoryOdd
-  // original_bigOdd
-  // original_bigOddOfDefeat
-  // original_bigOddOfVictory
-  // original_cornerOdd
-  // original_cornerOddOfDefeat
-  // original_cornerOddOfVictory
-  // original_customCornerScore
-  // original_customScore
-  // original_defeatOdd
-  // original_drawOdd
-  // original_hostCornerScore
-  // original_hostScore
-  // original_scoreOdd
-  // original_scoreOddOfDefeat
-  // original_scoreOddOfVictory
-  // original_victoryOdd
-  // timeMin
-  // weather
-  // historyVictoryRateOfHost
-  // recentVictoryRateOfHost
-  // recentVictoryRateOfCustom
-  // recentVictoryRateOfHost
-  // recentVictoryRateOfCustom
-  // recentVictoryRateOfCustom
 }
