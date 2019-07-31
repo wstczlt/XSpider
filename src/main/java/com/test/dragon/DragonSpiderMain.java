@@ -10,6 +10,7 @@ import com.test.dragon.tools.DragonProcessor;
 import com.test.dragon.tools.DragonProxySelector;
 import com.test.dragon.tools.RuntimeMatchSupplier;
 import com.test.dragon.tools.SQLiteProcessor;
+import com.test.dragon.tools.StaticMatchSupplier;
 
 import okhttp3.OkHttpClient;
 
@@ -35,7 +36,7 @@ public class DragonSpiderMain {
     // new StaticMatchSupplier(MATCH_START_ID, MATCH_END_ID);
     final Supplier<List<Integer>> matchSupplier = new RuntimeMatchSupplier(httpClient);
 
-    Dragon dragon = new Dragon(httpClient, pool, DEFAULT_SLEEP_MILLS, processor, matchSupplier);
+    Dragon dragon = new Dragon(httpClient, pool, DEFAULT_SLEEP_MILLS, processor, new StaticMatchSupplier(1507467, 1507478));
     dragon.start();
   }
 

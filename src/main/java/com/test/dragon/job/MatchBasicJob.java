@@ -1,6 +1,9 @@
 package com.test.dragon.job;
 
+import java.util.Arrays;
 import java.util.Map;
+
+import com.github.promeg.pinyinhelper.Pinyin;
 
 import okhttp3.Request;
 
@@ -29,12 +32,30 @@ public class MatchBasicJob extends Job {
         "ran=" + System.currentTimeMillis() * 1000);
 
     return new Request.Builder().url(newUrl);
-
   }
 
   @Override
   public void handleResponse(String text, Map<String, String> items) {
     String[] attrs = text.split("\\^");
+    if (attrs.length != 31) {
+      items.put(SKIP, String.valueOf(true));
+      return;
+    }
+    items.put(MATCH_ID, String.valueOf(mMatchID));
+    items.put(HOST_NAME, attrs[0]);
+    items.put(HOST_NAME_PINYIN, Pinyin.toPinyin(attrs[0], ""));
+    items.put(CUSTOM_NAME, attrs[1]);
+    items.put(CUSTOM_NAME_PINYIN, Pinyin.toPinyin(attrs[1], ""));
+    items.put(MATCH_TIME, attrs[5]);
+    items.put(LEAGUE, attrs[15]);
+    items.put(HOST_LEAGUE_RANK, attrs[6]);
+    items.put(CUSTOM_LEAGUE_RANK, attrs[7]);
+    items.put(HOST_SCORE, attrs[10]);
+    items.put(CUSTOM_SCORE, attrs[11]);
+
+
+    System.out.println(Arrays.toString(attrs));
+
 
     // System.out.println(attrs[0]); // 主队
     // System.out.println(attrs[1]); // 客队
@@ -42,6 +63,6 @@ public class MatchBasicJob extends Job {
     // System.out.println(attrs[15]); // 联赛名称
     // System.out.println(attrs[attrs.length - 12]); // 温度
     // System.out.println(attrs[attrs.length - 11]); // 天气
-    // System.out.println(Arrays.asList(attrs));
+    // System.out.println(attrs.length);
   }
 }

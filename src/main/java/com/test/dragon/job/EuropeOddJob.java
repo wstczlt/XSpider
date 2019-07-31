@@ -26,6 +26,6 @@ public class EuropeOddJob extends Job {
 
   @Override
   public void handleResponse(String text, Map<String, String> items) {
-    System.out.println(text);
+//    System.out.println(text);
   }
 }

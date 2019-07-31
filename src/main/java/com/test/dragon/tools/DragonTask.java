@@ -61,7 +61,7 @@ public class DragonTask implements Runnable {
   }
 
   private boolean isSkip(Map<String, String> items) {
-    return items.containsKey(Job.KEY_SKIP);
+    return items.containsKey(Keys.SKIP);
   }
 
   private void executeJob(Map<String, String> items, Job job) {
