@@ -13,5 +13,4 @@
 /captures
 .externalNativeBuild
 temp/*.dat
-sqlite/*.db
 sqlite/*.zip
