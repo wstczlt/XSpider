@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
+import com.test.tools.Utils;
 import com.test.train.tools.Estimation;
 import com.test.train.tools.Mappers.Mapper;
 import com.test.train.tools.Match;
 import com.test.train.tools.TrainInputs;
-import com.test.tools.Utils;
 
 /**
  * 足球AI模型基类.

@@ -1,15 +1,20 @@
-package com.test.dragon.tools;
+package com.test.dragon.kernel;
 
 import java.util.Map;
 
+import com.test.dragon.tools.Keys;
+import com.test.tools.Logger;
+
 import okhttp3.Request;
 
-public abstract class Job implements Keys {
+public abstract class DragonJob implements Keys {
 
   public final int mMatchID;
+  public final Logger mLogger;
 
-  public Job(int matchID) {
+  public DragonJob(int matchID, Logger logger) {
     mMatchID = matchID;
+    mLogger = logger;
   }
 
   public abstract Request.Builder newRequestBuilder();

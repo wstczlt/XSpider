@@ -1,10 +1,13 @@
 package com.test.dragon.job;
 
+import static com.test.dragon.tools.DragonUtils.setSkip;
+
 import java.util.Map;
 
 import com.github.promeg.pinyinhelper.Pinyin;
+import com.test.dragon.kernel.DragonJob;
 import com.test.dragon.tools.DragonUtils;
-import com.test.dragon.tools.Job;
+import com.test.tools.Logger;
 
 import okhttp3.Request;
 
@@ -12,7 +15,7 @@ import okhttp3.Request;
 // curl -H 'Host: txt.win007.com' -H 'User-Agent: okhttp/3.10.0' --compressed
 // 'http://txt.win007.com//phone/txt/analysisheader/cn/1/66/1662676.txt?androidfrom=nowscore&fromkind=1&version=4.80&app_token=sOA9HfVbPo1ywNVYl1Hi9wypKCjh63cf7FXrAekSYYCzl2OzgGZulNovlmS2%2F5WSKkoi6v9DpusnDmFD379Pv%2F40uIfkowNb7vhleIPHPrmHzGv5gUg6zf%2F252R0BBIvMbrlYIc%2B4hI7Oj8hhMKW%2BZNW8lpH8N8PcPTE5XWQc5M%3D&ran=1564488834189000'
 
-public class MatchBasicJob extends Job {
+public class MatchBasicJob extends DragonJob {
 
   private static final String REQUEST_URL_PREFIX =
       "http://txt.win007.com//phone/txt/analysisheader/cn/%s/%s/%s.txt?";
@@ -20,8 +23,8 @@ public class MatchBasicJob extends Job {
   private static final String REQUEST_URL_POSTFIX =
       "androidfrom=nowscore&fromkind=1&version=4.80&app_token=sOA9HfVbPo1ywNVYl1Hi9wypKCjh63cf7FXrAekSYYCzl2OzgGZulNovlmS2%2F5WSKkoi6v9DpusnDmFD379Pv%2F40uIfkowNb7vhleIPHPrmHzGv5gUg6zf%2F252R0BBIvMbrlYIc%2B4hI7Oj8hhMKW%2BZNW8lpH8N8PcPTE5XWQc5M%3D&ran=1564488834189000";
 
-  public MatchBasicJob(int matchID) {
-    super(matchID);
+  public MatchBasicJob(int matchID, Logger logger) {
+    super(matchID, logger);
   }
 
   @Override
@@ -39,7 +42,7 @@ public class MatchBasicJob extends Job {
   public void handleResponse(String text, Map<String, String> items) throws Exception {
     String[] attrs = text.split("\\^");
     if (attrs.length != 31) {
-      items.put(SKIP, String.valueOf(true));
+      setSkip(items);
       return;
     }
     items.put(MATCH_ID, String.valueOf(mMatchID));
@@ -58,18 +61,13 @@ public class MatchBasicJob extends Job {
     items.put(MIDDLE_HOST_SCORE, attrs[26]);
     items.put(MIDDLE_CUSTOM_SCORE, attrs[27]);
 
+    mLogger.log(
+        String.format("Found Match: %d, %s VS %s, %s", mMatchID, attrs[0], attrs[1], attrs[5]));
 
+
+    // System.out.println(attrs.length);
     // System.out.println(items);
     // System.out.println(Arrays.toString(attrs));
-
-
-    // System.out.println(attrs[0]); // 主队
-    // System.out.println(attrs[1]); // 客队
-    // System.out.println(attrs[5]); // 比赛时间
-    // System.out.println(attrs[15]); // 联赛名称
-    // System.out.println(attrs[attrs.length - 12]); // 温度
-    // System.out.println(attrs[attrs.length - 11]); // 天气
-    // System.out.println(attrs.length);
   }
 
 

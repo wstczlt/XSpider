@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.test.tools.Pair;
 import com.test.train.model.Model;
 import com.test.train.model.OddOriginalModel;
 import com.test.train.tools.Estimation;
@@ -11,7 +12,6 @@ import com.test.train.tools.Match;
 import com.test.train.tools.MatchQuery;
 import com.test.train.tools.TrainInputs;
 import com.test.train.tools.TrainSummary;
-import com.test.tools.Pair;
 
 public class TrainMain {
 

@@ -1,5 +1,7 @@
-package com.test.dragon.tools;
+package com.test.dragon.kernel;
 
+
+import static com.test.dragon.tools.DragonUtils.isSkip;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,42 +14,45 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
 
+import com.test.dragon.tools.DragonDbHelper;
+import com.test.dragon.tools.Keys;
 import com.test.tools.Logger;
 import com.test.tools.Utils;
 
 public class DragonProcessor implements Keys {
 
-  private final DragonDatabase mDatabase;
-  private final int mMaxCacheCount;
+  // 先攒数据，用于创建数据库的初始key
+  public static final int MAX_CACHE_ITEMS = 100;
+
+  private final DragonDbHelper mDbHelper;
   private final Logger mLogger;
 
-  public DragonProcessor(String databaseUrl, int maxCacheCount, Logger logger) {
-    mDatabase = new DragonDatabase(databaseUrl);
-    mMaxCacheCount = maxCacheCount;
-    mLogger = logger;
-  }
-
   private List<String> mColumns = new ArrayList<>();
-  private List<Map<String, String>> mResultItems = new ArrayList<>(); // 前期积累元素, 得到一个全量的key集合
+  private List<Map<String, String>> mCachedItems = new ArrayList<>(); // 前期积累元素, 得到一个全量的key集合
 
   private boolean mTableCreated = isExistTable(); // 标记是否创建了数据表
   private AtomicInteger mValueCount = new AtomicInteger(0);
 
+  public DragonProcessor(String databaseUrl, Logger logger) {
+    mDbHelper = new DragonDbHelper(databaseUrl);
+    mLogger = logger;
+  }
+
+
   public final void process(Map<String, String> items) {
-    if (items.containsKey(Keys.SKIP)) { // 废弃的结果
+    if (isSkip(items)) { // 废弃的结果
       return;
     }
-    if (!mTableCreated && mResultItems.size() < mMaxCacheCount) {
-      mResultItems.add(items);
-      mLogger.log("waiting: " + mResultItems.size());
+    if (!mTableCreated && mCachedItems.size() < MAX_CACHE_ITEMS) {
+      mCachedItems.add(items);
       return;
     }
     ensureColumns();
     if (!mTableCreated) { // 创建数据表并把缓存数据写进去
       createTable();
       mTableCreated = true;
-      mResultItems.forEach(this::updateDatabase);
-      mResultItems.clear(); // 避免占内存
+      mCachedItems.forEach(this::updateDatabase);
+      mCachedItems.clear(); // 避免占内存
     }
     updateDatabase(items);
   }
@@ -55,7 +60,7 @@ public class DragonProcessor implements Keys {
 
   private boolean isExistTable() {
     try {
-      QueryRunner runner = new QueryRunner(mDatabase.getDataSource());
+      QueryRunner runner = new QueryRunner(mDbHelper.open());
       Map<String, Object> map =
           runner.query("select count(*) as cnt from football", new MapHandler());
       return ((Integer) map.get("cnt")) > 0;
@@ -73,7 +78,7 @@ public class DragonProcessor implements Keys {
       sb.append(")");
       // mLogger.log("SQL: " + sb.toString());
       // System.exit(0);
-      final QueryRunner runner = new QueryRunner(mDatabase.getDataSource());
+      final QueryRunner runner = new QueryRunner(mDbHelper.open());
       // runner.update("DROP TABLE if exists football");
       runner.update(sb.toString());
     } catch (Throwable e) {
@@ -84,7 +89,7 @@ public class DragonProcessor implements Keys {
   private void updateDatabase(Map<String, String> items) {
     try {
       final int matchID = Utils.valueOfInt(items.get(MATCH_ID)); // matchID必须要
-      QueryRunner runner = new QueryRunner(mDatabase.getDataSource());
+      QueryRunner runner = new QueryRunner(mDbHelper.open());
       Map<String, Object> resultMap =
           runner.query("select matchID from football where matchID=" + matchID, new MapHandler());
       if (resultMap != null && resultMap.size() > 0) {// 做update
@@ -111,7 +116,7 @@ public class DragonProcessor implements Keys {
     }
     Set<String> columnSet = new HashSet<>();
     if (mTableCreated) {
-      QueryRunner runner = new QueryRunner(mDatabase.getDataSource());
+      QueryRunner runner = new QueryRunner(mDbHelper.open());
       try {
         Map<String, Object> map = runner.query("select * from football limit 1", new MapHandler());
         columnSet.addAll(map.keySet());
@@ -119,7 +124,7 @@ public class DragonProcessor implements Keys {
         e.printStackTrace();
       }
     } else {
-      for (Map<String, String> items : mResultItems) { // 去重
+      for (Map<String, String> items : mCachedItems) { // 去重
         columnSet.addAll(items.keySet());
       }
     }

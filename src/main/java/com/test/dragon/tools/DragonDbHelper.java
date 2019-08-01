@@ -4,16 +4,16 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
-public class DragonDatabase {
+public class DragonDbHelper {
 
   private final String mDatabaseUrl;
   private BasicDataSource mDataSource;
 
-  public DragonDatabase(String databaseUrl) {
+  public DragonDbHelper(String databaseUrl) {
     mDatabaseUrl = databaseUrl;
   }
 
-  public synchronized DataSource getDataSource() {
+  public synchronized DataSource open() {
     if (mDataSource == null) {
       mDataSource = new BasicDataSource();
       // 基本设置

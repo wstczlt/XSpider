@@ -6,36 +6,38 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import com.test.dragon.tools.DragonProcessor;
-import com.test.dragon.tools.DragonProxy;
-import com.test.dragon.tools.StaticSupplier;
+import com.test.dragon.kernel.DragonProxy;
+import com.test.dragon.kernel.RuntimeSupplier;
+import com.test.dragon.kernel.StaticSupplier;
 import com.test.tools.Logger;
 
 import okhttp3.OkHttpClient;
 
-public class DragonSpiderMain {
+public class DragonMain {
 
   // 超时时间
-  private static final long DEFAULT_TIMEOUT_MILLS = 5000L;
+  private static final long DEFAULT_TIMEOUT_MILLS = 2000L;
   // 线程总数
-  private static final int MAX_THREAD_COUNT = 20;
-  // 每场比赛抓取之后暂停线程一段时间
-  private static final long DEFAULT_MIN_RUN_MILLS = 1000L;
-  // 先攒数据，用于创建数据库的初始key
-  public static final int MAX_CACHE_ITEMS = 1000;
+  private static final int MAX_THREAD_COUNT = 10;
   // 日志输出
   private static final Logger LOGGER = Logger.SYSTEM;
   // database url
   public static final String DATABASE_URL = "jdbc:sqlite:sqlite/football_dragon.db";
 
   public static void main(String[] args) throws Exception {
-    final OkHttpClient httpClient = buildHttpClient();
-    final DragonProcessor processor = new DragonProcessor(DATABASE_URL, MAX_CACHE_ITEMS, LOGGER);
-    final ExecutorService pool = Executors.newFixedThreadPool(MAX_THREAD_COUNT);
-    final Supplier<List<Integer>> supplier = new StaticSupplier(1200000, 1756899);
-    // final Supplier<List<Integer>> supplier = new RuntimeSupplier(httpClient);
+    final boolean isSpider = args != null && args.length >= 1 && "-s".equals(args[0].toLowerCase());
 
-    Dragon dragon = new Dragon(httpClient, pool, DEFAULT_MIN_RUN_MILLS, processor, supplier);
+    final OkHttpClient httpClient = buildHttpClient();
+    final ExecutorService pool = Executors.newFixedThreadPool(MAX_THREAD_COUNT);
+
+    final Supplier<List<Integer>> supplier;
+    if (isSpider) { // Spider抓取模式
+      supplier = new StaticSupplier(1600000, 1756899);
+    } else { // 实时扫描模式
+      supplier = new RuntimeSupplier(httpClient);
+    }
+
+    Dragon dragon = new Dragon(httpClient, pool, supplier, DATABASE_URL, LOGGER);
     dragon.start();
   }
 

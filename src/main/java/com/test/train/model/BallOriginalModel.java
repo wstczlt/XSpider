@@ -36,14 +36,14 @@ public class BallOriginalModel extends Model {
     trainKeys.add(ORIGINAL_VICTORY_ODD); // 欧盘
     trainKeys.add(ORIGINAL_BIG_ODD); // 大小球
     // 临场欧赔变化
-//    trainKeys.add(match -> match.mOpeningVictoryOdd - match.mOriginalVictoryOdd);
+    // trainKeys.add(match -> match.mOpeningVictoryOdd - match.mOriginalVictoryOdd);
     // 临场大小球变化
-//    trainKeys.add(match -> match.mOpeningBigOdd - match.mOriginalBigOdd);
+    // trainKeys.add(match -> match.mOpeningBigOdd - match.mOriginalBigOdd);
 
     // 基本面情况
-//    trainKeys.add(match -> match.mHistoryVictoryRateOfHost);
-//    trainKeys.add(match -> match.mRecentVictoryRateOfHost);
-//    trainKeys.add(match -> match.mRecentVictoryRateOfCustom);
+    // trainKeys.add(match -> match.mHistoryVictoryRateOfHost);
+    // trainKeys.add(match -> match.mRecentVictoryRateOfHost);
+    // trainKeys.add(match -> match.mRecentVictoryRateOfCustom);
     return trainKeys;
   }
 

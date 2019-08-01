@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.test.spider.tools.SpiderUtils;
 import com.test.tools.Utils;
 
-public class OddItem implements Keys {
+public class OddItemParser implements Keys {
 
   private static final String PREFIX_MIDDLE = "middle_"; // 中场盘
   private static final String PREFIX_MIN_25 = "min25_"; // 25分钟盘
@@ -32,7 +32,7 @@ public class OddItem implements Keys {
   private ItemModel mMinOf70; // 70分钟盘
   private ItemModel mMin0f75; // 75分钟盘
 
-  public OddItem(OddType type, JSONArray array) {
+  public OddItemParser(OddType type, JSONArray array) {
     mType = type;
     mJSONArray = array;
     try {

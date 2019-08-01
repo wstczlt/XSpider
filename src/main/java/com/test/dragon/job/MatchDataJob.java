@@ -1,26 +1,29 @@
 package com.test.dragon.job;
 
+import static com.test.dragon.tools.DragonUtils.setSkip;
+
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.test.dragon.tools.Job;
+import com.test.dragon.kernel.DragonJob;
+import com.test.tools.Logger;
 
 import okhttp3.Request;
 
 // 获取场上基本数据情况
 // curl -H 'Host: txt.win007.com' -H 'User-Agent: okhttp/3.10.0' --compressed
 // 'http://txt.win007.com//phone/airlive/cn/1/75/1757870.htm?androidfrom=nowscore&fromkind=1&version=4.80&app_token=sOA9HfVbPo1ywNVYl1Hi9wypKCjh63cf7FXrAekSYYCzl2OzgGZulNovlmS2%2F5WSKkoi6v9DpusnDmFD379Pv%2F40uIfkowNb7vhleIPHPrmHzGv5gUg6zf%2F252R0BBIvMbrlYIc%2B4hI7Oj8hhMKW%2BZNW8lpH8N8PcPTE5XWQc5M%3D&ran=1564455118725000'
-public class MatchDataJob extends Job {
+public class MatchDataJob extends DragonJob {
 
   private static final String REQUEST_URL_PREFIX =
       "http://txt.win007.com//phone/airlive/cn/%s/%s/%s.htm?";
   private static final String REQUEST_URL_POSTFIX =
       "androidfrom=nowscore&fromkind=1&version=4.80&app_token=sOA9HfVbPo1ywNVYl1Hi9wypKCjh63cf7FXrAekSYYCzl2OzgGZulNovlmS2%2F5WSKkoi6v9DpusnDmFD379Pv%2F40uIfkowNb7vhleIPHPrmHzGv5gUg6zf%2F252R0BBIvMbrlYIc%2B4hI7Oj8hhMKW%2BZNW8lpH8N8PcPTE5XWQc5M%3D&ran=1564455118725000";
 
-  public MatchDataJob(int matchID) {
-    super(matchID);
+  public MatchDataJob(int matchID, Logger logger) {
+    super(matchID, logger);
   }
 
   @Override
@@ -38,7 +41,7 @@ public class MatchDataJob extends Job {
   public void handleResponse(String text, Map<String, String> items) throws Exception {
     JSONObject json = JSON.parseObject(text);
     if (json == null) {
-      items.put(SKIP, "true");
+      setSkip(items);
       return;
     }
     JSONArray listItemsTech = (JSONArray) json.get("listItemsTech");

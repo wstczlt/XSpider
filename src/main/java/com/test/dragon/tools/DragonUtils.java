@@ -1,6 +1,7 @@
 package com.test.dragon.tools;
 
 import java.text.SimpleDateFormat;
+import java.util.Map;
 
 public class DragonUtils {
 
@@ -13,5 +14,13 @@ public class DragonUtils {
       SDF.set(sdf);
     }
     return sdf.parse(time).getTime();
+  }
+
+  public static boolean isSkip(Map<String, String> items) {
+    return items.containsKey(Keys.SKIP);
+  }
+
+  public static void setSkip(Map<String, String> items) {
+    items.put(Keys.SKIP, String.valueOf(true));
   }
 }
