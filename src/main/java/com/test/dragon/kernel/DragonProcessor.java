@@ -30,12 +30,13 @@ public class DragonProcessor implements Keys {
   private List<String> mColumns = new ArrayList<>();
   private List<Map<String, String>> mCachedItems = new ArrayList<>(); // 前期积累元素, 得到一个全量的key集合
 
-  private boolean mTableCreated = isExistTable(); // 标记是否创建了数据表
+  private boolean mTableCreated; // 标记是否创建了数据表
   private AtomicInteger mValueCount = new AtomicInteger(0);
 
   public DragonProcessor(String databaseUrl, Logger logger) {
-    mDbHelper = new DragonDbHelper(databaseUrl);
     mLogger = logger;
+    mDbHelper = new DragonDbHelper(databaseUrl);
+    mTableCreated = isExistTable();
   }
 
 
@@ -99,12 +100,10 @@ public class DragonProcessor implements Keys {
       }
 
       final float victoryOdd = Utils.valueOfFloat(items.get(ORIGINAL_VICTORY_ODD));
-      if (victoryOdd > 0) {
-        int cnt = mValueCount.getAndIncrement();
-        mLogger.log(
-            String.format("DATABASE: matchID=%d, %s VS %s, valueCount=%d, victoryOdd=%.2f",
-                matchID, items.get(HOST_NAME), items.get(CUSTOM_SCORE), cnt, victoryOdd));
-      }
+      int cnt = mValueCount.getAndIncrement();
+      mLogger.log(
+          String.format("DATABASE: matchID=%d, %s VS %s, valueCount=%d, victoryOdd=%.2f",
+              matchID, items.get(HOST_NAME), items.get(CUSTOM_SCORE), cnt, victoryOdd));
     } catch (Throwable e) {
       e.printStackTrace();
     }

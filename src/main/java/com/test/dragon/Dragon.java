@@ -1,5 +1,7 @@
 package com.test.dragon;
 
+import static com.test.dragon.tools.DragonUtils.setSkip;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +51,7 @@ public class Dragon {
     final long startTime = System.currentTimeMillis();
     final List<Integer> matchIDs = mMatchSupplier.get();
     for (int matchID : matchIDs) {
-      mPool.submit(new DragonTask(buildJobs(matchID)));
+      mPool.submit(new DragonTask(matchID, buildJobs(matchID)));
     }
 
     mPool.shutdown();
@@ -60,7 +62,7 @@ public class Dragon {
     }
   }
 
-  void executeJob(Map<String, String> items, DragonJob job) {
+  void executeJob(int matchID, Map<String, String> items, DragonJob job) {
     try {
       final Request request = buildRequest(job.newRequestBuilder());
       final Response response = mClient.newCall(request).execute();
@@ -68,10 +70,12 @@ public class Dragon {
       if (response.isSuccessful() && response.body() != null) {
         String text = response.body().string();
         job.handleResponse(text, items);
-        response.close();
       } else {
-        mLogger.log("Execute Failed: " + response.code());
+        setSkip(items);
+        mLogger.log("Execute Failed: " + response.code() + ", matchID = " + matchID + ", "
+            + job.getClass().getSimpleName());
       }
+      response.close();
     } catch (Throwable e) {
       SpiderUtils.log(e);
       mLogger.log("Execute Failed: " + e.getMessage());
@@ -102,18 +106,21 @@ public class Dragon {
 
   class DragonTask implements Runnable {
 
+    final int mMatchID;
     final List<DragonJob> mJobs;
 
-    public DragonTask(List<DragonJob> jobs) {
+    public DragonTask(int matchID, List<DragonJob> jobs) {
+      mMatchID = matchID;
       mJobs = jobs;
     }
+
 
     @Override
     public void run() {
       final long timeStart = System.currentTimeMillis();
       final Map<String, String> items = new HashMap<>();
       for (DragonJob job : mJobs) {
-        executeJob(items, job);
+        executeJob(mMatchID, items, job);
         // 如果某Job认为不需要继续了, 则抛弃这个MatchID
         if (DragonUtils.isSkip(items)) {
           break;
@@ -121,7 +128,7 @@ public class Dragon {
       }
 
       if (!DragonUtils.isSkip(items)) { // 如果被标记为Skip则忽略不处理
-        // mDragonProcessor.process(items);
+        mDragonProcessor.process(items);
       }
 
       long timeUsed = System.currentTimeMillis() - timeStart;

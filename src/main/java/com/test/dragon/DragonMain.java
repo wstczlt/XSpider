@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import com.test.dragon.kernel.DragonProxy;
 import com.test.dragon.kernel.RuntimeSupplier;
 import com.test.dragon.kernel.StaticSupplier;
+import com.test.dragon.tools.RetryOnceInterceptor;
 import com.test.tools.Logger;
 
 import okhttp3.OkHttpClient;
@@ -18,7 +19,7 @@ public class DragonMain {
   // 超时时间
   private static final long DEFAULT_TIMEOUT_MILLS = 2000L;
   // 线程总数
-  private static final int MAX_THREAD_COUNT = 20;
+  private static final int MAX_THREAD_COUNT = 10;
   // 日志输出
   private static final Logger LOGGER = Logger.SYSTEM;
   // database url
@@ -32,7 +33,7 @@ public class DragonMain {
 
     final Supplier<List<Integer>> supplier;
     if (isSpider) { // Spider抓取模式
-      supplier = new StaticSupplier(1600000, 1659784);
+      supplier = new StaticSupplier(1600000, 1660000);
     } else { // 实时扫描模式
       supplier = new RuntimeSupplier(httpClient);
     }
@@ -45,6 +46,7 @@ public class DragonMain {
   private static OkHttpClient buildHttpClient() {
     OkHttpClient.Builder builder = new OkHttpClient.Builder()
         // .addInterceptor(new CurlInterceptor(Logger.SYSTEM))
+        .addInterceptor(new RetryOnceInterceptor())
         .proxySelector(new DragonProxy())
         .connectTimeout(DEFAULT_TIMEOUT_MILLS, TimeUnit.MILLISECONDS)
         .readTimeout(DEFAULT_TIMEOUT_MILLS, TimeUnit.MILLISECONDS)
