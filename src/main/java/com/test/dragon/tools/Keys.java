@@ -9,6 +9,7 @@ public interface Keys {
   String HOST_NAME_PINYIN = "hostNamePinyin";
   String CUSTOM_NAME = "customName";
   String CUSTOM_NAME_PINYIN = "customNamePinyin";
+  String MATCH_STATUS = "matchStatus";
   String LEAGUE = "league";
   String MATCH_TIME = "matchTime";
   String HOST_LEAGUE_RANK = "hostLeagueRank";

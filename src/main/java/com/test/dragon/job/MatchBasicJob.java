@@ -42,6 +42,7 @@ public class MatchBasicJob extends DragonJob {
   public void handleResponse(String text, Map<String, String> items) throws Exception {
     String[] attrs = text.split("\\^");
     if (attrs.length != 31) {
+      mLogger.log(String.format("Skipped: %s [%d]", getClass().getSimpleName(), mMatchID));
       setSkip(items);
       return;
     }
@@ -50,6 +51,7 @@ public class MatchBasicJob extends DragonJob {
     items.put(HOST_NAME_PINYIN, Pinyin.toPinyin(attrs[0], ""));
     items.put(CUSTOM_NAME, attrs[1]);
     items.put(CUSTOM_NAME_PINYIN, Pinyin.toPinyin(attrs[1], ""));
+    items.put(MATCH_STATUS, attrs[4]);
     items.put(MATCH_TIME, "" + DragonUtils.valueOfDate(attrs[5]));
     items.put(LEAGUE, attrs[15]);
     items.put(HOST_LEAGUE_RANK, attrs[6]);
