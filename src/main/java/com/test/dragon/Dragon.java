@@ -82,9 +82,10 @@ public class Dragon {
 
   private List<DragonJob> buildJobs(int matchID) {
     List<DragonJob> jobs = new ArrayList<>();
+    // 如果没有赛前指数, 直接判定为野鸡比赛，丢弃
+    jobs.add(new BeforeOddJob(matchID, mLogger));
     jobs.add(new MatchBasicJob(matchID, mLogger));
     jobs.add(new MatchDataJob(matchID, mLogger));
-    jobs.add(new BeforeOddJob(matchID, mLogger));
     jobs.add(new ScoreOddJob(matchID, mLogger));
     jobs.add(new BallOddJob(matchID, mLogger));
     jobs.add(new EuropeOddJob(matchID, mLogger));
