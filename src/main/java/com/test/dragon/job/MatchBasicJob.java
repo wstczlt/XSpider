@@ -42,7 +42,8 @@ public class MatchBasicJob extends DragonJob {
   public void handleResponse(String text, Map<String, String> items) throws Exception {
     String[] attrs = text.split("\\^");
     if (attrs.length != 31) {
-      mLogger.log(String.format("Skipped: %s [%d]", getClass().getSimpleName(), mMatchID));
+      mLogger
+          .log(String.format("Skipped: %s [%d] \n %s", getClass().getSimpleName(), mMatchID, text));
       setSkip(items);
       return;
     }

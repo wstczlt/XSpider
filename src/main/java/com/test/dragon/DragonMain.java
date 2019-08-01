@@ -18,7 +18,7 @@ public class DragonMain {
   // 超时时间
   private static final long DEFAULT_TIMEOUT_MILLS = 2000L;
   // 线程总数
-  private static final int MAX_THREAD_COUNT = 10;
+  private static final int MAX_THREAD_COUNT = 20;
   // 日志输出
   private static final Logger LOGGER = Logger.SYSTEM;
   // database url
@@ -32,7 +32,7 @@ public class DragonMain {
 
     final Supplier<List<Integer>> supplier;
     if (isSpider) { // Spider抓取模式
-      supplier = new StaticSupplier(1600000, 1756899);
+      supplier = new StaticSupplier(1600000, 1659784);
     } else { // 实时扫描模式
       supplier = new RuntimeSupplier(httpClient);
     }

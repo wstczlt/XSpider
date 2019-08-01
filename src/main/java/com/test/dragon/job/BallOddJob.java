@@ -36,7 +36,8 @@ public class BallOddJob extends DragonJob {
   public void handleResponse(String text, Map<String, String> items) {
     JSONArray json = JSON.parseArray(text);
     if (json == null) {
-      mLogger.log(String.format("Skipped: %s [%d]", getClass().getSimpleName(), mMatchID));
+      mLogger
+          .log(String.format("Skipped: %s [%d] \n %s", getClass().getSimpleName(), mMatchID, text));
       setSkip(items);
       return;
     }

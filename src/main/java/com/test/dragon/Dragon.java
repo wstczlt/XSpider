@@ -68,6 +68,9 @@ public class Dragon {
       if (response.isSuccessful() && response.body() != null) {
         String text = response.body().string();
         job.handleResponse(text, items);
+        response.close();
+      } else {
+        mLogger.log("Execute Failed: " + response.code());
       }
     } catch (Throwable e) {
       SpiderUtils.log(e);
@@ -118,7 +121,7 @@ public class Dragon {
       }
 
       if (!DragonUtils.isSkip(items)) { // 如果被标记为Skip则忽略不处理
-        mDragonProcessor.process(items);
+        // mDragonProcessor.process(items);
       }
 
       long timeUsed = System.currentTimeMillis() - timeStart;
