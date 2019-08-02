@@ -1,7 +1,5 @@
 package com.test.runtime;
 
-import static com.test.tools.Logger.EMPTY;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,20 +13,19 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import com.test.dragon.DragonMain;
+import com.test.dragon.kernel.ListSupplier;
 import com.test.spider.SpiderConfig;
-import com.test.spider.tools.SpiderBuilder;
 import com.test.tools.Utils;
 import com.test.train.tools.Estimation;
 import com.test.train.tools.Match;
 import com.test.train.tools.MatchQuery;
 import com.test.train.tools.TrainInputs;
 
-import us.codecraft.webmagic.Spider;
-
 public class RtMain {
 
   private static final Rt[] RTS = new Rt[] {
-      new RtBallAt25(), new RtBallAt70()
+      new RtBallHalf(), new RtOddHalf()
   };
 
   public static void main(String[] args) throws Exception {
@@ -54,11 +51,8 @@ public class RtMain {
     System.out.println("当前时间: " + SpiderConfig.DATE_FORMAT.format(new Date()));
 
     final List<Integer> matchIDs = collectRealTimeMatchIds();
-    final Spider spider = new SpiderBuilder(matchIDs, EMPTY, mojieMatch -> true).build();
-
     // 运行爬虫
-    spider.run();
-    spider.close();
+    DragonMain.run(new ListSupplier(matchIDs));
     // 运行AI
     loopRts(matchIDs);
   }
@@ -81,6 +75,8 @@ public class RtMain {
     for (int i = 0; i < results.size(); i++) {
       rt.display(input.mMatches.get(i), results.get(i));
     }
+
+    System.out.println("\n\n----------");
   }
 
 
@@ -98,7 +94,6 @@ public class RtMain {
       matchString = matchString.replace("sData[", "").replace("]", "");
       matchIds.add(Utils.valueOfInt(matchString));
     }
-    System.out.println(matchIds);
     return matchIds;
   }
 

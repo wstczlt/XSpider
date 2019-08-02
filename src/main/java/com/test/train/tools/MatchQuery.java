@@ -16,24 +16,25 @@ public class MatchQuery {
 
   public static final String SQL_BASE =
       "select * from football where 1=1 " +
+          "AND cast(timeMin as int) >0 AND cast(timeMin as int) <= 100 " +
           "AND hostScore >=0 " +
           "AND customScore >=0 " +
           "AND original_scoreOdd is not null " +
-          "AND original_scoreOddOfVictory >0 " +
-          "AND original_scoreOddOfDefeat >0 " +
+          "AND original_scoreOddOfVictory >0.7 " +
+          "AND original_scoreOddOfDefeat >0.7 " +
           "AND original_bigOdd > 0 " +
-          "AND original_bigOddOfVictory >0 " +
-          "AND original_bigOddOfDefeat >0 " +
+          "AND original_bigOddOfVictory >0.7 " +
+          "AND original_bigOddOfDefeat >0.7 " +
           "AND original_drawOdd >0 " +
           "AND original_victoryOdd >0 " +
           "AND original_defeatOdd >0 " +
 
           "AND opening_scoreOdd is not null " +
-          "AND opening_scoreOddOfVictory >0 " +
-          "AND opening_scoreOddOfDefeat >0 " +
+          "AND opening_scoreOddOfVictory >0.7 " +
+          "AND opening_scoreOddOfDefeat >0.7 " +
           "AND opening_bigOdd > 0 " +
-          "AND opening_bigOddOfVictory >0 " +
-          "AND opening_bigOddOfDefeat >0 " +
+          "AND opening_bigOddOfVictory >0.7 " +
+          "AND opening_bigOddOfDefeat >0.7 " +
           "AND opening_drawOdd >0 " +
           "AND opening_victoryOdd >0 " +
           "AND opening_defeatOdd >0 " +
@@ -41,48 +42,49 @@ public class MatchQuery {
           "AND hostBestShoot >=0 " +
           "AND customBestShoot >=0 " +
           "AND hostCornerScore >=0 " +
-          "AND customCornerScore >=0 ";
+          "AND customCornerScore >=0 " +
+          "AND hostBestShoot>=0 and customBestShoot>=0 " +
+          "AND hostScoreOf3 >=0 and customScoreOf3 >=0 " +
+          "AND hostLossOf3>=0 and customLossOf3>=0 ";
 
   public static final String SQL_MIN_25 =
       "AND min25_hostScore >=0  " +
           "AND min25_customScore >=0  " +
           "AND min25_bigOdd is not null " +
-          "AND min25_bigOddOfVictory >0 " +
-          "AND min25_bigOddOfDefeat >0 " +
+          "AND min25_bigOddOfVictory >0.7 " +
+          "AND min25_bigOddOfDefeat >0.7 " +
           "AND min25_scoreOdd is not null " +
-          "AND min25_scoreOddOfVictory >0 " +
-          "AND min25_scoreOddOfDefeat >0 ";
+          "AND min25_scoreOddOfVictory >0.7 " +
+          "AND min25_scoreOddOfDefeat >0.7 ";
 
   public static final String SQL_MIN_70 =
       "AND min70_hostScore >=0 " +
           "AND min70_customScore >=0 " +
           "AND min70_bigOdd is not null " +
-          "AND min70_bigOddOfVictory >0 " +
-          "AND min70_bigOddOfDefeat >0 " +
+          "AND min70_bigOddOfVictory >0.7 " +
+          "AND min70_bigOddOfDefeat >0.7 " +
           "AND min70_scoreOdd is not null " +
-          "AND min70_scoreOddOfVictory >0 " +
-          "AND min70_scoreOddOfDefeat >0 ";
+          "AND min70_scoreOddOfVictory >0.7 " +
+          "AND min70_scoreOddOfDefeat >0.7 ";
 
 
   public static final String SQL_MIDDLE =
       "AND middle_hostScore >=0 " +
           "AND middle_customScore >=0 " +
           "AND middle_bigOdd is not null " +
-          "AND middle_bigOddOfVictory >0 " +
-          "AND middle_bigOddOfDefeat >0 " +
+          "AND middle_bigOddOfVictory >0.7 " +
+          "AND middle_bigOddOfDefeat >0.7 " +
           "AND middle_scoreOdd is not null " +
-          "AND middle_scoreOddOfVictory >0 " +
-          "AND middle_scoreOddOfDefeat >0 ";
+          "AND middle_scoreOddOfVictory >0.7 " +
+          "AND middle_scoreOddOfDefeat >0.7 " +
+          "AND league is not null ";
 
   // 25分钟比分0-0
   public static final String SQL_MIN25_ZERO_SCORE =
       "AND min25_hostScore=0 " +
           "AND min25_customScore=0 ";
 
-  // 正规比赛
-  public static String SQL_LEAGUE = "AND league is not null ";
-
-  public static String SQL_ORDER = "order by matchTime desc limit 5000";
+  public static String SQL_ORDER = "order by matchTime desc limit 8000";
 
   public static List<Match> doQuery(String sql) throws Exception {
     final List<Match> matches = new ArrayList<>();
@@ -116,6 +118,7 @@ public class MatchQuery {
   private static Match buildMatch(Map<String, Object> databaseMap) {
     Match match = new Match();
     match.mMatchID = valueOfInt(databaseMap.get("matchID"));
+    match.mTimeMin = valueOfInt(databaseMap.get("timeMin"));
     match.mMatchTime = Long.parseLong(String.valueOf(databaseMap.get("matchTime")));
     match.mHostNamePinyin = String.valueOf(databaseMap.get("hostNamePinyin"));
     match.mCustomNamePinyin = String.valueOf(databaseMap.get("customNamePinyin"));
@@ -206,9 +209,6 @@ public class MatchQuery {
 
     match.mHostScoreOfMiddle = valueOfInt(databaseMap.get("middle_hostScore"));
     match.mCustomScoreOfMiddle = valueOfInt(databaseMap.get("middle_customScore"));
-    match.mBigOddOfMiddle = valueOfFloat(databaseMap.get("middle_bigOdd"));
-    match.mBigOddOfVictoryOfMiddle =
-        valueOfFloat(databaseMap.get("middle_bigOddOfVictory"));
 
     match.mHostScoreOf3 = valueOfFloat(databaseMap.get("hostScoreOf3"));
     match.mCustomScoreOf3 = valueOfFloat(databaseMap.get("customScoreOf3"));
@@ -222,15 +222,16 @@ public class MatchQuery {
     match.mHostCornerOf3 = valueOfFloat(databaseMap.get("hostCornerOf3"));
     match.mCustomCornerOf3 = valueOfFloat(databaseMap.get("customCornerOf3"));
 
-    match.mHostBestShoot = valueOfFloat(databaseMap.get("hostBestShoot"));
-    match.mCustomBestShoot = valueOfFloat(databaseMap.get("customBestShoot"));
+    match.mHostBestShoot =
+        valueOfFloat(databaseMap.get("hostBestShoot")) * (match.mTimeMin / 100.00f);
+    match.mCustomBestShoot = valueOfFloat(databaseMap.get("customBestShoot"))
+        * (match.mTimeMin / 100.00f);
 
     match.mHostControlRate = valueOfFloat(databaseMap.get("hostControlRate"));
     match.mCustomControlRate = valueOfFloat(databaseMap.get("customControlRate"));
 
     match.mHostCornerScore = valueOfFloat(databaseMap.get("hostCornerScore"));
     match.mCustomBestShoot = valueOfFloat(databaseMap.get("customCornerScore"));
-    match.mTimeMin = valueOfInt(databaseMap.get("timeMin"));
 
     match.mHistoryVictoryRateOfHost = valueOfFloat(databaseMap.get("historyVictoryRateOfHost"));
     match.mRecentVictoryRateOfHost = valueOfFloat(databaseMap.get("recentVictoryRateOfHost"));

@@ -21,23 +21,41 @@ public class DragonMain {
   // 线程总数
   private static final int MAX_THREAD_COUNT = 10;
   // 日志输出
-  private static final Logger LOGGER = Logger.SYSTEM;
+  private static final Logger LOGGER = Logger.EMPTY;
   // database url
   public static final String DATABASE_URL = "jdbc:sqlite:sqlite/football_dragon.db";
 
   public static void main(String[] args) throws Exception {
     final boolean isSpider = args != null && args.length >= 1 && "-s".equals(args[0].toLowerCase());
+    if (isSpider) {
+      runSpider(1600000, 1639600);
+    } else {
+      runRt();
+    }
+  }
 
+  public static void runRt() throws Exception {
     final Supplier<OkHttpClient> clientSupplier = DragonMain::buildHttpClient;
     final ExecutorService pool = Executors.newFixedThreadPool(MAX_THREAD_COUNT);
 
-    final Supplier<List<Integer>> supplier;
-    if (isSpider) { // Spider抓取模式
-      supplier = new StaticSupplier(1600000, 1647126);
-    } else { // 实时扫描模式
-      supplier = new RuntimeSupplier(clientSupplier.get());
-    }
+    final Supplier<List<Integer>> supplier = new RuntimeSupplier(clientSupplier.get());
+    Dragon dragon = new Dragon(clientSupplier, pool, supplier, DATABASE_URL, LOGGER);
+    dragon.start();
+  }
 
+  public static void run(Supplier<List<Integer>> supplier) throws Exception {
+    final Supplier<OkHttpClient> clientSupplier = DragonMain::buildHttpClient;
+    final ExecutorService pool = Executors.newFixedThreadPool(MAX_THREAD_COUNT);
+
+    Dragon dragon = new Dragon(clientSupplier, pool, supplier, DATABASE_URL, LOGGER);
+    dragon.start();
+  }
+
+  public static void runSpider(int matchStartID, int matchEndID) throws Exception {
+    final Supplier<OkHttpClient> clientSupplier = DragonMain::buildHttpClient;
+    final ExecutorService pool = Executors.newFixedThreadPool(MAX_THREAD_COUNT);
+
+    final Supplier<List<Integer>> supplier = new StaticSupplier(matchStartID, matchEndID);
     Dragon dragon = new Dragon(clientSupplier, pool, supplier, DATABASE_URL, LOGGER);
     dragon.start();
   }

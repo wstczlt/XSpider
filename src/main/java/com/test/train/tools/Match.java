@@ -74,8 +74,6 @@ public class Match {
 
   public int mHostScoreOfMiddle; // 中场主队得分
   public int mCustomScoreOfMiddle; // 中场客队得分
-  public float mBigOddOfMiddle; // 中场大小球盘口
-  public float mBigOddOfVictoryOfMiddle; // 中场大球赔率
 
   public float mHostScoreOf3; // 主队近3场平均进球数
   public float mCustomScoreOf3; // 客队近3场进球数

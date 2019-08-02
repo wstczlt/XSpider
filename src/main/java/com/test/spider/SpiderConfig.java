@@ -14,7 +14,8 @@ public class SpiderConfig {
 
   public static final int STATIC_ID_START = 1756889; // 起始ID
   public static final int STATIC_ID_END = 1756899; // 结束ID
-  public static final String DATABASE_URL = "jdbc:sqlite:sqlite/football_x.db";
+  // public static final String DATABASE_URL = "jdbc:sqlite:sqlite/football_x.db";
+  public static final String DATABASE_URL = "jdbc:sqlite:sqlite/football_dragon.db";
   public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
   public static final String PROXY_STRING =

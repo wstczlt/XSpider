@@ -1,6 +1,8 @@
 package com.test.train.tools;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,11 +40,13 @@ public class TrainInputs {
       xValue.add(trainLine.first);
       yValue.add(trainLine.second);
     }
-    FileWriter xWriter = null;
-    FileWriter yWriter = null;
+    Writer xWriter = null;
+    Writer yWriter = null;
     try {
-      xWriter = new FileWriter(mIsTrain ? mModel.nameOfX() : mModel.nameOfTestX());
-      yWriter = new FileWriter(mIsTrain ? mModel.nameOfY() : mModel.nameOfTestY());
+      xWriter = new OutputStreamWriter(
+          new FileOutputStream(mIsTrain ? mModel.nameOfX() : mModel.nameOfTestX()), "utf-8");
+      yWriter = new OutputStreamWriter(
+          new FileOutputStream(mIsTrain ? mModel.nameOfY() : mModel.nameOfTestY()), "utf-8");
       IOUtils.writeLines(xValue, null, xWriter);
       IOUtils.writeLines(yValue, null, yWriter);
     } finally {

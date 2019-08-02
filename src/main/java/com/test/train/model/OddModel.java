@@ -7,7 +7,6 @@ import static com.test.train.tools.Mappers.ORIGINAL_SCORE_ODD_OF_DEFEAT;
 import static com.test.train.tools.Mappers.ORIGINAL_SCORE_ODD_OF_VICTORY;
 import static com.test.train.tools.Mappers.ORIGINAL_VICTORY_ODD;
 import static com.test.train.tools.MatchQuery.SQL_BASE;
-import static com.test.train.tools.MatchQuery.SQL_LEAGUE;
 import static com.test.train.tools.MatchQuery.SQL_ORDER;
 
 import java.util.ArrayList;
@@ -28,9 +27,7 @@ public class OddModel extends Model {
   }
 
   public String buildQuerySql() {
-    final String andSql = "AND hostLeagueOnHostRank >0 AND customLeagueOnCustomRank >0 "
-        + "AND hostScoreOf3>=0 AND customScoreOf3>=0 ";
-    return SQL_BASE + SQL_LEAGUE + andSql + SQL_ORDER;
+    return SQL_BASE + SQL_ORDER;
   }
 
   @Override

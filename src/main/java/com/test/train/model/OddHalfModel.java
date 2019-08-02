@@ -5,7 +5,7 @@ import static com.test.train.tools.Mappers.ORIGINAL_SCORE_ODD;
 import static com.test.train.tools.Mappers.ORIGINAL_SCORE_ODD_OF_VICTORY;
 import static com.test.train.tools.Mappers.ORIGINAL_VICTORY_ODD;
 import static com.test.train.tools.MatchQuery.SQL_BASE;
-import static com.test.train.tools.MatchQuery.SQL_LEAGUE;
+import static com.test.train.tools.MatchQuery.SQL_MIDDLE;
 import static com.test.train.tools.MatchQuery.SQL_ORDER;
 
 import java.util.ArrayList;
@@ -26,13 +26,12 @@ public class OddHalfModel extends Model {
   }
 
   public String buildQuerySql() {
-    final String andSql = "AND middle_scoreOdd is not null AND middle_scoreOddOfVictory >0 " +
-        "and middle_bigOdd >0 and middle_bigOddOfVictory >0 " +
-        "AND middle_hostScore>=0 AND middle_customScore>=0 " +
-        "and hostBestShoot>=0 and customBestShoot>=0 " +
-        "and hostScoreOf3 >=0 and customScoreOf3 >=0 " +
-        "and hostLossOf3>=0 and customLossOf3>=0 ";
-    return SQL_BASE + SQL_LEAGUE + andSql + SQL_ORDER;
+    return SQL_BASE + SQL_MIDDLE + SQL_ORDER;
+  }
+
+  @Override
+  public float bestThreshold() {
+    return 0.65f;
   }
 
   @Override
@@ -55,10 +54,10 @@ public class OddHalfModel extends Model {
     trainKeys.add(match -> match.mMiddleScoreOdd);
     trainKeys.add(match -> match.mMiddleScoreOddOfVictory);
     trainKeys.add(match -> match.mMiddleVictoryOdd);
-    trainKeys.add(match -> match.mBigOddOfMiddle);
+    trainKeys.add(match -> match.mMiddleBigOdd);
 
-    trainKeys.add(match -> match.mHostBestShoot * 0.4f);
-    trainKeys.add(match -> match.mCustomBestShoot * 0.4f);
+    trainKeys.add(match -> match.mHostBestShoot);
+    trainKeys.add(match -> match.mCustomBestShoot);
     // trainKeys.add(match -> match.mHostControlRate);
     // trainKeys.add(match -> match.mCustomControlRate);
 

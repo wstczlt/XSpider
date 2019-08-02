@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.test.tools.Pair;
+import com.test.train.model.BallHalfModel;
 import com.test.train.model.Model;
 import com.test.train.model.OddHalfModel;
 import com.test.train.tools.Estimation;
@@ -17,14 +18,14 @@ import com.test.train.tools.TrainSummary;
 public class TrainMain {
 
   private static final int TOTAL_ROUND = 5;// 测试轮数
-  private static final int TEST_SET_COUNT = 1000; // 测试集长度
+  private static final int TEST_SET_COUNT = 2000; // 测试集长度
   private static final float[] THRESHOLDS = new float[] {
       // 0.50f,
       // 0.51f, 0.52f, 0.53f, 0.54f, 0.55f,
       0.50f, 0.55f, 0.60f, 0.65f, 0.7f}; // 高概率要求的阈值
 
   public static void main(String[] args) throws Exception {
-    final Model model = new OddHalfModel(); // 训练模型
+    final Model model = new BallHalfModel(); // 训练模型
 
 
     final List<Match> matches = MatchQuery.doQuery(model.buildQuerySql());
@@ -98,6 +99,7 @@ public class TrainMain {
       final Estimation est = estimations.get(i);
       final float aiGain = model.calGain(match, est);
       final boolean isAiHit = aiGain > 0;
+
       // 高概率
       if (est.mProbability >= threshold) {
         highProbTotalCount++;
