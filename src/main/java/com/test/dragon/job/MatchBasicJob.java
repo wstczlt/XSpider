@@ -32,8 +32,7 @@ public class MatchBasicJob extends DragonJob {
     String matchIDString = String.valueOf(mMatchID);
     String prefixUrl = String.format(REQUEST_URL_PREFIX,
         matchIDString.substring(0, 1), matchIDString.substring(1, 3), matchIDString);
-    String newUrl = prefixUrl + REQUEST_URL_POSTFIX.replace("ran=1564488834189000",
-        "ran=" + System.currentTimeMillis() * 1000);
+    String newUrl = prefixUrl + REQUEST_URL_POSTFIX;
 
     return new Request.Builder().url(newUrl);
   }
@@ -64,8 +63,8 @@ public class MatchBasicJob extends DragonJob {
     items.put(MIDDLE_HOST_SCORE, attrs[26]);
     items.put(MIDDLE_CUSTOM_SCORE, attrs[27]);
 
-    mLogger.log(
-        String.format("Found Match: %d, %s VS %s, %s", mMatchID, attrs[0], attrs[1], attrs[5]));
+    mLogger.log(String.format("Found Match: %d, %s, %s VS %s, %s",
+        mMatchID, attrs[15], attrs[0], attrs[1], attrs[5]));
 
 
     // System.out.println(attrs.length);

@@ -40,7 +40,7 @@ public class DragonProcessor implements Keys {
   }
 
 
-  public final void process(Map<String, String> items) {
+  public final synchronized void process(Map<String, String> items) {
     if (isSkip(items)) { // 废弃的结果
       return;
     }

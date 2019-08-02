@@ -26,8 +26,7 @@ public class BallOddJob extends DragonJob {
 
   @Override
   public Request.Builder newRequestBuilder() {
-    String newUrl = REQUEST_URL.replace("scheid=1757870", "scheid=" + mMatchID)
-        .replace("ran=1564455372432000", "ran=" + System.currentTimeMillis() * 1000);
+    String newUrl = REQUEST_URL.replace("scheid=1757870", "scheid=" + mMatchID);
 
     return new Request.Builder().url(newUrl);
   }

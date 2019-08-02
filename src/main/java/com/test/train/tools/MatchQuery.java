@@ -82,7 +82,7 @@ public class MatchQuery {
   // 正规比赛
   public static String SQL_LEAGUE = "AND league is not null ";
 
-  public static String SQL_ORDER = "order by matchTime desc limit 6000";
+  public static String SQL_ORDER = "order by matchTime desc limit 3000";
 
   public static List<Match> doQuery(String sql) throws Exception {
     final List<Match> matches = new ArrayList<>();

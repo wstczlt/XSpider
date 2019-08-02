@@ -31,8 +31,7 @@ public class BeforeOddJob extends DragonJob {
     String matchIDString = String.valueOf(mMatchID);
     String prefixUrl = String.format(REQUEST_URL_PREFIX,
         matchIDString.substring(0, 1), matchIDString.substring(1, 3), matchIDString);
-    String newUrl = prefixUrl + REQUEST_URL_POSTFIX.replace("ran=1564455656781000",
-        "ran=" + System.currentTimeMillis() * 1000);
+    String newUrl = prefixUrl + REQUEST_URL_POSTFIX;
 
     return new Request.Builder().url(newUrl);
   }

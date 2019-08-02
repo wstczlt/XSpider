@@ -28,17 +28,17 @@ public class DragonMain {
   public static void main(String[] args) throws Exception {
     final boolean isSpider = args != null && args.length >= 1 && "-s".equals(args[0].toLowerCase());
 
-    final OkHttpClient httpClient = buildHttpClient();
+    final Supplier<OkHttpClient> clientSupplier = DragonMain::buildHttpClient;
     final ExecutorService pool = Executors.newFixedThreadPool(MAX_THREAD_COUNT);
 
     final Supplier<List<Integer>> supplier;
     if (isSpider) { // Spider抓取模式
-      supplier = new StaticSupplier(1650000, 1755336);
+      supplier = new StaticSupplier(1600000, 1656223);
     } else { // 实时扫描模式
-      supplier = new RuntimeSupplier(httpClient);
+      supplier = new RuntimeSupplier(clientSupplier.get());
     }
 
-    Dragon dragon = new Dragon(httpClient, pool, supplier, DATABASE_URL, LOGGER);
+    Dragon dragon = new Dragon(clientSupplier, pool, supplier, DATABASE_URL, LOGGER);
     dragon.start();
   }
 
