@@ -150,6 +150,13 @@ public class MatchQuery {
     match.mMiddleScoreOddOfDefeat =
         valueOfFloat(databaseMap.get("middle_scoreOddOfDefeat"));
 
+    match.mMiddleVictoryOdd = valueOfFloat(databaseMap.get("middle_victoryOdd"));
+    match.mMiddleDrewOdd = valueOfFloat(databaseMap.get("middle_drewOdd"));
+    match.mMiddleDefeatOdd = valueOfFloat(databaseMap.get("middle_defeatOdd"));
+
+    match.mMiddleHostScore = valueOfInt(databaseMap.get("middle_hostScore"));
+    match.mMiddleCustomScore = valueOfInt(databaseMap.get("middle_customScore"));
+
     match.mOriginalVictoryOdd =
         valueOfFloat(databaseMap.get("original_victoryOdd"));
     match.mOriginalDrawOdd = valueOfFloat(databaseMap.get("original_drawOdd"));
@@ -217,6 +224,9 @@ public class MatchQuery {
 
     match.mHostBestShoot = valueOfFloat(databaseMap.get("hostBestShoot"));
     match.mCustomBestShoot = valueOfFloat(databaseMap.get("customBestShoot"));
+
+    match.mHostControlRate = valueOfFloat(databaseMap.get("hostControlRate"));
+    match.mCustomControlRate = valueOfFloat(databaseMap.get("customControlRate"));
 
     match.mHostCornerScore = valueOfFloat(databaseMap.get("hostCornerScore"));
     match.mCustomBestShoot = valueOfFloat(databaseMap.get("customCornerScore"));

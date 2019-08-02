@@ -30,6 +30,13 @@ public class Match {
   public float mMiddleScoreOddOfVictory; // 亚盘中场盘让球盘口
   public float mMiddleScoreOddOfDefeat; // 亚盘中场盘让球盘口
 
+  public float mMiddleVictoryOdd; // 中场欧盘
+  public float mMiddleDrewOdd; // 中场欧盘
+  public float mMiddleDefeatOdd; // 中场欧盘
+
+  public int mMiddleHostScore; // 中场得分
+  public int mMiddleCustomScore; // 中场得分
+
   public float mOriginalVictoryOdd; // 欧指初盘胜赔
   public float mOriginalDrawOdd; // 欧指初盘平赔
   public float mOriginalDefeatOdd; // 欧指初盘负赔
@@ -84,6 +91,10 @@ public class Match {
 
   public float mHostBestShoot; // 主队射正次数
   public float mCustomBestShoot; // 客队射正次数
+
+  public float mHostControlRate; // 主队射正次数
+  public float mCustomControlRate; // 客队射正次数
+
   public float mHostCornerScore; // 主队角球数
   public float mCustomCornerScore; // 客队角球数
 

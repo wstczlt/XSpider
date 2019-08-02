@@ -17,11 +17,11 @@ import com.test.train.tools.Match;
 /**
  * 70分钟，再追一球的大球模型.
  */
-public class BallAt70Model extends Model {
+public class Ball70Model extends Model {
 
   @Override
   public String name() {
-    return "bigBallOfMin70";
+    return "ball70";
   }
 
   @Override
@@ -69,7 +69,7 @@ public class BallAt70Model extends Model {
       return -1;
     }
     if (realValue == 1) { // 出大球
-      return 0.8f; // 平均赔率代替
+      return 0.7f; // 平均赔率代替
     } else { // 出小球，全赢
       return 0.9f;
     }

@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.apache.http.util.TextUtils;
 
-import com.test.train.model.BallAt25Model;
+import com.test.train.model.Ball25Model;
 import com.test.train.model.Model;
 import com.test.train.tools.Estimation;
 import com.test.train.tools.Match;
@@ -19,7 +19,7 @@ public class RtBallAt25 implements Rt {
 
   @Override
   public Model model() {
-    return new BallAt25Model();
+    return new Ball25Model();
   }
 
   @Override

@@ -21,11 +21,11 @@ import com.test.train.tools.Match;
 /**
  * 大球训练模型.
  */
-public class BallOriginalModel extends Model {
+public class BallModel extends Model {
 
   @Override
   public String name() {
-    return "bigBall";
+    return "ball";
   }
 
   @Override

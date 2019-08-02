@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.http.util.TextUtils;
 
-import com.test.train.model.BallAt70Model;
+import com.test.train.model.Ball70Model;
 import com.test.train.model.Model;
 import com.test.train.tools.Estimation;
 import com.test.train.tools.Match;
@@ -17,7 +17,7 @@ public class RtBallAt70 implements Rt {
 
   @Override
   public Model model() {
-    return new BallAt70Model();
+    return new Ball70Model();
   }
 
   @Override

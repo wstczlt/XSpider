@@ -3,10 +3,11 @@ package com.test.train;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import com.test.tools.Pair;
+import com.test.train.model.BallHalfModel;
 import com.test.train.model.Model;
-import com.test.train.model.OddOriginalModel;
 import com.test.train.tools.Estimation;
 import com.test.train.tools.Match;
 import com.test.train.tools.MatchQuery;
@@ -20,10 +21,10 @@ public class TrainMain {
   private static final float[] THRESHOLDS = new float[] {
       // 0.50f,
       // 0.51f, 0.52f, 0.53f, 0.54f, 0.55f,
-      0.55f, 0.58f, 0.61f, 0.64f, 0.67f, 0.70f}; // 高概率要求的阈值
+      0.50f, 0.55f, 0.60f, 0.65f, 0.7f}; // 高概率要求的阈值
 
   public static void main(String[] args) throws Exception {
-    final Model model = new OddOriginalModel(); // 训练模型
+    final Model model = new BallHalfModel(); // 训练模型
 
 
     final List<Match> matches = MatchQuery.doQuery(model.buildQuerySql());
@@ -54,29 +55,32 @@ public class TrainMain {
   private static Pair<TrainSummary, TrainSummary> doTest(Model model,
       TrainInputs data, double threshold) throws Exception {
     List<Estimation> estimations = model.estimate(data);
-    int normalTotalCount = 0, highProbTotalCount = 0, normalPositiveHitCount = 0, normalProfit = 0,
+    int normalTotalCount = 0, highProbTotalCount = 0, normalPositiveHitCount = 0,
         maxContinueHitCount = 0, maxContinueMissCount = 0;
-    int normalHitCount = 0, highProbHitCount = 0, highPositiveProbHitCount = 0, highPorbProfit = 0,
+    float normalProfit = 0;
+    int normalHitCount = 0, highProbHitCount = 0, highPositiveProbHitCount = 0,
         highMaxContinueHitCount = 0, highMaxContinueMissCount = 0;
+    float highPorbProfit = 0;
 
     int continueHit = 0, continueMiss = 0, highContinueHit = 0, highContinueMiss = 0;
     boolean lastHit = false, highLastHit = false;
     for (int i = 0; i < estimations.size(); i++) {
       final Match match = data.mMatches.get(i);
-      final Estimation est = estimations.get(i);
-      final float newGain = model.calGain(match, est);
-      final boolean isHit = newGain > 0;
+      // 随机结果
+      final Estimation randomEst = new Estimation(new Random().nextInt(2), 0.5f);
+      final float randomGain = model.calGain(match, randomEst);
+      final boolean isRandomHit = randomGain > 0;
 
       normalTotalCount++;
-      normalProfit += newGain;
+      normalProfit += randomGain;
 
-      if (isHit) { // 实际命中
+      if (isRandomHit) { // 实际命中
         normalHitCount++;
         // 上盘
-        if (est.mValue == 1) normalPositiveHitCount++;
+        if (randomEst.mValue == 1) normalPositiveHitCount++;
       }
       // 处理连黑连红计算
-      if (isHit) {
+      if (isRandomHit) {
         continueMiss = 0;
         // 连红
         if (lastHit) continueHit++;
@@ -86,22 +90,26 @@ public class TrainMain {
         if (!lastHit) continueMiss++;
       }
 
-      lastHit = isHit;
+      lastHit = isRandomHit;
       maxContinueHitCount = Math.max(continueHit, maxContinueHitCount);
       maxContinueMissCount = Math.max(continueMiss, maxContinueMissCount);
 
+      // 处理AI的结果
+      final Estimation est = estimations.get(i);
+      final float aiGain = model.calGain(match, est);
+      final boolean isAiHit = aiGain > 0;
       // 高概率
       if (est.mProbability >= threshold) {
         highProbTotalCount++;
-        highPorbProfit += newGain;
-        if (isHit) { // 实际阳性
+        highPorbProfit += aiGain;
+        if (isAiHit) { // 实际阳性
           highProbHitCount++;
           // 上盘
           if (est.mValue == 1) highPositiveProbHitCount++;
         }
 
         // 处理连黑连红计算
-        if (isHit) {
+        if (isAiHit) {
           highContinueMiss = 0;
           // 连红
           if (highLastHit) highContinueHit++;
@@ -110,7 +118,7 @@ public class TrainMain {
           // 连黑
           if (!highLastHit) highContinueMiss++;
         }
-        highLastHit = isHit;
+        highLastHit = isAiHit;
         highMaxContinueHitCount = Math.max(highContinueHit, highMaxContinueHitCount);
         highMaxContinueMissCount = Math.max(highContinueMiss, highMaxContinueMissCount);
       }

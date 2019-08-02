@@ -17,11 +17,11 @@ import com.test.train.tools.Match;
 /**
  * 上半场大小球模型
  */
-public class BallAt25Model extends Model {
+public class Ball25Model extends Model {
 
   @Override
   public String name() {
-    return "bigBallOfMin25";
+    return "ball25";
   }
 
   @Override

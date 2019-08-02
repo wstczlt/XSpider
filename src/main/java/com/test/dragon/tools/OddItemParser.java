@@ -152,19 +152,19 @@ public class OddItemParser implements Keys {
         isForbidden = true;
         return;
       }
-      String oddString = mJson.getString("PanKou"); // 盘口
+
       switch (mType) {
         case SCORE:
-          mOdd = SpiderUtils.convertOdd(oddString);
+          mOdd = -mJson.getFloatValue("PanKou");
           break;
         case BALL:
-          mOdd = SpiderUtils.convertBallOdd(oddString);
+          mOdd = mJson.getFloatValue("PanKou");
           break;
         case EUROPE:
-          mOdd = Utils.valueOfFloat(oddString);
+          mOdd = mJson.getFloatValue("PanKou");
           break;
         case CORNER:
-          mOdd = Utils.valueOfFloat(oddString);
+          mOdd = mJson.getFloatValue("PanKou");
           break;
       }
     }

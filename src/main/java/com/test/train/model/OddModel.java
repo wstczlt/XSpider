@@ -20,11 +20,11 @@ import com.test.train.tools.Match;
 /**
  * 让球胜训练模型.
  */
-public class OddOriginalModel extends Model {
+public class OddModel extends Model {
 
   @Override
   public String name() {
-    return "oddVictory";
+    return "odd";
   }
 
   public String buildQuerySql() {
@@ -54,7 +54,7 @@ public class OddOriginalModel extends Model {
 
   @Override
   public Mappers.Mapper mapOfY() {
-    return match -> (match.mHostScore - match.mCustomScore + match.mOpeningScoreOdd) > 0 ? 1f : 0;
+    return match -> (match.mHostScore - match.mCustomScore - match.mOpeningScoreOdd) > 0 ? 1f : 0;
   }
 
   @Override
