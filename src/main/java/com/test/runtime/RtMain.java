@@ -1,20 +1,21 @@
 package com.test.runtime;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-
 import com.test.dragon.DragonMain;
 import com.test.dragon.kernel.ListSupplier;
+import com.test.runtime.est.ConsoleEstConsumer;
+import com.test.runtime.est.EstimationConsumer;
+import com.test.runtime.est.FileEstConsumer;
+import com.test.runtime.rt.Rt;
+import com.test.runtime.rt.RtBallHalf;
+import com.test.runtime.rt.RtOddHalf;
 import com.test.spider.SpiderConfig;
 import com.test.tools.Utils;
 import com.test.train.tools.Estimation;
@@ -22,10 +23,18 @@ import com.test.train.tools.Match;
 import com.test.train.tools.MatchQuery;
 import com.test.train.tools.TrainInputs;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class RtMain {
 
   private static final Rt[] RTS = new Rt[] {
       new RtBallHalf(), new RtOddHalf()
+  };
+
+  private static final EstimationConsumer[] CONSUMERS = new EstimationConsumer[] {
+      new ConsoleEstConsumer(), new FileEstConsumer()
   };
 
   public static void main(String[] args) throws Exception {
@@ -73,19 +82,24 @@ public class RtMain {
     List<Estimation> results = rt.model().estimate(input);
 
     for (int i = 0; i < results.size(); i++) {
-      rt.display(input.mMatches.get(i), results.get(i));
+      for (EstimationConsumer consumer : CONSUMERS) {
+        consumer.onEstimation(input.mMatches.get(i), rt.model(), results.get(i));
+      }
     }
 
-    System.out.println("\n\n----------");
+    System.out.println("\n\n");
   }
 
 
   private static List<Integer> collectRealTimeMatchIds() throws Exception {
     final String requestUrl = "http://score.nowscore.com/data/sbOddsData.js";
     List<Integer> matchIds = new ArrayList<>();
-    HttpResponse response = HttpClients.custom().build().execute(new HttpGet(requestUrl));
-    HttpEntity entity = response.getEntity();
-    String html = EntityUtils.toString(entity, "UTF-8");
+    OkHttpClient httpClient = DragonMain.buildHttpClient();
+    Response response = httpClient.newCall(new Request.Builder().url(requestUrl).build()).execute();
+    if (!response.isSuccessful() || response.body() == null) {
+      return Collections.emptyList();
+    }
+    String html = response.body().string();
     // System.out.println(html);
     Pattern pattern = Pattern.compile("sData\\[\\d+]");
     Matcher matcher = pattern.matcher(html);

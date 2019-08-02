@@ -26,12 +26,7 @@ public class DragonMain {
   public static final String DATABASE_URL = "jdbc:sqlite:sqlite/football_dragon.db";
 
   public static void main(String[] args) throws Exception {
-    final boolean isSpider = args != null && args.length >= 1 && "-s".equals(args[0].toLowerCase());
-    if (isSpider) {
-      runSpider(1600000, 1639600);
-    } else {
-      runRt();
-    }
+    runSpider(1600000, 1639600);
   }
 
   public static void runRt() throws Exception {
@@ -61,7 +56,7 @@ public class DragonMain {
   }
 
 
-  private static OkHttpClient buildHttpClient() {
+  public static OkHttpClient buildHttpClient() {
     OkHttpClient.Builder builder = new OkHttpClient.Builder()
         // .addInterceptor(new CurlInterceptor(Logger.SYSTEM))
         .addInterceptor(new RetryOnceInterceptor())

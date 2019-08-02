@@ -223,9 +223,9 @@ public class MatchQuery {
     match.mCustomCornerOf3 = valueOfFloat(databaseMap.get("customCornerOf3"));
 
     match.mHostBestShoot =
-        valueOfFloat(databaseMap.get("hostBestShoot")) * (match.mTimeMin / 100.00f);
+        valueOfFloat(databaseMap.get("hostBestShoot")) * (90.00f / match.mTimeMin);
     match.mCustomBestShoot = valueOfFloat(databaseMap.get("customBestShoot"))
-        * (match.mTimeMin / 100.00f);
+        * (90.00f / match.mTimeMin);
 
     match.mHostControlRate = valueOfFloat(databaseMap.get("hostControlRate"));
     match.mCustomControlRate = valueOfFloat(databaseMap.get("customControlRate"));

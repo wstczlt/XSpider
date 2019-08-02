@@ -132,7 +132,9 @@ public class OddItemParser implements Keys {
 
     private void init() {
       final String stringOfMin = mJson.getString("HappenTime"); // 时间
-      if (stringOfMin.trim().equals("中场") || stringOfMin.trim().equals("半")) {
+      if (stringOfMin.trim().equals("中场")
+          || stringOfMin.trim().equals("半")
+          || stringOfMin.trim().equals("45")) {
         isMiddle = true;
         mMinute = 45;
       } else {
