@@ -29,7 +29,9 @@ public class OddHalfModel extends Model {
     final String andSql = "AND middle_scoreOdd is not null AND middle_scoreOddOfVictory >0 " +
         "and middle_bigOdd >0 and middle_bigOddOfVictory >0 " +
         "AND middle_hostScore>=0 AND middle_customScore>=0 " +
-        "and hostBestShoot>=0 and customBestShoot>=0 ";
+        "and hostBestShoot>=0 and customBestShoot>=0 " +
+        "and hostScoreOf3 >=0 and customScoreOf3 >=0 " +
+        "and hostLossOf3>=0 and customLossOf3>=0 ";
     return SQL_BASE + SQL_LEAGUE + andSql + SQL_ORDER;
   }
 
@@ -59,6 +61,12 @@ public class OddHalfModel extends Model {
     trainKeys.add(match -> match.mCustomBestShoot * 0.4f);
     // trainKeys.add(match -> match.mHostControlRate);
     // trainKeys.add(match -> match.mCustomControlRate);
+
+
+    trainKeys.add(match -> match.mHostScoreOf3);
+    trainKeys.add(match -> match.mCustomScoreOf3);
+    trainKeys.add(match -> match.mHostLossOf3);
+    trainKeys.add(match -> match.mCustomLossOf3);
 
     return trainKeys;
   }

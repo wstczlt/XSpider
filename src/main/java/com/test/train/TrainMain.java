@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Random;
 
 import com.test.tools.Pair;
-import com.test.train.model.BallHalfModel;
 import com.test.train.model.Model;
+import com.test.train.model.OddHalfModel;
 import com.test.train.tools.Estimation;
 import com.test.train.tools.Match;
 import com.test.train.tools.MatchQuery;
@@ -24,7 +24,7 @@ public class TrainMain {
       0.50f, 0.55f, 0.60f, 0.65f, 0.7f}; // 高概率要求的阈值
 
   public static void main(String[] args) throws Exception {
-    final Model model = new BallHalfModel(); // 训练模型
+    final Model model = new OddHalfModel(); // 训练模型
 
 
     final List<Match> matches = MatchQuery.doQuery(model.buildQuerySql());
