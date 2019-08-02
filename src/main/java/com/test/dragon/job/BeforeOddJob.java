@@ -69,13 +69,13 @@ public class BeforeOddJob extends DragonJob {
 
     if (json.containsKey("FirstLetGoal")) {
       items.put(ORIGINAL_SCORE_ODD, -json.getFloatValue("FirstLetGoal") + "");
-      items.put(ORIGINAL_SCORE_ODD_OF_VICTORY, -json.getFloatValue("FirstHomeOdds") + "");
-      items.put(ORIGINAL_SCORE_ODD_OF_DEFEAT, -json.getFloatValue("FirstAwayOdds") + "");
+      items.put(ORIGINAL_SCORE_ODD_OF_VICTORY, json.getFloatValue("FirstHomeOdds") + "");
+      items.put(ORIGINAL_SCORE_ODD_OF_DEFEAT, json.getFloatValue("FirstAwayOdds") + "");
     }
     if (json.containsKey("LetGoal")) {
       items.put(OPENING_SCORE_ODD, -json.getFloatValue("LetGoal") + "");
-      items.put(OPENING_SCORE_ODD_OF_VICTORY, -json.getFloatValue("HomeOdds") + "");
-      items.put(OPENING_SCORE_ODD_OF_DEFEAT, -json.getFloatValue("AwayOdds") + "");
+      items.put(OPENING_SCORE_ODD_OF_VICTORY, json.getFloatValue("HomeOdds") + "");
+      items.put(OPENING_SCORE_ODD_OF_DEFEAT, json.getFloatValue("AwayOdds") + "");
     }
 
     JSONArray oddsCompare = json.getJSONArray("OddsCompare");
