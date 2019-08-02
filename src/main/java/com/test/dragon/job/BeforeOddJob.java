@@ -40,8 +40,8 @@ public class BeforeOddJob extends DragonJob {
   public void handleResponse(String text, Map<String, String> items) {
     JSONObject json = JSON.parseObject(text);
     if (json == null) {
-      mLogger
-          .log(String.format("Skipped: %s [%d] \n %s", getClass().getSimpleName(), mMatchID, text));
+      // mLogger
+      // .log(String.format("Skipped: %s [%d] \n %s", getClass().getSimpleName(), mMatchID, text));
       setSkip(items);
       return;
     }

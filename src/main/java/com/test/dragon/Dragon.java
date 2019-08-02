@@ -33,11 +33,12 @@ public class Dragon {
   // 每场比赛抓取之后暂停线程一段时间
   private static final int DEFAULT_MIN_RUN_MILLS = 1500;
 
-  private final Supplier<OkHttpClient> mClientSupplier;
   private final ExecutorService mPool;
   private final Supplier<List<Integer>> mMatchSupplier;
   private final DragonProcessor mDragonProcessor;
   private final Logger mLogger;
+  private final Supplier<OkHttpClient> mClientSupplier;
+  private final ThreadLocal<OkHttpClient> mHttpClientThreadLocal = new ThreadLocal<>();
 
 
   public Dragon(Supplier<OkHttpClient> clientSupplier, ExecutorService pool,
@@ -64,11 +65,17 @@ public class Dragon {
     }
   }
 
-  void executeJob(int matchID, Map<String, String> items, DragonJob job) {
+  void executeJob(int matchID, Map<String, String> items, DragonJob job, int retry) {
     String text;
+    Response response = null;
     try {
       final Request request = buildRequest(job.newRequestBuilder());
-      final Response response = mClientSupplier.get().newCall(request).execute();
+      OkHttpClient client = mHttpClientThreadLocal.get();
+      if (client == null) {
+        client = mClientSupplier.get();
+        mHttpClientThreadLocal.set(client);
+      }
+      response = client.newCall(request).execute();
       // 成功则继续处理
       if (response.isSuccessful() && response.body() != null) {
         text = response.body().string();
@@ -77,14 +84,28 @@ public class Dragon {
         setSkip(items);
         text = response.code() + "";
       }
-      response.close();
     } catch (Throwable e) {
       SpiderUtils.log(e);
       text = e.getMessage();
+    } finally {
+      if (response != null && response.body() != null) {
+        response.body().close();
+      }
     }
 
-    if (isSkip(items)) {
-      mLogger.log("Execute Failed: " + text +
+    // 重试
+    // 野鸡不应该出现其它Job的失败, 重置HTTPCLIENT
+    if (isSkip(items) && !(job instanceof BeforeOddJob) && retry > 0) {
+      mHttpClientThreadLocal.set(null);
+      executeJob(matchID, items, job, --retry);
+    }
+    // 彻底失败
+    if (isSkip(items) && !(job instanceof BeforeOddJob) && retry <= 0) {
+      mLogger.log("Execute Failed: [Length="
+          + ((response != null && response.body() != null) ? response.body().contentLength() : 0)
+          + ", code="
+          + (response != null ? response.code() : 0) + "]"
+          + text +
           ", matchID = " + matchID + ", " + job.getClass().getSimpleName());
     }
   }
@@ -127,11 +148,9 @@ public class Dragon {
       final long timeStart = System.currentTimeMillis();
       final Map<String, String> items = new HashMap<>();
       for (DragonJob job : mJobs) {
-        executeJob(mMatchID, items, job);
+        executeJob(mMatchID, items, job, 2);
         // 如果某Job认为不需要继续了, 则抛弃这个MatchID
-        boolean isSkip = isSkip(items);
-
-        if (isSkip) break;
+        if (isSkip(items)) break;
       }
 
       if (!DragonUtils.isSkip(items)) { // 如果被标记为Skip则忽略不处理

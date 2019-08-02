@@ -103,7 +103,7 @@ public class DragonProcessor implements Keys {
       int cnt = mValueCount.getAndIncrement();
       mLogger.log(
           String.format("DATABASE: matchID=%d, %s VS %s, valueCount=%d, victoryOdd=%.2f",
-              matchID, items.get(HOST_NAME), items.get(CUSTOM_SCORE), cnt, victoryOdd));
+              matchID, items.get(HOST_NAME), items.get(CUSTOM_NAME), cnt, victoryOdd));
     } catch (Throwable e) {
       e.printStackTrace();
     }

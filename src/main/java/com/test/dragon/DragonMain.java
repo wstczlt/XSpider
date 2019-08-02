@@ -33,7 +33,7 @@ public class DragonMain {
 
     final Supplier<List<Integer>> supplier;
     if (isSpider) { // Spider抓取模式
-      supplier = new StaticSupplier(1600000, 1656223);
+      supplier = new StaticSupplier(1600000, 1647126);
     } else { // 实时扫描模式
       supplier = new RuntimeSupplier(clientSupplier.get());
     }
