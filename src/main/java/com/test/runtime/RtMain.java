@@ -61,8 +61,7 @@ public class RtMain {
   }
 
   private static void loopMain() throws Exception {
-    System.out.println(); // 空行
-    System.out.println("当前时间: " + SpiderConfig.DATE_FORMAT.format(new Date()));
+    System.out.println("\n\n\n\n\n\n当前时间: " + SpiderConfig.DATE_FORMAT.format(new Date()));
 
     final List<Integer> matchIDs = collectRealTimeMatchIds();
     // 运行爬虫
@@ -77,6 +76,7 @@ public class RtMain {
 
   private static void loopRts(List<Match> matches) throws Exception {
     for (Rt rt : RTS) {
+      System.out.println("-----------------模型: " + rt.model().name() + "--------------------");
       loopOne(rt, matches);
     }
   }
@@ -105,8 +105,6 @@ public class RtMain {
         consumer.onEstimation(input.mMatches.get(i), rt.model(), results.get(i));
       }
     }
-
-    System.out.println("\n\n");
   }
 
 

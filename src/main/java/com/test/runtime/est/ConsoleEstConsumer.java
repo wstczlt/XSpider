@@ -20,15 +20,13 @@ public class ConsoleEstConsumer implements EstimationConsumer {
   }
 
   private void displayBallHalf(Match match, Model model, Estimation est) {
-    // if (est.mProbability < model.bestThreshold()) { // 只展示高概率比赛
-    // return;
-    // }
-    // int matchID = match.mMatchID;
+    if (est.mProbability < model.bestThreshold()) { // 只展示高概率比赛
+      return;
+    }
     String hostName = match.mHostName;
     String customName = match.mCustomName;
     String league = !TextUtils.isEmpty(match.mLeague) ? match.mLeague : "野鸡";
 
-    System.out.println("\n\n");
     System.out.println(
         String.format("%d', [%s], %s VS %s", match.mTimeMin, league, hostName, customName));
     System.out.println(
@@ -38,6 +36,8 @@ public class ConsoleEstConsumer implements EstimationConsumer {
         match.mMiddleBigOdd + "[" + (est.mValue == 0 ? "小" : "大") + "]",
         est.mProbability,
         ((int) (est.mProbability * 100 + 5)) + "%"));
+
+    System.out.println("\n\n");
   }
 
   private void displayOddHalf(Match match, Model model, Estimation est) {
