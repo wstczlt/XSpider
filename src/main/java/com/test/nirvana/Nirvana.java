@@ -1,6 +1,7 @@
 package com.test.nirvana;
 
 import static com.test.tools.QueryHelper.SQL_BASE;
+import static com.test.tools.QueryHelper.SQL_MIDDLE;
 import static com.test.tools.QueryHelper.SQL_ORDER;
 import static com.test.tools.QueryHelper.SQL_RT;
 import static com.test.tools.QueryHelper.buildSqlIn;
@@ -57,7 +58,7 @@ public class Nirvana {
     // 运行爬虫
     List<Integer> matchIDs = Dragon.runRt();
     // 查询数据
-    String querySql = SQL_BASE + SQL_RT + buildSqlIn(matchIDs) + SQL_ORDER;
+    String querySql = SQL_BASE + SQL_MIDDLE + SQL_RT + buildSqlIn(matchIDs) + SQL_ORDER;
     List<Match> matches = QueryHelper.doQuery(querySql);
     System.out.println("进行中的比赛场次: " + matches.size());
 

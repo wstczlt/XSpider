@@ -67,7 +67,7 @@ public class QueryHelper implements Keys {
   // 已结束的比赛
   public static String SQL_ST = "AND matchStatus=-1 ";
 
-  public static String SQL_ORDER = "order by matchTime desc limit 8000";
+  public static String SQL_ORDER = "order by matchTime desc limit 5000";
 
   public static List<Match> doQuery(String sql) throws Exception {
     final List<Match> matches = new ArrayList<>();

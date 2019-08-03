@@ -16,11 +16,7 @@ import com.test.tools.Utils;
 public class Phoenix {
 
   public static void main(String[] args) throws Exception {
-    runTest(new OddHalfModel());
-  }
-
-  public static void runTest(Model model) throws Exception {
-    PhoenixTester.runTest(model);
+    PhoenixTester.runTest(new OddHalfModel());
   }
 
   /**

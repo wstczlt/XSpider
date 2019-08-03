@@ -75,6 +75,7 @@ public class FileConsumer implements EstimationConsumer, Keys {
   public static void main(String[] args) throws Exception {
     File file = new File(FILENAME);
     List<String> lines = FileUtils.readLines(file, "utf-8");
+    // lines = lines.subList(0, 268); // 测试
     Map<String, Object[]> matchMap = new HashMap<>();
 
     for (String line : lines) {
@@ -101,7 +102,7 @@ public class FileConsumer implements EstimationConsumer, Keys {
       Model model = (Model) objects[1];
       Estimation newEst = (Estimation) objects[2];
 
-      if (newEst.mProbability >= 0.65f) {
+      if (newEst.mProbability >= 0.6f) {
         float newGain = model.calGain(match, newEst);
 
         sumGain += newGain;
@@ -133,6 +134,7 @@ public class FileConsumer implements EstimationConsumer, Keys {
     match.mHostName = basicMap.get(HOST_NAME);
     match.mCustomName = basicMap.get(CUSTOM_NAME);
     match.mLeague = basicMap.get(LEAGUE);
+    match.mMatchTime = Long.parseLong(basicMap.get(MATCH_TIME));
     match.mHostScore = valueOfInt(basicMap.get(HOST_SCORE));
     match.mCustomScore = valueOfInt(basicMap.get(CUSTOM_SCORE));
     match.mMiddleHostScore = valueOfInt(items[2].trim().substring("middleHostScore=".length()));
