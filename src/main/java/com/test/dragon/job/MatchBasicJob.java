@@ -5,7 +5,7 @@ import static com.test.dragon.tools.DragonUtils.setSkip;
 import java.util.Map;
 
 import com.github.promeg.pinyinhelper.Pinyin;
-import com.test.dragon.kernel.DragonJob;
+import com.test.dragon.DragonJob;
 import com.test.dragon.tools.DragonUtils;
 import com.test.tools.Logger;
 

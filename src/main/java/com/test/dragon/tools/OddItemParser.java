@@ -9,7 +9,6 @@ import org.apache.http.util.TextUtils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.test.spider.tools.SpiderUtils;
 import com.test.tools.Keys;
 import com.test.tools.Utils;
 
@@ -39,7 +38,7 @@ public class OddItemParser implements Keys {
     try {
       init();
     } catch (Throwable e) {
-      SpiderUtils.log(e);
+      Utils.log(e);
     }
   }
 
@@ -127,7 +126,7 @@ public class OddItemParser implements Keys {
       try {
         init();
       } catch (Throwable e) {
-        SpiderUtils.log(e);
+        Utils.log(e);
       }
     }
 

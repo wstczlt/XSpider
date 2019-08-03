@@ -2,7 +2,7 @@ package com.test.dragon.job;
 
 import java.util.Map;
 
-import com.test.dragon.kernel.DragonJob;
+import com.test.dragon.DragonJob;
 import com.test.tools.Logger;
 
 import okhttp3.Request;

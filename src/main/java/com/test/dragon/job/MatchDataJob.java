@@ -7,7 +7,7 @@ import java.util.Map;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.test.dragon.kernel.DragonJob;
+import com.test.dragon.DragonJob;
 import com.test.tools.Logger;
 
 import okhttp3.Request;
