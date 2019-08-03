@@ -26,33 +26,47 @@ import okhttp3.Response;
 
 // import java.util.Collections;
 
+@SuppressWarnings("unchecked")
 public class FileEstConsumer implements EstimationConsumer, Keys {
 
   private static final String FILENAME = "temp/est.txt";
 
   @Override
   public void onEstimation(Match match, Model model, Estimation est) {
-    File file = new File(FILENAME);
+    final String newLine = String.format("Model=%s, matchID=%d, " +
+        "middleHostScore=%d, middleCustomScore=%d, " +
+        "middleScoreOdd=%.2f, middleBigOdd=%.2f, " +
+        "middleScoreOddOfVictory=%.2f, middleScoreOddOfDefeat=%.2f, " +
+        "middleBigOddOfVictory=%.2f, middleBigOddOfDefeat=%.2f, " +
+        "estValue=%d, estProb=%.2f",
+        model.name(), match.mMatchID,
+        match.mMiddleHostScore, match.mMiddleCustomScore,
+        match.mMiddleScoreOdd, match.mMiddleBigOdd,
+        match.mMiddleScoreOddOfVictory, match.mMiddleScoreOddOfDefeat,
+        match.mMiddleBigOddOfVictory, match.mMiddleBigOddOfDefeat,
+        (int) est.mValue, est.mProbability);
 
+    final File file = new File(FILENAME);
     try {
-      String text = FileUtils.readFileToString(file, "utf-8");
-      final String line = String.format("Model=%s, matchID=%d, " +
-          "middleHostScore=%d, middleCustomScore=%d, " +
-          "middleScoreOdd=%.2f, middleBigOdd=%.2f, " +
-          "middleScoreOddOfVictory=%.2f, middleScoreOddOfDefeat=%.2f, " +
-          "middleBigOddOfVictory=%.2f, middleBigOddOfDefeat=%.2f, " +
-          "estValue=%d, estProb=%.2f",
-          model.name(), match.mMatchID,
-          match.mMiddleHostScore, match.mMiddleCustomScore,
-          match.mMiddleScoreOdd, match.mMiddleBigOdd,
-          match.mMiddleScoreOddOfVictory, match.mMiddleScoreOddOfDefeat,
-          match.mMiddleBigOddOfVictory, match.mMiddleBigOddOfDefeat,
-          (int) est.mValue, est.mProbability);
-      if (text.contains(line)) { // 去重
-        return;
+      List<String> lines = FileUtils.readLines(file, "utf-8");
+      int existIndex = -1;
+      for (int i = 0; i < lines.size(); i++) {
+        String text = lines.get(i);
+        // 根据matchID和model去重
+        if (text.contains(match.mMatchID + "") && text.contains(model.name())) {
+          // 找到一样的行
+          existIndex = i;
+          break;
+        }
       }
-      text = text + line + "\n";
-      FileUtils.writeStringToFile(file, text, "utf-8");
+
+      if (existIndex != -1) {
+        lines.set(existIndex, newLine);
+      } else {
+        lines.add(newLine);
+      }
+      // 写入
+      FileUtils.writeLines(file, "utf-8", lines);
     } catch (Exception e) {
       e.printStackTrace();
     }
