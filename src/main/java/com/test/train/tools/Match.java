@@ -12,6 +12,7 @@ public class Match {
   public String mLeague; // 联赛名称
   public int mHostScore; // 主队比分
   public int mCustomScore; // 客队比分
+  public int mStatus; // 比赛状态: -1=已完场, 0=不知道， [1~4]=进行中
 
   public int mHostLeagueRank; // 主队联赛排名, 可能为0
   public int mHostLeagueOnHostRank; // 主队主场排名, 可能为0

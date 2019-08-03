@@ -11,8 +11,9 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 
 import com.test.spider.tools.SpiderDB;
+import com.test.tools.Keys;
 
-public class MatchQuery {
+public class MatchQuery implements Keys {
 
   public static final String SQL_BASE =
       "select * from football where 1=1 " +
@@ -38,6 +39,7 @@ public class MatchQuery {
           "AND opening_drawOdd >0 " +
           "AND opening_victoryOdd >0 " +
           "AND opening_defeatOdd >0 " +
+          "AND league is not null " +
 
           "AND hostBestShoot >=0 " +
           "AND customBestShoot >=0 " +
@@ -76,13 +78,15 @@ public class MatchQuery {
           "AND middle_bigOddOfDefeat >0.7 " +
           "AND middle_scoreOdd is not null " +
           "AND middle_scoreOddOfVictory >0.7 " +
-          "AND middle_scoreOddOfDefeat >0.7 " +
-          "AND league is not null ";
+          "AND middle_scoreOddOfDefeat >0.7 ";
 
   // 25分钟比分0-0
   public static final String SQL_MIN25_ZERO_SCORE =
       "AND min25_hostScore=0 " +
           "AND min25_customScore=0 ";
+
+  // 进行中的比赛
+  public static String SQL_RT = "AND matchStatus>=1 AND matchStatus<=4 ";
 
   public static String SQL_ORDER = "order by matchTime desc limit 8000";
 
@@ -127,6 +131,7 @@ public class MatchQuery {
     match.mLeague = String.valueOf(databaseMap.get("league"));
     match.mHostScore = valueOfInt(databaseMap.get("hostScore"));
     match.mCustomScore = valueOfInt(databaseMap.get("customScore"));
+    match.mStatus = valueOfInt(databaseMap.get(MATCH_STATUS));
 
     match.mHostLeagueRank = valueOfInt(databaseMap.get("hostLeagueRank"));
     match.mHostLeagueOnHostRank =

@@ -16,7 +16,8 @@ import java.util.Random;
 
 public class DragonProxy extends ProxySelector {
 
-  private static final String PROXY_STRING = "";
+  private static final String PROXY_STRING =
+      "58.218.214.159:9891 58.218.214.159:9873 58.218.214.159:9590 58.218.214.159:9536 58.218.214.159:9950 58.218.214.159:9567 58.218.214.159:9978 58.218.214.159:9859 58.218.214.159:9775 58.218.214.159:9880 58.218.214.159:9828 58.218.214.159:9607 58.218.214.159:9541 58.218.214.159:9731 58.218.214.159:9701 58.218.214.159:9893 58.218.214.159:9723 58.218.214.159:9674 58.218.214.159:9931 58.218.214.159:9964";
 
   private final List<String> mProxySet = new ArrayList<>();
   private final Map<String, String> mUsedProxy = new HashMap<>();

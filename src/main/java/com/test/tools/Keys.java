@@ -1,4 +1,4 @@
-package com.test.dragon.tools;
+package com.test.tools;
 
 public interface Keys {
 

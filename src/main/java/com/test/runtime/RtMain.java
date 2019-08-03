@@ -1,5 +1,10 @@
 package com.test.runtime;
 
+import static com.test.train.tools.MatchQuery.SQL_BASE;
+import static com.test.train.tools.MatchQuery.SQL_ORDER;
+import static com.test.train.tools.MatchQuery.SQL_RT;
+import static com.test.train.tools.MatchQuery.buildSqlIn;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -62,26 +67,40 @@ public class RtMain {
     final List<Integer> matchIDs = collectRealTimeMatchIds();
     // 运行爬虫
     DragonMain.run(new ListSupplier(matchIDs));
+    String querySql = SQL_BASE + SQL_RT + buildSqlIn(matchIDs) + SQL_ORDER;
+    List<Match> matches = MatchQuery.doQuery(querySql);
+    System.out.println("进行中的比赛场次: " + matches.size());
+
     // 运行AI
-    loopRts(matchIDs);
+    loopRts(matches);
   }
 
-  private static void loopRts(List<Integer> matchIDs) throws Exception {
+  private static void loopRts(List<Match> matches) throws Exception {
     for (Rt rt : RTS) {
-      loopOne(rt, matchIDs);
+      loopOne(rt, matches);
     }
   }
 
-  private static void loopOne(Rt rt, List<Integer> matchIDs) throws Exception {
-    final String querySql = rt.buildSql(matchIDs);
-    List<Match> matches = MatchQuery.doQuery(querySql).stream().filter(rt)
+  private static void loopOne(Rt rt, List<Match> matches) throws Exception {
+    matches = matches.stream().filter(rt)
         .sorted((o1, o2) -> o1.mLeague.compareTo(o2.mLeague)).collect(Collectors.toList());
+    if (matches.isEmpty()) {
+      return;
+    }
+    boolean trick = false;
+    if (matches.size() == 1) { // 单条无法训练, 做一个trick
+      matches.add(matches.get(0));
+      trick = true;
+    }
 
     TrainInputs input = new TrainInputs(rt.model(), matches, false);
     input.prepare(); // 写入数据
     List<Estimation> results = rt.model().estimate(input);
 
     for (int i = 0; i < results.size(); i++) {
+      if (trick && i == 1) { // trick的数据不要
+        continue;
+      }
       for (EstimationConsumer consumer : CONSUMERS) {
         consumer.onEstimation(input.mMatches.get(i), rt.model(), results.get(i));
       }

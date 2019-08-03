@@ -20,9 +20,9 @@ public class ConsoleEstConsumer implements EstimationConsumer {
   }
 
   private void displayBallHalf(Match match, Model model, Estimation est) {
-    if (est.mProbability < model.bestThreshold()) { // 只展示高概率比赛
-      return;
-    }
+    // if (est.mProbability < model.bestThreshold()) { // 只展示高概率比赛
+    // return;
+    // }
     // int matchID = match.mMatchID;
     String hostName = match.mHostName;
     String customName = match.mCustomName;

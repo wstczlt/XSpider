@@ -1,15 +1,15 @@
-package com.test.dragon.tools;
+package com.test.tools;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
-public class DragonDbHelper {
+public class DbHelper {
 
   private final String mDatabaseUrl;
   private BasicDataSource mDataSource;
 
-  public DragonDbHelper(String databaseUrl) {
+  public DbHelper(String databaseUrl) {
     mDatabaseUrl = databaseUrl;
   }
 

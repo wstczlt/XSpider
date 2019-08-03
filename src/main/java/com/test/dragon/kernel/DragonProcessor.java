@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
 
-import com.test.dragon.tools.DragonDbHelper;
-import com.test.dragon.tools.Keys;
+import com.test.tools.DbHelper;
+import com.test.tools.Keys;
 import com.test.tools.Logger;
 import com.test.tools.Utils;
 
@@ -24,7 +24,7 @@ public class DragonProcessor implements Keys {
   // 先攒数据，用于创建数据库的初始key
   public static final int MAX_CACHE_ITEMS = 100;
 
-  private final DragonDbHelper mDbHelper;
+  private final DbHelper mDbHelper;
   private final Logger mLogger;
 
   private List<String> mColumns = new ArrayList<>();
@@ -35,7 +35,7 @@ public class DragonProcessor implements Keys {
 
   public DragonProcessor(String databaseUrl, Logger logger) {
     mLogger = logger;
-    mDbHelper = new DragonDbHelper(databaseUrl);
+    mDbHelper = new DbHelper(databaseUrl);
     mTableCreated = isExistTable();
   }
 
