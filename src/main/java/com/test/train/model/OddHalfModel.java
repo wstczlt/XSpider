@@ -78,7 +78,7 @@ public class OddHalfModel extends Model {
 
   @Override
   public float calGain(Match match, Estimation est) {
-    float realValue = mapOfY().val(match);
+    // float realValue = mapOfY().val(match);
 
     // System.out.println(
     // String.format(
@@ -88,13 +88,20 @@ public class OddHalfModel extends Model {
     // match.mMiddleScoreOdd,
     // match.mHostScore, match.mCustomScore,
     // (int) est.mValue, (int) realValue, String.valueOf(realValue == est.mValue)));
-    if (realValue != est.mValue) {
-      return -0.9f; // 把走盘也估算进去
-    }
-    if (realValue == 1) { // 上盘赔率
-      return match.mMiddleScoreOddOfVictory * 0.85f; // 考虑赢一半的情况
-    } else {
-      return match.mMiddleScoreOddOfDefeat * 0.8f; // 把走盘考虑进去
+
+    float deltaScore = (match.mHostScore - match.mCustomScore)
+        - (match.mMiddleHostScore - match.mMiddleCustomScore) + match.mMiddleScoreOdd;
+
+    if (deltaScore >= 0.5) {// 全赢
+      return est.mValue == 1 ? match.mMiddleScoreOddOfVictory : -1;
+    } else if (deltaScore > 0) {// 赢
+      return est.mValue == 1 ? match.mMiddleScoreOddOfVictory * 0.5f : -0.5f;
+    } else if (deltaScore == 0) { // 走盘
+      return 0;
+    } else if (deltaScore > -0.5) { // -0.25, 输半
+      return est.mValue == 1 ? -0.5f : match.mMiddleScoreOddOfDefeat * 0.5f;
+    } else {// 全输
+      return est.mValue == 1 ? -1 : match.mMiddleScoreOddOfDefeat;
     }
   }
 }

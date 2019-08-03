@@ -168,25 +168,27 @@ public class TrainMain {
 
     System.out.println("Test For threshold = " + threshold);
     System.out.println(String.format(
-        "Model=%s, 总场次=%.2f, 命中次数=%.2f, 命中上盘次数=%.2f，命中率=%d%%，最多连红=%.2f, 最多连黑=%.2f, 盈利=%.2f",
+        "Model=%s, 总场次=%.2f, 命中次数=%.2f, 命中上盘次数=%.2f，命中率=%d%%，最多连红=%.2f, 最多连黑=%.2f, 盈利=%.2f, 盈利率=%d%%",
         model.name(), normalResult.mTotalCount,
         normalResult.mHitCount,
         normalResult.mPositiveHitCount,
         (int) (normalResult.mHitCount * 100 / normalResult.mTotalCount),
         normalResult.mMaxContinueHitCount,
         normalResult.mMaxContinueMissCount,
-        normalResult.mProfit));
+        normalResult.mProfit,
+        (int) (normalResult.mProfit * 100 / normalResult.mTotalCount)));
 
     System.out
         .println(String.format(
-            "Model=%s, 高概率场次=%.2f, 命中次数=%.2f, 命中上盘次数=%.2f，命中率=%d%%，最多连红=%.2f, 最多连黑=%.2f, 盈利=%.2f",
+            "Model=%s, 高概率场次=%.2f, 命中次数=%.2f, 命中上盘次数=%.2f，命中率=%d%%，最多连红=%.2f, 最多连黑=%.2f, 盈利=%.2f, 盈利率=%d%%",
             model.name(), highProbResult.mTotalCount,
             highProbResult.mHitCount,
             highProbResult.mPositiveHitCount,
             (int) (highProbResult.mHitCount * 100 / highProbResult.mTotalCount),
             highProbResult.mMaxContinueHitCount,
             highProbResult.mMaxContinueMissCount,
-            highProbResult.mProfit));
+            highProbResult.mProfit,
+            (int) (highProbResult.mProfit * 100 / highProbResult.mTotalCount)));
 
     System.out.println();
     System.out.println();

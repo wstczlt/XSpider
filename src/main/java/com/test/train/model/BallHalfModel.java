@@ -79,7 +79,21 @@ public class BallHalfModel extends Model {
 
   @Override
   public float calGain(Match match, Estimation est) {
-    float realValue = mapOfY().val(match);
+    // float realValue = mapOfY().val(match);
+
+    float deltaBall = (match.mHostScore + match.mCustomScore) - match.mMiddleBigOdd;
+
+    if (deltaBall >= 0.5) {// 全赢
+      return est.mValue == 1 ? match.mMiddleBigOddOfVictory : -1;
+    } else if (deltaBall > 0) {// 赢
+      return est.mValue == 1 ? match.mMiddleBigOddOfVictory * 0.5f : -0.5f;
+    } else if (deltaBall == 0) { // 走盘
+      return 0;
+    } else if (deltaBall > -0.5) { // -0.25, 输半
+      return est.mValue == 1 ? -0.5f : match.mMiddleBigOddOfDefeat * 0.5f;
+    } else {// 全输
+      return est.mValue == 1 ? -1 : match.mMiddleBigOddOfDefeat;
+    }
 
     // System.out.println(
     // String.format(
@@ -89,13 +103,5 @@ public class BallHalfModel extends Model {
     // match.mMiddleBigOdd,
     // match.mHostScore, match.mCustomScore,
     // (int) est.mValue, (int) realValue, String.valueOf(realValue == est.mValue)));
-    if (realValue != est.mValue) {
-      return -0.9f; // 把走盘也估算进去
-    }
-    if (realValue == 1) { // 上盘赔率
-      return match.mMiddleBigOddOfVictory * 0.85f; // 考虑赢一半的情况
-    } else {
-      return match.mMiddleBigOddOfDefeat * 0.8f; // 把走盘考虑进去
-    }
   }
 }
