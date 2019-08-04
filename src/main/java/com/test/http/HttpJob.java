@@ -24,6 +24,11 @@ public abstract class HttpJob implements Keys {
   }
 
   public void onFailed(Throwable t) {
-    Config.LOGGER.log(String.format("[%s], Failed: %s", getClass().getSimpleName(), t.getMessage()));
+    Config.LOGGER.log(String.format("[%s], matchID=%d, Failed: %s",
+        getClass().getSimpleName(),
+        mMatchID,
+        t.getMessage()));
+
+    // Utils.log(t);
   }
 }

@@ -1,7 +1,5 @@
 package com.test.tools;
 
-import static com.test.Config.LOGGER;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
@@ -12,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 
+import com.test.Config;
 import com.test.Keys;
 import com.test.entity.Estimation;
 import com.test.entity.Model;
@@ -23,6 +22,14 @@ public class Utils {
   public static int valueOfInt(Object str) {
     try {
       return Integer.parseInt(str != null ? str.toString() : "");
+    } catch (Throwable e) {
+      return -1;
+    }
+  }
+
+  public static long valueOfLong(Object str) {
+    try {
+      return Long.parseLong(str != null ? str.toString() : "");
     } catch (Throwable e) {
       return -1;
     }
@@ -82,7 +89,7 @@ public class Utils {
     StringWriter writer = new StringWriter();
     e.printStackTrace(new PrintWriter(writer));
 
-    LOGGER.log(writer.toString());
+    Config.LOGGER.log(writer.toString());
   }
 
 

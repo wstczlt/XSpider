@@ -28,12 +28,12 @@ public class HttpEngine {
   private final List<List<HttpJob>> mJobs;
   private final HttpPipeline mProcessor;
   private final ExecutorService mPool;
-  private final OkHttpClient mHttpClient;
+  private final ThreadLocal<OkHttpClient> mClientThreadLocal;
 
   public HttpEngine(List<List<HttpJob>> jobs, HttpPipeline pipeline) {
     mJobs = jobs;
     mProcessor = pipeline;
-    mHttpClient = HttpUtils.buildHttpClient();
+    mClientThreadLocal = new ThreadLocal<>();
     mPool = Executors.newFixedThreadPool(MAX_THREAD_COUNT);
   }
 
@@ -47,7 +47,7 @@ public class HttpEngine {
     while (!mPool.awaitTermination(1, TimeUnit.SECONDS)) {
       // just wait
       int timeSpend = (int) ((System.currentTimeMillis() - startTime) / 1000);
-      Config.LOGGER.log(String.format("执行中..., 当前用时: %dszuqiu", timeSpend));
+      Config.LOGGER.log(String.format("执行中..., 当前用时: %ds", timeSpend));
     }
   }
 
@@ -68,7 +68,7 @@ public class HttpEngine {
       final long timeStart = System.currentTimeMillis();
       final Map<String, String> items = new HashMap<>();
       for (HttpJob job : mJobs) {
-        executeJob(items, job, 2);
+        executeJob(items, job);
         // 如果某Job认为不需要继续了, 则抛弃这个MatchID
         if (isSkip(items)) break;
       }
@@ -91,13 +91,33 @@ public class HttpEngine {
       }
     }
 
-    void executeJob(Map<String, String> items, HttpJob job, int retry) {
+    void executeJob(Map<String, String> items, HttpJob job) {
+      if (executeJobReal(items, job) != null) {
+        try {
+          Thread.sleep(500);
+        } catch (InterruptedException ignore) {}
+
+        mClientThreadLocal.set(null);
+        Throwable th = executeJobReal(items, job);
+        // 彻底失败
+        if (th != null) {
+          job.onFailed(th);
+        }
+      }
+    }
+
+    Throwable executeJobReal(Map<String, String> items, HttpJob job) {
       String text;
       Response response = null;
       Throwable th = null;
       try {
         final Request request = buildRequest(job.newRequestBuilder());
-        response = mHttpClient.newCall(request).execute();
+        OkHttpClient httpClient = mClientThreadLocal.get();
+        if (httpClient == null) {
+          httpClient = HttpUtils.buildHttpClient();
+          mClientThreadLocal.set(httpClient);
+        }
+        response = httpClient.newCall(request).execute();
         // 成功则继续处理
         if (response.isSuccessful() && response.body() != null) {
           text = response.body().string();
@@ -107,7 +127,6 @@ public class HttpEngine {
           th = new RuntimeException("Http Code=" + response.code());
         }
       } catch (Throwable e) {
-        Utils.log(e);
         th = e;
       } finally {
         if (response != null && response.body() != null) {
@@ -115,14 +134,7 @@ public class HttpEngine {
         }
       }
 
-      // 重试
-      if (isSkip(items) && job.needRetry() && retry > 0) {
-        executeJob(items, job, --retry);
-      }
-      // 彻底失败
-      if (th != null && retry <= 0) {
-        job.onFailed(th);
-      }
+      return th;
     }
   }
 }

@@ -2,6 +2,8 @@ package com.test.dszuqiu.jobs;
 
 import static com.test.tools.Utils.setSkip;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.http.util.TextUtils;
@@ -10,6 +12,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.test.Config;
 import com.test.http.HttpJob;
+import com.test.tools.Utils;
 
 import okhttp3.Request;
 
@@ -24,7 +27,6 @@ public class RaceJob extends HttpJob {
   @Override
   public Request.Builder newRequestBuilder() {
     String requestUrl = String.format(REQUEST_URL, mMatchID);
-    System.out.println(requestUrl);
     return new Request.Builder()
         .header("User-Agent", "Android 6.0.1/CLT-AL00/9")
         .url(requestUrl);
@@ -32,13 +34,8 @@ public class RaceJob extends HttpJob {
 
   @Override
   public void onResponse(String text, Map<String, String> items) throws Exception {
-    String error;
     JSONObject json = JSON.parseObject(text);
-    if (json == null) {
-      error = "Json Null";
-    } else {
-      error = json.getString("error");
-    }
+    String error = isLegal(json);
     if (!TextUtils.isEmpty(error)) {
       setSkip(items);
       Config.LOGGER.log(
@@ -46,7 +43,44 @@ public class RaceJob extends HttpJob {
       return;
     }
 
+    JSONObject race = json.getJSONObject("race");
+    JSONObject host = race.getJSONObject("host");
+    JSONObject guest = race.getJSONObject("guest");
+    JSONObject league = race.getJSONObject("league");
+    long matchTime = Utils.valueOfLong(race.getString("race_time")) * 1000;
+    String leagueName = league.getString("short_name");
+    String hostName = host.getString("sb_name");
+    String customName = guest.getString("sb_name");
+
     items.put(MATCH_ID, "" + mMatchID);
+    items.put(MATCH_TIME, matchTime + "");
+    items.put(HOST_NAME, hostName);
+    items.put(CUSTOM_NAME, customName);
+    items.put(LEAGUE, leagueName);
     items.put(RAW_TEXT, text);
+
+    Config.LOGGER.log(String.format("Found Match ID=%d, %s, [%s], %s VS %s",
+        mMatchID,
+        new SimpleDateFormat("yyyy-MM-dd").format(new Date(matchTime)),
+        leagueName,
+        hostName,
+        customName));
+  }
+
+  private String isLegal(JSONObject json) {
+    if (json == null) {
+      return "Json Null";
+    } else {
+      String error = json.getString("error");
+      if (!TextUtils.isEmpty(error)) {
+        return error;
+      }
+    }
+    JSONObject race = json.getJSONObject("race");
+    if (race == null) {
+      return "Race Null";
+    }
+
+    return null;
   }
 }
