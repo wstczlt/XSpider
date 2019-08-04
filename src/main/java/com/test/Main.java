@@ -1,12 +1,12 @@
 package com.test;
 
-import com.test.nirvana.Nirvana;
+import com.test.dszuqiu.DsSpider;
 
 public class Main {
 
   public static void main(String[] args) throws Exception {
 
-    Nirvana.runRt(1000);
+    DsSpider.runSt(140000, 640000);
   }
 
 }

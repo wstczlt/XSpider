@@ -3,7 +3,7 @@ package com.test.entity;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.test.phoenix.PhoenixMapper;
+import com.test.learning.PhoenixMapper;
 
 /**
  * 足球AI模型基类.

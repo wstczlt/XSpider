@@ -101,4 +101,9 @@ public class Match {
   public float mRecentVictoryRateOfHost; // 主队近期让胜率;
   public float mRecentVictoryRateOfCustom; // 客队近期让胜率
 
+  public float mJCVictoryOdd; // 竞彩胜赔
+  public float mAMVictoryOdd; // 澳门
+  public float mCrownVictoryOdd; // 皇冠
+  public float mBet365VictoryOdd; // bet365
+
 }

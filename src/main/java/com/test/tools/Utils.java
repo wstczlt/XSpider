@@ -4,16 +4,21 @@ import static com.test.Config.LOGGER;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 
+import com.test.Keys;
 import com.test.entity.Estimation;
 import com.test.entity.Model;
 
 public class Utils {
+
+  private static ThreadLocal<SimpleDateFormat> SDF = new ThreadLocal<>();
 
   public static int valueOfInt(Object str) {
     try {
@@ -29,6 +34,15 @@ public class Utils {
     } catch (Throwable e) {
       return -1;
     }
+  }
+
+  public static long valueOfDate(String time) throws Exception {
+    SimpleDateFormat sdf = SDF.get();
+    if (sdf == null) {
+      sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+      SDF.set(sdf);
+    }
+    return sdf.parse(time).getTime();
   }
 
   public static String exec(String cmd) throws Exception {
@@ -92,4 +106,11 @@ public class Utils {
     return "temp/" + model.name() + ".m";
   }
 
+  public static boolean isSkip(Map<String, String> items) {
+    return items.containsKey(Keys.SKIP);
+  }
+
+  public static void setSkip(Map<String, String> items) {
+    items.put(Keys.SKIP, String.valueOf(true));
+  }
 }
