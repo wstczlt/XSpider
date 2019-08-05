@@ -19,6 +19,8 @@ public class MojieMain {
   private static final Map<Integer, MojieMatch> BIG_MAP = new HashMap<>();
   private static final Map<Integer, MojieMatch> ASIA_MAP = new HashMap<>();
   private static final Map<Integer, MojieMatch> JINGCAI_MAP = new HashMap<>();
+  private static final Map<Integer, MojieMatch> BASKETBALL_MAP = new HashMap<>();
+
 
   public static void main(String[] args) throws Exception {
     for (int i = 0; i < 10000; i++) {
@@ -39,12 +41,13 @@ public class MojieMain {
       JSONArray matchArray = (JSONArray) predictionMap.get("prediction_list");
 
       final int matchID = (int) matchMap.get("match_id");
-      final int hostScore = (int) matchMap.get("host_score");
-      final int awayScore = (int) matchMap.get("away_score");
+      final int hostScore = Utils.valueOfInt(matchMap.get("host_score"));
+      final int awayScore = Utils.valueOfInt(matchMap.get("away_score"));
 
       Map<String, Object> bigMap = null;
       Map<String, Object> asiaMap = null;
       Map<String, Object> jingCaiMap = null;
+      Map<String, Object> baskballMap = null;
       for (int k = 0; k < matchArray.size(); k++) {
         Map<String, Object> itemMap = (Map<String, Object>) matchArray.get(k);
         String playCode = (String) itemMap.get("play_code");
@@ -54,11 +57,13 @@ public class MojieMain {
           bigMap = itemMap;
         } else if (playCode.equals("006")) {
           asiaMap = itemMap;
+        } else if (playCode.equals("101")) {
+          baskballMap = itemMap;
         }
       }
 
       final MojieMatch match =
-          new MojieMatch(matchID, hostScore, awayScore, bigMap, asiaMap, jingCaiMap);
+          new MojieMatch(matchID, hostScore, awayScore, bigMap, asiaMap, jingCaiMap, baskballMap);
       if (bigMap != null) {
         BIG_MAP.put(matchID, match);
       }
@@ -67,6 +72,9 @@ public class MojieMain {
       }
       if (jingCaiMap != null) {
         JINGCAI_MAP.put(matchID, match);
+      }
+      if (baskballMap != null) {
+        BASKETBALL_MAP.put(matchID, match);
       }
     }
     System.out.println("--->  主选胜平负结果");
@@ -79,6 +87,10 @@ public class MojieMain {
 
     System.out.println("--->  大小球结果");
     doTest(BIG_MAP, mojieMatch -> mojieMatch.mBigMap, mojieMatch -> true);
+    System.out.println();
+
+    System.out.println("--->  篮球结果");
+    doTest(BASKETBALL_MAP, mojieMatch -> mojieMatch.mBaskballMap, mojieMatch -> true);
     System.out.println();
   }
 
@@ -166,15 +178,18 @@ public class MojieMain {
     final Map<String, Object> mBigMap; // 大小球
     final Map<String, Object> mAsiaMap; // 亚盘
     final Map<String, Object> mJingCaiMap; // 亚盘胜平负
+    final Map<String, Object> mBaskballMap; // 篮球胜负
 
     public MojieMatch(int matchID, int hostScore, int awayScore, Map<String, Object> bigMap,
-        Map<String, Object> asiaMap, Map<String, Object> jingCaiMap) {
+        Map<String, Object> asiaMap, Map<String, Object> jingCaiMap,
+        Map<String, Object> baskballMap) {
       mMatchID = matchID;
       mHostScore = hostScore;
       mAwayScore = awayScore;
       mBigMap = bigMap;
       mAsiaMap = asiaMap;
       mJingCaiMap = jingCaiMap;
+      mBaskballMap = baskballMap;
     }
   }
 }
