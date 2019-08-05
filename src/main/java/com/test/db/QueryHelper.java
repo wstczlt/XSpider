@@ -44,32 +44,28 @@ public class QueryHelper implements Keys {
           "AND opening_defeatOdd >0 " +
           "AND league is not null " +
 
-          "AND odd_company_first_victory_1>0 " +
-          "AND odd_company_first_victory_8>0 " +
-
           "AND hostBestShoot >=0 " +
           "AND customBestShoot >=0 " +
           "AND hostCornerScore >=0 " +
-          "AND customCornerScore >=0 " +
-          "AND hostBestShoot>=0 and customBestShoot>=0 " +
-          "AND hostScoreOf3 >=0 and customScoreOf3 >=0 " +
-          "AND hostLossOf3>=0 and customLossOf3>=0 ";
+          "AND customCornerScore >=0 ";
 
   public static final String SQL_MIDDLE =
       "AND middle_hostScore >=0 " +
           "AND middle_customScore >=0 " +
-          "AND middle_bigOdd is not null " +
-          "AND middle_bigOddOfVictory >0.7 " +
-          "AND middle_bigOddOfDefeat >0.7 " +
-          "AND middle_scoreOdd is not null " +
-          "AND middle_scoreOddOfVictory >0.7 " +
-          "AND middle_scoreOddOfDefeat >0.7 ";
+          "AND min45_bigOdd is not null " +
+          "AND min45_bigOddOfVictory >0.7 " +
+          "AND min45_bigOddOfDefeat >0.7 " +
+          "AND min45_hostBestShoot >=0 " +
+          "AND min45_customBestShoot >=0 " +
+          "AND min45_scoreOdd is not null " +
+          "AND min45_scoreOddOfVictory >0.7 " +
+          "AND min45_scoreOddOfDefeat >0.7 ";
 
   // 进行中的比赛
   public static String SQL_RT = "AND matchStatus>=1 AND matchStatus<=4 ";
 
   // 已结束的比赛
-  public static String SQL_ST = "AND matchStatus=-1 ";
+  public static String SQL_ST = "AND matchStatus=3 ";
 
   public static String SQL_ORDER = "order by matchTime desc limit 5000";
 
@@ -206,15 +202,25 @@ public class QueryHelper implements Keys {
     match.mOpeningScoreOddOfDefeat =
         valueOfFloat(dbMap.get("opening_scoreOddOfDefeat"));
 
-    match.mMiddleScoreOdd = valueOfFloat(dbMap.get("middle_scoreOdd"));
-    match.mMiddleScoreOddOfVictory =
-        valueOfFloat(dbMap.get("middle_scoreOddOfVictory"));
-    match.mMiddleScoreOddOfDefeat =
-        valueOfFloat(dbMap.get("middle_scoreOddOfDefeat"));
+    match.mMiddleScoreOdd = dbMap.containsKey("middle_scoreOdd")
+        ? valueOfFloat(dbMap.get("middle_scoreOdd"))
+        : valueOfFloat(dbMap.get("min45_scoreOdd"));
+    match.mMiddleScoreOddOfVictory = dbMap.containsKey("middle_scoreOddOfVictory")
+        ? valueOfFloat(dbMap.get("middle_scoreOddOfVictory"))
+        : valueOfFloat(dbMap.get("min45_scoreOddOfVictory"));
+    match.mMiddleScoreOddOfDefeat = dbMap.containsKey("middle_scoreOddOfDefeat")
+        ? valueOfFloat(dbMap.get("middle_scoreOddOfDefeat"))
+        : valueOfFloat(dbMap.get("min45_scoreOddOfDefeat"));
 
-    match.mMiddleVictoryOdd = valueOfFloat(dbMap.get("middle_victoryOdd"));
-    match.mMiddleDrewOdd = valueOfFloat(dbMap.get("middle_drewOdd"));
-    match.mMiddleDefeatOdd = valueOfFloat(dbMap.get("middle_defeatOdd"));
+    match.mMiddleVictoryOdd = dbMap.containsKey("middle_victoryOdd")
+        ? valueOfFloat(dbMap.get("middle_victoryOdd"))
+        : valueOfFloat(dbMap.get("min45_victoryOdd"));
+    match.mMiddleDrewOdd = dbMap.containsKey("middle_drewOdd")
+        ? valueOfFloat(dbMap.get("middle_drewOdd"))
+        : valueOfFloat(dbMap.get("min45_drewOdd"));
+    match.mMiddleDefeatOdd = dbMap.containsKey("middle_defeatOdd")
+        ? valueOfFloat(dbMap.get("middle_defeatOdd"))
+        : valueOfFloat(dbMap.get("min45_defeatOdd"));
 
     match.mMiddleHostScore = valueOfInt(dbMap.get("middle_hostScore"));
     match.mMiddleCustomScore = valueOfInt(dbMap.get("middle_customScore"));
@@ -244,6 +250,11 @@ public class QueryHelper implements Keys {
         valueOfFloat(dbMap.get("middle_bigOddOfVictory"));
     match.mMiddleBigOddOfDefeat =
         valueOfFloat(dbMap.get("middle_bigOddOfDefeat"));
+
+    match.mMin45HostBestShoot = valueOfFloat(dbMap.get("min45_hostBestShoot"));
+    match.mMin45HostDanger = valueOfFloat(dbMap.get("min45_hostDanger"));
+    match.mMin45CustomBestShoot = valueOfFloat(dbMap.get("min45_customBestShoot"));
+    match.mMin45CustomDanger = valueOfFloat(dbMap.get("min45_customDanger"));
 
     match.mHostScoreMinOf70 = valueOfInt(dbMap.get("min70_hostScore"));
     match.mCustomScoreMinOf70 = valueOfInt(dbMap.get("min70_customScore"));

@@ -10,13 +10,13 @@ import java.util.List;
 
 import com.test.entity.Estimation;
 import com.test.entity.Model;
-import com.test.learning.model.OddModel;
+import com.test.learning.model.OddHalfModel;
 import com.test.tools.Utils;
 
 public class Phoenix {
 
   public static void main(String[] args) throws Exception {
-    PhoenixTester.runTest(new OddModel());
+    PhoenixTester.runTest(new OddHalfModel());
   }
 
   /**

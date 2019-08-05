@@ -58,6 +58,11 @@ public class Match {
   public float mMiddleBigOddOfVictory; // 中场盘大小球赔率
   public float mMiddleBigOddOfDefeat; // 中场盘大小球赔率
 
+  public float mMin45HostBestShoot;
+  public float mMin45HostDanger;
+  public float mMin45CustomBestShoot;
+  public float mMin45CustomDanger;
+
   public int mHostScoreMinOf70; // 70分钟主队得分
   public int mCustomScoreMinOf70; // 70分钟客队得分
   public float mBigOddOfMin70; // 70分钟大小球盘口

@@ -47,16 +47,9 @@ public class BallHalfModel extends Model {
     trainKeys.add(match -> match.mMiddleBigOdd);
     trainKeys.add(match -> match.mMiddleBigOddOfVictory); // 中场大球赔率
 
-    //
-    trainKeys.add(match -> match.mHostBestShoot * 0.5f);
-    trainKeys.add(match -> match.mCustomBestShoot * 0.5f);
     // trainKeys.add(match -> match.mHostControlRate);
     // trainKeys.add(match -> match.mCustomControlRate);
 
-    trainKeys.add(match -> match.mHostScoreOf3);
-    trainKeys.add(match -> match.mCustomScoreOf3);
-    trainKeys.add(match -> match.mHostLossOf3);
-    trainKeys.add(match -> match.mCustomLossOf3);
 
     return trainKeys;
   }

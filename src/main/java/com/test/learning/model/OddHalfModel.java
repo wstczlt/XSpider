@@ -46,16 +46,21 @@ public class OddHalfModel extends Model {
     trainKeys.add(match -> match.mMiddleBigOdd);
     trainKeys.add(match -> match.mMiddleBigOddOfVictory);
 
+    trainKeys.add(match -> match.mMin45HostBestShoot);
+    trainKeys.add(match -> match.mMin45CustomBestShoot);
+    trainKeys.add(match -> match.mMin45HostDanger);
+    trainKeys.add(match -> match.mMin45CustomDanger);
+
     // trainKeys.add(match -> match.mHostBestShoot * 0.5f);
     // trainKeys.add(match -> match.mCustomBestShoot * 0.5f);
     // trainKeys.add(match -> match.mHostControlRate);
     // trainKeys.add(match -> match.mCustomControlRate);
 
-
-    trainKeys.add(match -> match.mHostScoreOf3);
-    trainKeys.add(match -> match.mCustomScoreOf3);
-    trainKeys.add(match -> match.mHostLossOf3);
-    trainKeys.add(match -> match.mCustomLossOf3);
+    //
+    // trainKeys.add(match -> match.mHostScoreOf3);
+    // trainKeys.add(match -> match.mCustomScoreOf3);
+    // trainKeys.add(match -> match.mHostLossOf3);
+    // trainKeys.add(match -> match.mCustomLossOf3);
 
     return trainKeys;
   }

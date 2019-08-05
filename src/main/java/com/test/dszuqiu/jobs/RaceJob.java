@@ -20,7 +20,10 @@ import okhttp3.Request;
 
 public class RaceJob extends HttpJob {
 
-  private static final String REQUEST_URL = "http://api.dszuqiu.com/v9/race/view?token=&race_id=%d";
+  // private static final String REQUEST_URL =
+  // "http://api.dszuqiu.com/v9/race/view?token=&race_id=%d";
+  private static final String REQUEST_URL =
+      "http://vipapi.dszuqiu.com/v9/race/view?token=327596-b1487f27682bf00f9cfbbde55729aae9&race_id=%s";
 
   private final FilePipeline mPipeline;
 

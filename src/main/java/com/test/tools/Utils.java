@@ -120,4 +120,22 @@ public class Utils {
   public static void setSkip(Map<String, String> items) {
     items.put(Keys.SKIP, String.valueOf(true));
   }
+
+  public static float convertDsOdd(String oddString) {
+    if (oddString == null) {
+      return -1;
+    }
+    try {
+      return Float.parseFloat(oddString);
+    } catch (Exception e) {
+      String[] pair = oddString.split(",");
+      if (pair.length == 2) {
+        try {
+          return (Float.parseFloat(pair[0]) + Float.parseFloat(pair[1])) / 2;
+        } catch (Exception ignore) {}
+      }
+    }
+
+    return -1;
+  }
 }
