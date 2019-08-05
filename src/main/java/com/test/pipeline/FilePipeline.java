@@ -1,25 +1,23 @@
 package com.test.pipeline;
 
 import java.io.File;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.util.TextUtils;
 
 import com.test.tools.Utils;
 
-public class FilePipeline implements HttpPipeline {
+public class FilePipeline {
 
   private final String mParentDirectory;
+  private final String mPostfix;
 
-  public FilePipeline(String parentDirectory) {
+  public FilePipeline(String parentDirectory, String postfix) {
     mParentDirectory = parentDirectory;
+    mPostfix = postfix;
   }
 
-  @Override
-  public void process(Map<String, String> items) {
-    String rawText = items.get(RAW_TEXT);
-    String matchID = items.get(MATCH_ID);
+  public void process(String matchID, String rawText) {
     if (TextUtils.isEmpty(rawText)) {
       return;
     }
@@ -32,7 +30,7 @@ public class FilePipeline implements HttpPipeline {
   }
 
   private void doWrite(String matchID, String rawText) throws Exception {
-    File file = new File(mParentDirectory, matchID + ".txt");
+    File file = new File(mParentDirectory, matchID + mPostfix);
     FileUtils.writeStringToFile(file, rawText, "utf-8");
   }
 }

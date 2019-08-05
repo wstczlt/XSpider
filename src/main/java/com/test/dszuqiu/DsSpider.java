@@ -2,7 +2,7 @@ package com.test.dszuqiu;
 
 import com.test.http.HttpEngine;
 import com.test.http.RangeJobFactory;
-import com.test.pipeline.FilePipeline;
+import com.test.pipeline.EmptyPipeline;
 
 public class DsSpider {
 
@@ -14,7 +14,7 @@ public class DsSpider {
 
   public static void runSt(int matchStartID, int matchEndID) throws Exception {
     RangeJobFactory factory = new RangeJobFactory(new DsJobBuilder(), matchStartID, matchEndID);
-    HttpEngine dragon = new HttpEngine(factory.build(), new FilePipeline("dszuqiu"));
+    HttpEngine dragon = new HttpEngine(factory.build(), new EmptyPipeline());
 
     dragon.start();
   }
