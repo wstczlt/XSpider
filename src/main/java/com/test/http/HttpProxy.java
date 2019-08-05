@@ -1,7 +1,5 @@
 package com.test.http;
 
-import com.test.Config;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -14,16 +12,21 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import com.test.Config;
 
 public class HttpProxy extends ProxySelector {
 
   private final List<String> mProxySet = new ArrayList<>();
   private final Map<String, String> mUsedProxy = new HashMap<>();
 
+  private final AtomicInteger mPointer = new AtomicInteger(0);
+
   public HttpProxy() {
     String[] proxyArray = Config.PROXY_STRING.split("\\s");
     mProxySet.addAll(Arrays.asList(proxyArray));
+    Collections.shuffle(mProxySet);
   }
 
   @Override
@@ -31,8 +34,7 @@ public class HttpProxy extends ProxySelector {
     if (mProxySet.isEmpty()) {
       return null;
     }
-    int next = new Random().nextInt(mProxySet.size());
-    String proxyString = mProxySet.get(next);
+    String proxyString = mProxySet.get(mPointer.getAndIncrement() % mProxySet.size());
     if (!proxyString.contains(":")) {
       return null;
     }

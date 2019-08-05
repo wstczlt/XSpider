@@ -6,7 +6,7 @@ public class Main {
 
   public static void main(String[] args) throws Exception {
 
-    DsSpider.runSt(140000, 640000);
+    DsSpider.runSt(140000, 633248);
   }
 
 }
