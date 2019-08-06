@@ -16,8 +16,8 @@ import com.test.entity.Estimation;
 import com.test.entity.Match;
 import com.test.entity.Model;
 import com.test.http.HttpUtils;
-import com.test.learning.model.BallHalfModel;
-import com.test.learning.model.OddHalfModel;
+import com.test.learning.model.BallModel45;
+import com.test.learning.model.OddModel45;
 import com.test.win007.jobs.MatchBasicJob;
 
 import okhttp3.OkHttpClient;
@@ -128,7 +128,7 @@ public class FileConsumer implements EstimationConsumer, Keys {
     Map<String, String> basicMap = new HashMap<>();
     basicJob.onResponse(responseText, basicMap);
 
-    Match match = new Match();
+    Match match = new Match(new HashMap<>());
     match.mMatchID = matchID;
     match.mHostName = basicMap.get(HOST_NAME);
     match.mCustomName = basicMap.get(CUSTOM_NAME);
@@ -155,9 +155,9 @@ public class FileConsumer implements EstimationConsumer, Keys {
   private static Model newModel(String modelName) {
     switch (modelName) {
       case "ballHalf":
-        return new BallHalfModel();
+        return new BallModel45();
       case "oddHalf":
-        return new OddHalfModel();
+        return new OddModel45();
       default:
         throw new RuntimeException();
     }

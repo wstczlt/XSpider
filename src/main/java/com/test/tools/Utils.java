@@ -64,18 +64,24 @@ public class Utils {
     final List<Estimation> estimations = new ArrayList<>();
     final String[] lines = result.replace("\r", "").split("\n");
     Arrays.stream(lines).forEach(line -> {
+      // System.out.println(line);
       Estimation est;
-      String[] arr = line.replace("[", "").replace("]", "").split(" ");
-      if (arr.length != 2) {
-        return;
+      String[] arr = line.replace("[", "").replace("]", "").split("\\s+");
+      if (arr.length != 3) {
+        throw new RuntimeException(line);
       }
-      float probOf0 = valueOfFloat(arr[0]);
-      float probOf1 = valueOfFloat(arr[1]);
-      if (probOf0 > probOf1) {
-        est = new Estimation(0f, probOf0);
-      } else {
-        est = new Estimation(1f, probOf1);
+      float maxProb = 0;
+      float indexOfMax = -1;
+      for (int i = 0; i < 3; i++) { // 0=主, 1=走，2=客
+        float prob = valueOfFloat(arr[i]);
+        if (prob > maxProb) {
+          indexOfMax = i;
+          maxProb = prob;
+        }
       }
+
+      // System.out.println("value=" + indexOfMax + ", prob=" + maxProb);
+      est = new Estimation(indexOfMax, maxProb);
       estimations.add(est);
     });
 

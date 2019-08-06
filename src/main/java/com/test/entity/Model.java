@@ -1,14 +1,14 @@
 package com.test.entity;
 
+import com.test.Keys;
+
 import java.util.List;
 import java.util.function.Predicate;
-
-import com.test.learning.PhoenixMapper;
 
 /**
  * 足球AI模型基类.
  */
-public abstract class Model implements Predicate<Match> {
+public abstract class Model implements Predicate<Match>, Keys {
 
 
   /**
@@ -19,12 +19,13 @@ public abstract class Model implements Predicate<Match> {
   /**
    * 需要训练的数据集X.
    */
-  public abstract List<PhoenixMapper> mapOfX();
+  public abstract List<Float> xValues(Match match);
 
   /**
    * 训练集的结果集的Y.
    */
-  public abstract PhoenixMapper mapOfY();
+  public abstract Float yValue(Match match);
+
 
   /**
    * 判断该Match是否符合这个模型的训练要求.

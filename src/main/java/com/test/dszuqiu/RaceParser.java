@@ -214,8 +214,8 @@ public class RaceParser implements Keys {
       if (item == null) item = last;
       last = item;
       mItems.put("min" + i + "_bigOdd", Utils.convertDsOdd(item.getString("handicap")) + "");
-      mItems.put("min" + i + "_bigOddOfVictory", item.getString("host_sp"));
-      mItems.put("min" + i + "_bigOddOfDefeat", item.getString("guest_sp"));
+      mItems.put("min" + i + "_bigOddOfVictory", item.getString("up_sp"));
+      mItems.put("min" + i + "_bigOddOfDefeat", item.getString("low_sp"));
       mItems.put("min" + i + "_hostScore", item.getString("host_goal"));
       mItems.put("min" + i + "_customScore", item.getString("guest_goal"));
     }

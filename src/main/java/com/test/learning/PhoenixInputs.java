@@ -42,7 +42,7 @@ public class PhoenixInputs {
     List<String> yValue = new ArrayList<>();
     for (int i = 0; i < matches.size(); i++) {
       Match match = matches.get(i);
-      Pair<String, String> trainLine = writeLine(match, mModel.mapOfX(), mModel.mapOfY());
+      Pair<String, String> trainLine = writeLine(match, mModel);
       xValue.add(trainLine.first);
       yValue.add(trainLine.second);
     }
@@ -62,15 +62,16 @@ public class PhoenixInputs {
   }
 
 
-  private static Pair<String, String> writeLine(Match match,
-      List<PhoenixMapper> keyOfX, PhoenixMapper keyOfY) {
+  private static Pair<String, String> writeLine(Match match, Model model) {
     List<String> list = new ArrayList<>();
-    for (PhoenixMapper trainKey : keyOfX) {
-      list.add(String.format("%.2f", trainKey.val(match)));
+    for (float xValue : model.xValues(match)) {
+      list.add(String.format("%.2f", xValue));
     }
 
     String trainLineX = StringUtils.join(list, "   ");
-    String trainLineY = String.format("%.2f", keyOfY.val(match));
+    List<String> yList = new ArrayList<>();
+    yList.add(model.yValue(match).intValue() + "");
+    String trainLineY = StringUtils.join(yList, "   ");
 
     return new Pair<>(trainLineX, trainLineY);
   }

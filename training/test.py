@@ -18,5 +18,7 @@ y_data = reg.predict_proba(x_data)
 for y in y_data:
     print y
 
+# print reg.predict(x_data)
+
 # y_data_test = np.loadtxt(sys.argv[3]).astype(np.float32)
 # print reg.score(x_data_std, y_data_test)

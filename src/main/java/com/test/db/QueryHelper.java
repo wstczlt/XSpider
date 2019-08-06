@@ -21,45 +21,36 @@ public class QueryHelper implements Keys {
   public static final String SQL_BASE =
       "select * from football where 1=1 " +
           "AND cast(timeMin as int) >0 AND cast(timeMin as int) <= 100 " +
-          "AND hostScore >=0 " +
-          "AND customScore >=0 " +
-          "AND original_scoreOdd is not null " +
-          "AND original_scoreOddOfVictory >0.7 " +
-          "AND original_scoreOddOfDefeat >0.7 " +
-          "AND original_bigOdd > 0 " +
-          "AND original_bigOddOfVictory >0.7 " +
-          "AND original_bigOddOfDefeat >0.7 " +
-          "AND original_drawOdd >0 " +
-          "AND original_victoryOdd >0 " +
-          "AND original_defeatOdd >0 " +
-
-          "AND opening_scoreOdd is not null " +
-          "AND opening_scoreOddOfVictory >0.7 " +
-          "AND opening_scoreOddOfDefeat >0.7 " +
-          "AND opening_bigOdd > 0 " +
-          "AND opening_bigOddOfVictory >0.7 " +
-          "AND opening_bigOddOfDefeat >0.7 " +
-          "AND opening_drawOdd >0 " +
-          "AND opening_victoryOdd >0 " +
-          "AND opening_defeatOdd >0 " +
+          "AND cast(hostScore as int) >=0 " +
+          "AND cast(customScore as int) >=0 " +
           "AND league is not null " +
 
-          "AND hostBestShoot >=0 " +
-          "AND customBestShoot >=0 " +
-          "AND hostCornerScore >=0 " +
-          "AND customCornerScore >=0 ";
+          "AND cast(min0_scoreOdd as number) >=-0.5 " +
+          "AND cast(min0_scoreOdd as number) <=0.5 " +
+          "AND cast(min0_scoreOddOfVictory as number) >0.7 " +
+          "AND cast(min0_scoreOddOfDefeat as number) >0.7 " +
+
+          "AND cast(min0_bigOdd as number) > 0 " +
+          // "AND cast(min0_bigOddOfVictory as number) >0.7 " +
+          // "AND cast(min0_bigOddOfDefeat as number) >0.7 " +
+          "AND cast(min0_drewOdd as number) >0 " +
+          "AND cast(min0_victoryOdd as number) >0 " +
+          "AND cast(min0_defeatOdd as number) >0 " +
+
+          "AND cast(min15_hostBestShoot as int) >=0 " +
+          "AND cast(min15_customBestShoot as int) >=0 " +
+          "AND cast(min15_hostDanger as int) >=0 " +
+          "AND cast(min15_customDanger as int) >=0 ";
+
 
   public static final String SQL_MIDDLE =
-      "AND middle_hostScore >=0 " +
-          "AND middle_customScore >=0 " +
-          "AND min45_bigOdd is not null " +
-          "AND min45_bigOddOfVictory >0.7 " +
-          "AND min45_bigOddOfDefeat >0.7 " +
-          "AND min45_hostBestShoot >=0 " +
-          "AND min45_customBestShoot >=0 " +
-          "AND min45_scoreOdd is not null " +
-          "AND min45_scoreOddOfVictory >0.7 " +
-          "AND min45_scoreOddOfDefeat >0.7 ";
+      "AND cast(min75_scoreOdd as number)=0 " +
+          "AND cast(min75_scoreOddOfVictory as number)>0.7 " +
+          "AND cast(min75_scoreOddOfDefeat as number)>0.7 " +
+          // "AND cast(min75_hostScore as number) - cast(min75_customScore as number) >= 0 " +
+          // "AND cast(min75_hostBestShoot as number) - cast(min75_customBestShoot as number) >= 1 "
+          // +
+          "AND 1=1 ";
 
   // 进行中的比赛
   public static String SQL_RT = "AND matchStatus>=1 AND matchStatus<=4 ";
@@ -67,7 +58,7 @@ public class QueryHelper implements Keys {
   // 已结束的比赛
   public static String SQL_ST = "AND matchStatus=3 ";
 
-  public static String SQL_ORDER = "order by matchTime desc limit 5000";
+  public static String SQL_ORDER = "order by matchTime desc limit 6000";
 
   public static List<Match> doQuery(String sql) throws Exception {
     final List<Match> matches = new ArrayList<>();
@@ -78,6 +69,8 @@ public class QueryHelper implements Keys {
       final Match match = buildMatch(map);
       matches.add(match);
     }
+    System.out.println(sql);
+    System.out.println("查询结果条数: " + matches.size());
 
     return matches;
   }
@@ -170,7 +163,7 @@ public class QueryHelper implements Keys {
    * 从数据库属性Map构建一个Match模型.
    */
   private static Match buildMatch(Map<String, Object> dbMap) {
-    Match match = new Match();
+    Match match = new Match(dbMap);
     match.mMatchID = valueOfInt(dbMap.get(MATCH_ID));
     match.mTimeMin = valueOfInt(dbMap.get(TIME_MIN));
     match.mMatchTime = Long.parseLong(String.valueOf(dbMap.get(MATCH_TIME)));
@@ -227,10 +220,10 @@ public class QueryHelper implements Keys {
 
     match.mOriginalVictoryOdd =
         valueOfFloat(dbMap.get("original_victoryOdd"));
-    match.mOriginalDrawOdd = valueOfFloat(dbMap.get("original_drawOdd"));
+    match.mOriginalDrewOdd = valueOfFloat(dbMap.get("original_drewOdd"));
     match.mOriginalDefeatOdd = valueOfFloat(dbMap.get("original_defeatOdd"));
     match.mOpeningVictoryOdd = valueOfFloat(dbMap.get("opening_victoryOdd"));
-    match.mOpeningDrawOdd = valueOfFloat(dbMap.get("opening_drawOdd"));
+    match.mOpeningDrewOdd = valueOfFloat(dbMap.get("opening_drewOdd"));
     match.mOpeningDefeatOdd = valueOfFloat(dbMap.get("opening_defeatOdd"));
 
     match.mOriginalBigOdd = valueOfFloat(dbMap.get("original_bigOdd"));

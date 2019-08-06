@@ -1,8 +1,11 @@
 # -*- coding:utf-8 -*-
 import numpy as np
 import sys
+from sklearn import svm
 from sklearn.externals import joblib
 from sklearn import linear_model
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 # sys.argv[1] = 训练集X，文件名
 # sys.argv[2] = 训练集Y，文件名
@@ -10,9 +13,9 @@ from sklearn import linear_model
 x_data = np.loadtxt(sys.argv[1]).astype(np.float32)
 y_data = np.loadtxt(sys.argv[2]).astype(np.float32)
 
-
 # We evaluate the x and y by sklearn to get a sense of the coefficients.
-reg = linear_model.LogisticRegression(solver='sag')
+# reg = OneVsRestClassifier(svm.SVC(C=1.0, kernel='rbf', degree=3, gamma='auto', probability=True))
+reg = RandomForestClassifier(n_estimators=100)
 # reg = linear_model.LinearRegression(fit_intercept=False)
 reg.fit(x_data, y_data)
 

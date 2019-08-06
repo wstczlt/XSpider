@@ -5,7 +5,7 @@ package com.test.entity;
  */
 public class Estimation {
 
-  public final float mValue; // 预测值
+  public final float mValue; // 预测值 0=主, 1=走，2=客
   public final float mProbability; // 预测概率
 
   public Estimation(float value, float probability) {

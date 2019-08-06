@@ -18,14 +18,14 @@ import com.test.entity.Match;
 import com.test.entity.Model;
 import com.test.learning.Phoenix;
 import com.test.learning.PhoenixInputs;
-import com.test.learning.model.BallHalfModel;
-import com.test.learning.model.OddHalfModel;
+import com.test.learning.model.BallModel45;
+import com.test.learning.model.OddModel45;
 import com.test.win007.Win007Spider;
 
 public class Radar {
 
   private static final Model[] MODELS = new Model[] {
-      new BallHalfModel(), new OddHalfModel()
+      new BallModel45(), new OddModel45()
   };
 
   private static final EstimationConsumer[] CONSUMERS = new EstimationConsumer[] {

@@ -5,16 +5,16 @@ import org.apache.http.util.TextUtils;
 import com.test.entity.Estimation;
 import com.test.entity.Match;
 import com.test.entity.Model;
-import com.test.learning.model.BallHalfModel;
-import com.test.learning.model.OddHalfModel;
+import com.test.learning.model.BallModel45;
+import com.test.learning.model.OddModel45;
 
 public class ConsoleConsumer implements EstimationConsumer {
 
   @Override
   public void accept(Match match, Model model, Estimation est) {
-    if (model instanceof OddHalfModel) {
+    if (model instanceof OddModel45) {
       displayOddHalf(match, model, est);
-    } else if (model instanceof BallHalfModel) {
+    } else if (model instanceof BallModel45) {
       displayBallHalf(match, model, est);
     }
   }

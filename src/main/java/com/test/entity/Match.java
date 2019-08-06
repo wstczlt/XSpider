@@ -1,6 +1,14 @@
 package com.test.entity;
 
+import java.util.Map;
+
 public class Match {
+
+  public final Map<String, Object> mDbMap;
+
+  public Match(Map<String, Object> dbMap) {
+    mDbMap = dbMap;
+  }
 
   public int mMatchID; // matchID
   public long mMatchTime; // 比赛时间
@@ -39,11 +47,11 @@ public class Match {
   public int mMiddleCustomScore; // 中场得分
 
   public float mOriginalVictoryOdd; // 欧指初盘胜赔
-  public float mOriginalDrawOdd; // 欧指初盘平赔
+  public float mOriginalDrewOdd; // 欧指初盘平赔
   public float mOriginalDefeatOdd; // 欧指初盘负赔
 
   public float mOpeningVictoryOdd; // 欧指即时盘胜赔
-  public float mOpeningDrawOdd; // 欧指即时盘平赔
+  public float mOpeningDrewOdd; // 欧指即时盘平赔
   public float mOpeningDefeatOdd; // 欧指即时盘负赔
 
   public float mOriginalBigOdd; // 初盘大小球盘口
