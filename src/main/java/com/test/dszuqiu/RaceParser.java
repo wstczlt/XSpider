@@ -122,7 +122,7 @@ public class RaceParser implements Keys {
     JSONObject race_start_first = race.getJSONObject("race_start_first");
     if (race_start_first != null && !race_start_first.keySet().isEmpty()) {
       mItems.put(ORIGINAL_VICTORY_ODD, race_start_first.getString("host_sp"));
-      mItems.put(ORIGINAL_DRAW_ODD, race_start_first.getString("tie_sp"));
+      mItems.put(ORIGINAL_DREW_ODD, race_start_first.getString("tie_sp"));
       mItems.put(ORIGINAL_DEFEAT_ODD, race_start_first.getString("guest_sp"));
 
       mItems.put(ORIGINAL_SCORE_ODD,

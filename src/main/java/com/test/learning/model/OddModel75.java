@@ -14,7 +14,7 @@ import com.test.entity.Model;
 
 public class OddModel75 extends Model {
 
-  private final int mTimeMin = 75;
+  private final int mTimeMin = 50;
 
   @Override
   public String name() {
@@ -25,34 +25,55 @@ public class OddModel75 extends Model {
   public List<Float> xValues(Match match) {
     Map<String, Object> dbMap = new HashMap<>(match.mDbMap);
     List<Float> xValues = new ArrayList<>();
-    for (int i = -1; i <= mTimeMin; i++) {
-      if (i != -1 && i != 0 && i != mTimeMin) {
+
+    // xValues.add(valueOfFloat(dbMap.get(HOST_SCORE)));
+    // xValues.add(valueOfFloat(dbMap.get(CUSTOM_SCORE)));
+    // xValues.add(valueOfFloat(dbMap.get("min" + mTimeMin + "_" + "scoreOdd")));
+    // xValues.add(valueOfFloat(dbMap.get("min" + mTimeMin + "_" + "hostScore")));
+    // xValues.add(valueOfFloat(dbMap.get("min" + mTimeMin + "_" + "customScore")));
+
+    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_SCORE_ODD)));
+    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_SCORE_ODD_OF_VICTORY)));
+    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_SCORE_ODD_OF_DEFEAT)));
+
+    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_VICTORY_ODD)));
+    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_DREW_ODD)));
+    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_DEFEAT_ODD)));
+
+    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_BIG_ODD)));
+    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_BIG_ODD_OF_VICTORY)));
+    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_BIG_ODD_OF_DEFEAT)));
+
+
+    for (int i = 0; i <= mTimeMin; i++) {
+      if (i != 0 && i != mTimeMin) {
         continue;
       }
-      // 当前比分
+      // 当前场上情况
       List<String> keys = new ArrayList<>();
-      keys.add((i == -1 ? "min0_" : ("min" + i + "_")) + "hostScore");
-      keys.add((i == -1 ? "min0_" : ("min" + i + "_")) + "customScore");
-      keys.add((i == -1 ? "min0_" : ("min" + i + "_")) + "hostDanger");
-      keys.add((i == -1 ? "min0_" : ("min" + i + "_")) + "customDanger");
-      keys.add((i == -1 ? "min0_" : ("min" + i + "_")) + "hostBestShoot");
-      keys.add((i == -1 ? "min0_" : ("min" + i + "_")) + "customBestShoot");
-
+      if (i > 0) {
+        keys.add("min" + i + "_" + "hostScore");
+        keys.add("min" + i + "_" + "customScore");
+        keys.add("min" + i + "_" + "hostDanger");
+        keys.add("min" + i + "_" + "customDanger");
+        keys.add("min" + i + "_" + "hostBestShoot");
+        keys.add("min" + i + "_" + "customBestShoot");
+      }
 
       // 亚盘
-      keys.add((i == -1 ? "original_" : ("min" + i + "_")) + "scoreOdd");
-      keys.add((i == -1 ? "original_" : ("min" + i + "_")) + "scoreOddOfVictory");
-      keys.add((i == -1 ? "original_" : ("min" + i + "_")) + "scoreOddOfDefeat");
+      keys.add("min" + i + "_" + "scoreOdd");
+      keys.add("min" + i + "_" + "scoreOddOfVictory");
+      keys.add("min" + i + "_" + "scoreOddOfDefeat");
 
       // 欧盘
-      keys.add((i == -1 ? "original_" : ("min" + i + "_")) + "victoryOdd");
-      keys.add((i == -1 ? "original_" : ("min" + i + "_")) + "drewOdd");
-      keys.add((i == -1 ? "original_" : ("min" + i + "_")) + "defeatOdd");
+      keys.add("min" + i + "_" + "victoryOdd");
+      keys.add("min" + i + "_" + "drewOdd");
+      keys.add("min" + i + "_" + "defeatOdd");
 
       // 大小球
-      keys.add((i == -1 ? "original_" : ("min" + i + "_")) + "bigOdd");
-      keys.add((i == -1 ? "original_" : ("min" + i + "_")) + "bigOddOfVictory");
-      keys.add((i == -1 ? "original_" : ("min" + i + "_")) + "bigOddOfDefeat");
+      keys.add("min" + i + "_" + "bigOdd");
+      keys.add("min" + i + "_" + "bigOddOfVictory");
+      keys.add("min" + i + "_" + "bigOddOfDefeat");
 
 
       keys.forEach(key -> xValues.add(valueOfFloat(dbMap.get(key))));
@@ -63,44 +84,46 @@ public class OddModel75 extends Model {
 
   @Override
   public Float yValue(Match match) {
+    float delta = calScoreDelta(match);
+    return delta > 0 ? 0 : (delta == 0 ? 1f : 2);
+  }
+
+  public float calScoreDelta(Match match) {
     Map<String, Object> dbMap = new HashMap<>(match.mDbMap);
     int hostScore = valueOfInt(dbMap.get(HOST_SCORE));
     int customScore = valueOfInt(dbMap.get(CUSTOM_SCORE));
-
     int timeHostScore = valueOfInt(dbMap.get("min" + mTimeMin + "_hostScore"));
     int timeCustomScore = valueOfInt(dbMap.get("min" + mTimeMin + "_customScore"));
-
     float timeScoreOdd = valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOdd"));
 
-    float delta = (hostScore - customScore) - (timeHostScore - timeCustomScore) + timeScoreOdd;
-
-    return delta > 0 ? 0 : (delta == 0 ? 1f : 2);
+    return (hostScore - customScore) - (timeHostScore - timeCustomScore) + timeScoreOdd;
   }
 
   @Override
   public float calGain(Match match, Estimation est) {
     Map<String, Object> dbMap = new HashMap<>(match.mDbMap);
-    int hostScore = valueOfInt(dbMap.get(HOST_SCORE));
-    int customScore = valueOfInt(dbMap.get(CUSTOM_SCORE));
-    int timeHostScore = valueOfInt(dbMap.get("min" + mTimeMin + "_hostScore"));
-    int timeCustomScore = valueOfInt(dbMap.get("min" + mTimeMin + "_customScore"));
-    float timeScoreOdd = valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOdd"));
-    float timeScoreOddOfVictory =
-        valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOddOfVictory")) - 1;
-    float timeScoreOddOfDefeat =
-        valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOddOfDefeat")) - 1;
-    float deltaScore = (hostScore - customScore) - (timeHostScore - timeCustomScore) + timeScoreOdd;
+    float scoreOddOfVictory = valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOddOfVictory")) - 1;
+    float scoreOddOfDefeat = valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOddOfDefeat")) - 1;
+    float deltaScore = calScoreDelta(match);
 
-    if (deltaScore >= 0.5) {// 全赢
-      return est.mValue == 0 ? timeScoreOddOfVictory : -1;
-    } else if (deltaScore > 0) {// 赢
-      return est.mValue == 0 ? timeScoreOddOfVictory * 0.5f : -0.5f;
-    } else if (deltaScore == 0) { // 走盘
-      return 0;
-    } else if (deltaScore > -0.5) { // -0.25, 输半
-      return est.mValue == 2 ? -0.5f : timeScoreOddOfDefeat * 0.5f;
-    } else {// 全输
-      return est.mValue == 2 ? -1 : timeScoreOddOfDefeat;
+    if (est.mValue == 0) { // 判断主队
+      if (deltaScore >= 0.5) return scoreOddOfVictory;
+      if (deltaScore >= 0.25) return scoreOddOfVictory * 0.5f;
+      if (deltaScore == 0) return 0;
+      if (deltaScore >= -0.25) return -0.5f;
+      if (deltaScore <= -0.5) return -1;
     }
+    if (est.mValue == 1) { // 判断走水, 不买
+      return 0;
+    }
+    if (est.mValue == 2) { // 判断客队
+      if (deltaScore >= 0.5) return -1;
+      if (deltaScore >= 0.25) return -0.5f;
+      if (deltaScore == 0) return 0;
+      if (deltaScore >= -0.25) return scoreOddOfDefeat * 0.5f;
+      if (deltaScore <= -0.5) return scoreOddOfDefeat;
+    }
+
+    return 0;
   }
 }

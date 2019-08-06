@@ -69,7 +69,7 @@ public interface Keys {
 
   String ORIGINAL_VICTORY_ODD = "original_victoryOdd";
   String ORIGINAL_DEFEAT_ODD = "original_defeatOdd";
-  String ORIGINAL_DRAW_ODD = "original_drawOdd";
+  String ORIGINAL_DREW_ODD = "original_drawOdd";
 
 
 

@@ -14,6 +14,7 @@ import com.test.db.QueryHelper;
 import com.test.entity.Estimation;
 import com.test.entity.Match;
 import com.test.entity.Model;
+import com.test.learning.model.OddModel75;
 import com.test.tools.Pair;
 
 public class PhoenixTester {
@@ -21,9 +22,10 @@ public class PhoenixTester {
   private static final int TOTAL_ROUND = 3;// 测试轮数
   private static final int TEST_SET_COUNT = 1000; // 测试集长度
   private static final float[] THRESHOLDS = new float[] {
-      // 0.50f,
-      // 0.51f, 0.52f, 0.53f, 0.54f, 0.55f,
-      0.50f, 0.55f, 0.60f, 0.65f, 0.70f, 0.75f, 0.80f}; // 高概率要求的阈值
+      // 0.50f};
+       0.4f, 0.45f, 0.5f};
+//      0.50f, 0.51f, 0.52f, 0.53f, 0.54f, 0.55f, 0.58f};
+  // 0.50f, 0.55f, 0.60f, 0.65f, 0.70f, 0.75f, 0.80f}; // 高概率要求的阈值
 
   public static void runTest(Model model) throws Exception {
     String querySql = SQL_BASE + SQL_MIDDLE + SQL_ST + SQL_ORDER;
@@ -63,7 +65,7 @@ public class PhoenixTester {
     int normalHitCount = 0, highProbHitCount = 0, highPositiveProbHitCount = 0,
         highMaxContinueHitCount = 0, highMaxContinueMissCount = 0;
     int normalDrewCount = 0, highProbDrewCount = 0;
-    float highPorbProfit = 0;
+    float highProbProfit = 0;
 
     int continueHit = 0, continueMiss = 0, highContinueHit = 0, highContinueMiss = 0;
     boolean lastHit = false, highLastHit = false;
@@ -107,10 +109,12 @@ public class PhoenixTester {
       final boolean isAiHit = aiGain > 0;
       final boolean isAiDrew = aiGain == 0;
 
+       System.out.println(est.mValue + ", " + model.yValue(match) + ", "
+       + ((OddModel75) model).calScoreDelta(match) + ", " + aiGain);
       // 高概率
       if (est.mProbability >= threshold) {
         highProbTotalCount++;
-        highPorbProfit += aiGain;
+        highProbProfit += aiGain;
         if (isAiHit) { // 实际阳性
           highProbHitCount++;
           // 上盘
@@ -143,7 +147,7 @@ public class PhoenixTester {
     PhoenixSummary highProbResult =
         new PhoenixSummary(highProbTotalCount, highProbHitCount, highProbDrewCount,
             highPositiveProbHitCount,
-            highPorbProfit, highMaxContinueHitCount, highMaxContinueMissCount);
+            highProbProfit, highMaxContinueHitCount, highMaxContinueMissCount);
 
     return new Pair<>(normalResult, highProbResult);
   }

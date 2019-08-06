@@ -15,8 +15,9 @@ y_data = np.loadtxt(sys.argv[2]).astype(np.float32)
 
 # We evaluate the x and y by sklearn to get a sense of the coefficients.
 # reg = OneVsRestClassifier(svm.SVC(C=1.0, kernel='rbf', degree=3, gamma='auto', probability=True))
-reg = RandomForestClassifier(n_estimators=100)
+# reg = RandomForestClassifier(n_estimators=100)
 # reg = linear_model.LinearRegression(fit_intercept=False)
+reg = linear_model.LogisticRegression(solver='sag')
 reg.fit(x_data, y_data)
 
 # print ("Coefficients of sklearn: K=%s, b=%f" % (reg.coef_, reg.intercept_))

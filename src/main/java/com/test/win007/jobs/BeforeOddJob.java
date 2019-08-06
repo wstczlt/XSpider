@@ -50,7 +50,7 @@ public class BeforeOddJob extends HttpJob {
     }
 
     items.put(ORIGINAL_VICTORY_ODD, json.getString("FirstHomeWin"));
-    items.put(ORIGINAL_DRAW_ODD, json.getString("FirstStandoff"));
+    items.put(ORIGINAL_DREW_ODD, json.getString("FirstStandoff"));
     items.put(ORIGINAL_DEFEAT_ODD, json.getString("FirstAwayWin"));
     items.put(OPENING_VICTORY_ODD, json.getString("HomeWin"));
     items.put(OPENING_DRAW_ODD, json.getString("Standoff"));

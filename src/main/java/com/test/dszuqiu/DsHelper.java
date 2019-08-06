@@ -3,8 +3,11 @@ package com.test.dszuqiu;
 import static com.test.tools.Utils.isSkip;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 
@@ -24,10 +27,15 @@ public class DsHelper {
       return;
     }
     final DbPipeline pipeline = new DbPipeline();
-    for (String name : names) {
-      if (name.endsWith("_odd.txt")) {
-        continue;
-      }
+    List<String> sorted = Arrays.stream(names)
+        .filter(s -> !s.endsWith("_odd.txt"))
+        .sorted((o1, o2) -> {
+          o1 = o1.replace(".txt", "");
+          o2 = o2.replace(".txt", "");
+          return o2.compareTo(o1);
+        }).collect(Collectors.toList());
+
+    for (String name : sorted) {
       final Map<String, String> items = new HashMap<>();
 
       // 处理Race信息
