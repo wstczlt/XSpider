@@ -47,9 +47,9 @@ public class QueryHelper implements Keys {
       "AND cast(min75_scoreOdd as number)=0 " +
           "AND cast(min75_scoreOddOfVictory as number)>0.7 " +
           "AND cast(min75_scoreOddOfDefeat as number)>0.7 " +
-          // "AND cast(min75_hostScore as number) - cast(min75_customScore as number) >= 0 " +
-          // "AND cast(min75_hostBestShoot as number) - cast(min75_customBestShoot as number) >= 1 "
-          // +
+          "AND abs(cast(min75_hostScore as number) - cast(min75_customScore as number)) >= 1 " +
+          "AND abs(cast(min75_hostBestShoot as number) - cast(min75_customBestShoot as number)) >= 3 "
+          +
           "AND 1=1 ";
 
   // 进行中的比赛
