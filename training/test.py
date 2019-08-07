@@ -10,19 +10,12 @@ from sklearn.impute import SimpleImputer
 # Read x and y
 x_data = np.loadtxt(sys.argv[1]).astype(np.float32)
 
-
-
-# We evaluate the x and y by sklearn to get a sense of the coefficients.
-# reg = linear_model.LogisticRegression(solver='liblinear')
 reg = joblib.load(sys.argv[2])
-y_data = reg.predict_proba(SimpleImputer(missing_values=999, strategy='mean').fit_transform(x_data))
-# for y in y_data:
-#     print y
+x_data = SimpleImputer(missing_values=999.00, strategy='mean').fit_transform(x_data)
+y_data = reg.predict_proba(x_data)
+for y in y_data:
+    print y
 
-print "分类器:"
-print reg.score(SimpleImputer(missing_values=999.00, strategy='mean').fit_transform(x_data), np.loadtxt('temp/odd75_y_test.dat').astype(np.float32))
+# print "拟合算法:"
 # print reg.score(x_data, np.loadtxt('temp/odd75_y_test.dat').astype(np.float32))
-print "\n"
-
-# y_data_test = np.loadtxt(sys.argv[3]).astype(np.float32)
-# print reg.score(x_data_std, y_data_test)
+# print "\n"

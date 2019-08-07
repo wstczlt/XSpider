@@ -23,6 +23,11 @@ public class BallModel45 extends Model {
   }
 
   @Override
+  public String andSql() {
+    return "";
+  }
+
+  @Override
   public List<Float> xValues(Match match) {
     List<Float> xValues = new ArrayList<>();
     xValues.add(match.mOriginalScoreOdd); // 亚盘

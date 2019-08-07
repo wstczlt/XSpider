@@ -40,31 +40,24 @@ public class PhoenixInputs {
   private void writeAll(List<Match> matches) throws Exception {
     List<String> xValue = new ArrayList<>();
     List<String> yValue = new ArrayList<>();
-    List<String> yValueF = new ArrayList<>();
     for (int i = 0; i < matches.size(); i++) {
       Match match = matches.get(i);
       Pair<String, String> trainLine = writeLine(match, mModel);
       xValue.add(trainLine.first);
       yValue.add(trainLine.second);
-      yValueF.add(mModel.yValue(match).intValue() + "");
     }
     Writer xWriter = null;
     Writer yWriter = null;
-    Writer yWriterF = null;
     try {
       xWriter = new OutputStreamWriter(
           new FileOutputStream(mIsTrain ? nameOfX(mModel) : nameOfTestX(mModel)), "utf-8");
       yWriter = new OutputStreamWriter(
           new FileOutputStream(mIsTrain ? nameOfY(mModel) : nameOfTestY(mModel)), "utf-8");
-      yWriterF = new OutputStreamWriter(
-          new FileOutputStream(mIsTrain ? nameOfY(mModel) + ".x" : nameOfTestY(mModel) + ".x"), "utf-8");
       IOUtils.writeLines(xValue, null, xWriter);
       IOUtils.writeLines(yValue, null, yWriter);
-      IOUtils.writeLines(yValueF, null, yWriterF);
     } finally {
       IOUtils.closeQuietly(xWriter);
       IOUtils.closeQuietly(yWriter);
-      IOUtils.closeQuietly(yWriterF);
     }
   }
 
@@ -77,19 +70,20 @@ public class PhoenixInputs {
 
     String trainLineX = StringUtils.join(list, "   ");
 
-    // List<String> yList = new ArrayList<>();
-    // yList.add(model.yValue(match).intValue() + "");
-    // String trainLineY = StringUtils.join(yList, " ");
+    List<String> yList = new ArrayList<>();
+    yList.add(model.yValue(match).intValue() + "");
+    String trainLineY = StringUtils.join(yList, " ");
 
-    int yValue = model.yValue(match).intValue();
-    String trainLineY; // 0=主, 1=和, 2=客
-    if (yValue == 0) { // 转化为多标签问题
-      trainLineY = "1   0   0";
-    } else if (yValue == 1) {
-      trainLineY = "0   1   0";
-    } else {
-      trainLineY = "0   0   1";
-    }
+    // int yValue = model.yValue(match).intValue();
+    // String trainLineY; // 0=主, 1=和, 2=客
+    // if (yValue == 0) { // 转化为多标签问题
+    // trainLineY = "1 0 0";
+    // } else if (yValue == 1) {
+    // trainLineY = "0 1 0";
+    // } else {
+    // trainLineY = "0 0 1";
+    // }
+
     return new Pair<>(trainLineX, trainLineY);
   }
 }

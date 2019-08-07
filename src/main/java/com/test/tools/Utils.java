@@ -70,18 +70,23 @@ public class Utils {
       if (arr.length != 3) {
         throw new RuntimeException(line);
       }
-      float maxProb = 0;
-      float indexOfMax = -1;
-      for (int i = 0; i < 3; i++) { // 0=主, 1=走，2=客
-        float prob = valueOfFloat(arr[i]);
-        if (prob > maxProb) {
-          indexOfMax = i;
-          maxProb = prob;
-        }
-      }
+       if (valueOfFloat(arr[0]) > valueOfFloat(arr[2])) {
+       est = new Estimation(0, valueOfFloat(arr[0]) + valueOfFloat(arr[1]));
+       } else {
+       est = new Estimation(2, valueOfFloat(arr[2]) + valueOfFloat(arr[1]));
+       }
+      // float maxProb = 0;
+      // float indexOfMax = -1;
+      // for (int i = 0; i < 3; i++) { // 0=主, 1=走，2=客
+      // float prob = valueOfFloat(arr[i]);
+      // if (prob > maxProb) {
+      // indexOfMax = i;
+      // maxProb = prob;
+      // }
+      // }
+      // // System.out.println("value=" + indexOfMax + ", prob=" + maxProb);
+      // est = new Estimation(indexOfMax, maxProb);
 
-      // System.out.println("value=" + indexOfMax + ", prob=" + maxProb);
-      est = new Estimation(indexOfMax, maxProb);
       estimations.add(est);
     });
 

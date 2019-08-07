@@ -4,10 +4,8 @@ import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
@@ -20,48 +18,40 @@ import com.test.Keys;
 import com.test.entity.Match;
 import com.test.tools.Pair;
 
+@SuppressWarnings("WeakerAccess")
 public class QueryHelper implements Keys {
-
-  public static final String SQL_SELECT = "select * from football where 1=1 ";
 
   public static final String SQL_AND =
       "AND cast(timeMin as int) >0 AND cast(timeMin as int) <= 100 " +
           "AND cast(hostScore as int) >=0 " +
           "AND cast(customScore as int) >=0 " +
           "AND league is not null " +
+          "AND original_scoreOdd is not null " +
+          "AND cast(original_scoreOddOfVictory as number) >=1.7 " +
+          "AND cast(original_scoreOddOfDefeat as number) >=1.7 " +
+          "AND cast(original_victoryOdd as number) >=0 " +
+          "AND cast(original_drawOdd as number) >=0 " +
+          "AND cast(original_defeatOdd as number) >=0 " +
+          "AND cast(original_bigOdd as number) >=1 " +
+          "AND cast(original_bigOddOfVictory as number) >=1.7 " +
+          "AND cast(original_bigOddOfDefeat as number) >=1.7 " +
 
-          // "AND cast(min0_scoreOdd as number) >=-0.5 " +
-          // "AND cast(min0_scoreOdd as number) <=0.5 " +
-          "AND cast(min0_scoreOddOfVictory as number) >0.7 " +
-          "AND cast(min0_scoreOddOfDefeat as number) >0.7 " +
+          "AND min0_scoreOdd is not null " +
+          "AND cast(min0_scoreOddOfVictory as number) >=1.7 " +
+          "AND cast(min0_scoreOddOfDefeat as number) >=1.7 " +
+          "AND cast(min0_victoryOdd as number) >=0 " +
+          "AND cast(min0_drewOdd as number) >=0 " +
+          "AND cast(min0_defeatOdd as number) >=0 " +
+          "AND cast(min0_bigOdd as number) >=1 " +
+          "AND cast(min0_bigOddOfVictory as number) >=1.7 " +
+          "AND cast(min0_bigOddOfDefeat as number) >=1.7 " +
 
-          "AND cast(min0_bigOdd as number) > 0 " +
-          "AND cast(min0_bigOddOfVictory as number) >0.7 " +
-          "AND cast(min0_bigOddOfDefeat as number) >0.7 " +
-          "AND cast(min0_drewOdd as number) >0 " +
-          "AND cast(min0_victoryOdd as number) >0 " +
-          "AND cast(min0_defeatOdd as number) >0 " +
 
+          // 需要能抓取到场上基本的数据
           "AND cast(min15_hostBestShoot as int) >=0 " +
           "AND cast(min15_customBestShoot as int) >=0 " +
           "AND cast(min15_hostDanger as int) >=0 " +
           "AND cast(min15_customDanger as int) >=0 ";
-
-  public static final String SQL_BASE = SQL_SELECT + SQL_AND;
-
-  public static final String SQL_MIDDLE =
-      // "AND cast(min75_scoreOdd as number)=0 " +
-      // "AND cast(min75_scoreOddOfVictory as number)>0.7 " +
-      // "AND cast(min0_scoreOdd as number)=0.5 " +
-      // "AND cast(min75_hostScore as int) - cast(min75_customScore as int) >=0 " +
-      // "AND cast(min75_hostBestShoot as int) - cast(min75_customBestShoot as int) >=1 " +
-      // "AND abs(cast(min45_scoreOdd as number)) in (0.5,1) " +
-      // "AND abs(cast(min75_hostScore as number) - cast(min75_customScore as number)) >= 1 " +
-      // "AND abs(cast(min75_hostBestShoot as number) - cast(min75_customBestShoot as number))
-      // >= 3 "
-      // +
-      // "AND league like '%英超%' " +
-      "AND 1=1 ";
 
   // 进行中的比赛
   public static String SQL_RT = "AND matchStatus=1 ";
@@ -69,7 +59,12 @@ public class QueryHelper implements Keys {
   // 已结束的比赛
   public static String SQL_ST = "AND matchStatus=3 ";
 
-  public static String SQL_ORDER = "order by matchTime desc limit 6000";
+  public static String SQL_ORDER = "order by matchTime desc limit 4000";
+
+  public static final String SQL_SELECT = "select * from football where 1=1 ";
+
+  public static final String SQL_BASE = SQL_SELECT + SQL_AND;
+
 
   public static List<Match> doQuery(String sql) throws Exception {
     final List<Match> matches = new ArrayList<>();
@@ -86,12 +81,13 @@ public class QueryHelper implements Keys {
     return matches;
   }
 
-  public static Set<String> queryLeagues() throws Exception {
-    String sql = "select distinct(league) from football where 1=1 " + SQL_AND;
+  public static List<String> queryLeagues() throws Exception {
+    String sql = "select max(league) from football where 1=1 " + SQL_AND
+        + " group by league order by count(*) desc ";
     final DataSource ds = new DbHelper().open();
     QueryRunner runner = new QueryRunner(ds);
     List<Object[]> leagues = runner.query(sql, new ArrayListHandler());
-    final Set<String> list = new HashSet<>();
+    final List<String> list = new ArrayList<>();
     for (Object[] league : leagues) {
       list.add((String) league[0]);
     }
@@ -103,7 +99,7 @@ public class QueryHelper implements Keys {
 
   public static void updateHistory() throws Exception {
     int updated = 0;
-    final Set<String> leagues = queryLeagues();
+    final List<String> leagues = queryLeagues();
     final QueryRunner runner = new QueryRunner(new DbHelper().open());
     for (String league : leagues) {
       String sql = SQL_BASE + "and league='" + league + "' order by matchTime desc limit 10000";
@@ -166,8 +162,8 @@ public class QueryHelper implements Keys {
         .count();
 
     int total = hostMatches.size() + awayMatches.size();
-    if (total == 0) return -1;
-    return total > 0 ? hostVictory * 1.00f / total : 0.5f;
+    if (total == 0) return 999;
+    return hostVictory * 1.00f / total;
   }
 
   public static float recentVictoryRate(long matchTime, String pinyin, List<Match> all) {
@@ -188,7 +184,7 @@ public class QueryHelper implements Keys {
         .count();
 
     int total = hostMatches.size() + awayMatches.size();
-    if (total == 0) return -1;
+    if (total == 0) return 999;
     return hostVictory * 1.00f / total;
   }
 
@@ -204,8 +200,8 @@ public class QueryHelper implements Keys {
     int goalOnHost = hostMatches.stream().mapToInt(match -> match.mHostScore).sum();
     int goalOnAway = awayMatches.stream().mapToInt(match -> match.mCustomScore).sum();
 
-    float onHost = hostMatches.isEmpty() ? -1 : goalOnHost * 1f / hostMatches.size();
-    float onAway = awayMatches.isEmpty() ? -1 : goalOnAway * 1f / awayMatches.size();
+    float onHost = hostMatches.isEmpty() ? 999 : goalOnHost * 1f / hostMatches.size();
+    float onAway = awayMatches.isEmpty() ? 999 : goalOnAway * 1f / awayMatches.size();
     return new Pair<>(onHost, onAway);
   }
 
@@ -221,22 +217,22 @@ public class QueryHelper implements Keys {
     int lossOnHost = hostMatches.stream().mapToInt(match -> match.mCustomScore).sum();
     int lossOnAway = awayMatches.stream().mapToInt(match -> match.mHostScore).sum();
 
-    float onHost = hostMatches.isEmpty() ? -1 : lossOnHost * 1f / hostMatches.size();
-    float onAway = awayMatches.isEmpty() ? -1 : lossOnAway * 1f / awayMatches.size();
+    float onHost = hostMatches.isEmpty() ? 999 : lossOnHost * 1f / hostMatches.size();
+    float onAway = awayMatches.isEmpty() ? 999 : lossOnAway * 1f / awayMatches.size();
     return new Pair<>(onHost, onAway);
   }
 
   public static String buildSqlIn(List<Integer> matchIds) {
-    String sqlIn = "AND matchID in (";
+    StringBuilder sqlIn = new StringBuilder("AND matchID in (");
     for (int i = 0; i < matchIds.size(); i++) {
       if (i > 0) {
-        sqlIn += ", ";
+        sqlIn.append(", ");
       }
-      sqlIn += matchIds.get(i);
+      sqlIn.append(matchIds.get(i));
     }
-    sqlIn += ") ";
+    sqlIn.append(") ");
 
-    return sqlIn;
+    return sqlIn.toString();
   }
 
 

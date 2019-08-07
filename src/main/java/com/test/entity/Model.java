@@ -1,14 +1,13 @@
 package com.test.entity;
 
-import com.test.Keys;
-
 import java.util.List;
-import java.util.function.Predicate;
+
+import com.test.Keys;
 
 /**
  * 足球AI模型基类.
  */
-public abstract class Model implements Predicate<Match>, Keys {
+public abstract class Model implements Keys {
 
 
   /**
@@ -28,12 +27,9 @@ public abstract class Model implements Predicate<Match>, Keys {
 
 
   /**
-   * 判断该Match是否符合这个模型的训练要求.
+   * 追加的查询语句.
    */
-  @Override
-  public boolean test(Match match) {
-    return true;
-  }
+  public abstract String andSql();
 
   /**
    * 优选高概率的结果.

@@ -1,7 +1,6 @@
 package com.test.radar;
 
 import static com.test.db.QueryHelper.SQL_BASE;
-import static com.test.db.QueryHelper.SQL_MIDDLE;
 import static com.test.db.QueryHelper.SQL_ORDER;
 import static com.test.db.QueryHelper.SQL_RT;
 import static com.test.db.QueryHelper.buildSqlIn;
@@ -19,13 +18,12 @@ import com.test.entity.Model;
 import com.test.learning.Phoenix;
 import com.test.learning.PhoenixInputs;
 import com.test.learning.model.BallModel45;
-import com.test.learning.model.OddModel45;
 import com.test.win007.Win007Spider;
 
 public class Radar {
 
   private static final Model[] MODELS = new Model[] {
-      new BallModel45(), new OddModel45()
+      new BallModel45()
   };
 
   private static final EstimationConsumer[] CONSUMERS = new EstimationConsumer[] {
@@ -58,7 +56,7 @@ public class Radar {
     // 运行爬虫
     List<Integer> matchIDs = Win007Spider.runRt();
     // 查询数据
-    String querySql = SQL_BASE + SQL_MIDDLE + SQL_RT + buildSqlIn(matchIDs) + SQL_ORDER;
+    String querySql = SQL_BASE + SQL_RT + buildSqlIn(matchIDs) + SQL_ORDER;
     List<Match> matches = QueryHelper.doQuery(querySql);
     System.out.println("进行中的比赛场次: " + matches.size());
 
@@ -70,7 +68,7 @@ public class Radar {
   }
 
   private static void loopOne(Model model, List<Match> matches) throws Exception {
-    matches = matches.stream().filter(model)
+    matches = matches.stream()
         .sorted((o1, o2) -> o1.mLeague.compareTo(o2.mLeague)).collect(Collectors.toList());
     if (matches.isEmpty()) {
       return;

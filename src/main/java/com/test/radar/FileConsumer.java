@@ -17,7 +17,6 @@ import com.test.entity.Match;
 import com.test.entity.Model;
 import com.test.http.HttpUtils;
 import com.test.learning.model.BallModel45;
-import com.test.learning.model.OddModel45;
 import com.test.win007.jobs.MatchBasicJob;
 
 import okhttp3.OkHttpClient;
@@ -157,7 +156,7 @@ public class FileConsumer implements EstimationConsumer, Keys {
       case "ballHalf":
         return new BallModel45();
       case "oddHalf":
-        return new OddModel45();
+//        return new OddModel45();
       default:
         throw new RuntimeException();
     }

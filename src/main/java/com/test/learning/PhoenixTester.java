@@ -1,7 +1,6 @@
 package com.test.learning;
 
 import static com.test.db.QueryHelper.SQL_BASE;
-import static com.test.db.QueryHelper.SQL_MIDDLE;
 import static com.test.db.QueryHelper.SQL_ORDER;
 import static com.test.db.QueryHelper.SQL_ST;
 
@@ -22,12 +21,11 @@ public class PhoenixTester {
   private static final int TEST_SET_COUNT = 1000; // 测试集长度
   private static final float[] THRESHOLDS = new float[] {
       // 0.50f};
-       0.4f, 0.45f, 0.5f};
-//      0.50f, 0.51f, 0.52f, 0.53f, 0.54f, 0.55f, 0.58f};
-//   0.50f, 0.55f, 0.60f, 0.65f, 0.70f, 0.75f, 0.80f}; // 高概率要求的阈值
+//      0.4f, 0.45f, 0.5f, 0.53f, 0.55f, 0.58f};
+   0.50f, 0.55f, 0.60f, 0.65f, 0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f}; // 高概率要求的阈值
 
   public static void runTest(Model model) throws Exception {
-    String querySql = SQL_BASE + SQL_MIDDLE + SQL_ST + SQL_ORDER;
+    String querySql = SQL_BASE + model.andSql() + SQL_ST + SQL_ORDER;
     final List<Match> matches = QueryHelper.doQuery(querySql);
     for (float threshold : THRESHOLDS) {
       trainAndTest(model, threshold, matches);
@@ -109,7 +107,7 @@ public class PhoenixTester {
       final boolean isAiDrew = aiGain == 0;
 
       // System.out.println(est.mValue + ", " + model.yValue(match) + ", "
-      // + ((OddModel75) model).calScoreDelta(match) + ", " + aiGain);
+      // + ((OddModel) model).deltaScore(match) + ", " + aiGain);
       // 高概率
       if (est.mProbability >= threshold) {
         highProbTotalCount++;

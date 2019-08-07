@@ -12,13 +12,35 @@ import com.test.entity.Estimation;
 import com.test.entity.Match;
 import com.test.entity.Model;
 
-public class OddModel75 extends Model {
+/**
+ * 指定时刻让球胜平负.
+ */
+public class OddModel extends Model {
 
-  private final int mTimeMin = 45;
+  private final int mTimeMin;
+
+  public OddModel(int timeMin) {
+    mTimeMin = timeMin;
+  }
 
   @Override
   public String name() {
-    return "odd75";
+    return "odd" + mTimeMin;
+  }
+
+  @Override
+  public String andSql() {
+    return String.format(
+        "AND cast(min0_scoreOdd as number)=0 " +
+        // "AND cast(min%d_scoreOdd as number)=0 " +
+            "AND cast(min%d_scoreOddOfVictory as number)>1.7 " +
+            "AND cast(min%d_scoreOddOfDefeat as number)>1.7 ",
+        // "AND cast(min%d_victoryOdd as number)>1.7 " +
+        // "AND cast(min%d_drewOdd as number)>1.7 " +
+        // "AND cast(min%d_defeatOdd as number)>1.7 ",
+        // mTimeMin,
+        mTimeMin,
+        mTimeMin);
   }
 
   @Override
@@ -32,36 +54,28 @@ public class OddModel75 extends Model {
     // xValues.add(valueOfFloat(dbMap.get("min" + mTimeMin + "_" + "hostScore")));
     // xValues.add(valueOfFloat(dbMap.get("min" + mTimeMin + "_" + "customScore")));
 
-    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_SCORE_ODD)));
-    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_SCORE_ODD_OF_VICTORY)));
-    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_SCORE_ODD_OF_DEFEAT)));
+     xValues.add(valueOfFloat(dbMap.get(HISTORY_VICTORY_RATE_OF_HOST)));
+     xValues.add(valueOfFloat(dbMap.get(RECENT_VICTORY_RATE_OF_HOST)));
+     xValues.add(valueOfFloat(dbMap.get(RECENT_VICTORY_RATE_OF_CUSTOM)));
+     xValues.add(valueOfFloat(dbMap.get(RECENT_GOAL_OF_HOST)));
+     xValues.add(valueOfFloat(dbMap.get(RECENT_GOAL_OF_CUSTOM)));
+     xValues.add(valueOfFloat(dbMap.get(RECENT_LOSS_OF_HOST)));
+     xValues.add(valueOfFloat(dbMap.get(RECENT_LOSS_OF_CUSTOM)));
 
-    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_VICTORY_ODD)));
-    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_DREW_ODD)));
-    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_DEFEAT_ODD)));
-
-    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_BIG_ODD)));
-    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_BIG_ODD_OF_VICTORY)));
-    xValues.add(valueOfFloat(dbMap.get(ORIGINAL_BIG_ODD_OF_DEFEAT)));
-
-    float val = valueOfFloat(dbMap.get(HISTORY_VICTORY_RATE_OF_HOST));
-    xValues.add(val == -1 ? 999 : val);
-    val = valueOfFloat(dbMap.get(RECENT_VICTORY_RATE_OF_HOST));
-    xValues.add(val == -1 ? 999 : val);
-    val = valueOfFloat(dbMap.get(RECENT_VICTORY_RATE_OF_CUSTOM));
-    xValues.add(val == -1 ? 999 : val);
-    val = valueOfFloat(dbMap.get(RECENT_GOAL_OF_HOST));
-    xValues.add(val == -1 ? 999 : val);
-    val = valueOfFloat(dbMap.get(RECENT_GOAL_OF_CUSTOM));
-    xValues.add(val == -1 ? 999 : val);
-    val = valueOfFloat(dbMap.get(RECENT_LOSS_OF_HOST));
-    xValues.add(val == -1 ? 999 : val);
-    val = valueOfFloat(dbMap.get(RECENT_LOSS_OF_CUSTOM));
-    xValues.add(val == -1 ? 999 : val);
-
+    // xValues.add(valueOfFloat(dbMap.get(ORIGINAL_SCORE_ODD)));
+    // xValues.add(valueOfFloat(dbMap.get(ORIGINAL_SCORE_ODD_OF_VICTORY)));
+    // xValues.add(valueOfFloat(dbMap.get(ORIGINAL_SCORE_ODD_OF_DEFEAT)));
+    //
+    // xValues.add(valueOfFloat(dbMap.get(ORIGINAL_VICTORY_ODD)));
+    // xValues.add(valueOfFloat(dbMap.get(ORIGINAL_DREW_ODD)));
+    // xValues.add(valueOfFloat(dbMap.get(ORIGINAL_DEFEAT_ODD)));
+    //
+    // xValues.add(valueOfFloat(dbMap.get(ORIGINAL_BIG_ODD)));
+    // xValues.add(valueOfFloat(dbMap.get(ORIGINAL_BIG_ODD_OF_VICTORY)));
+    // xValues.add(valueOfFloat(dbMap.get(ORIGINAL_BIG_ODD_OF_DEFEAT)));
 
     for (int i = 0; i <= mTimeMin; i++) {
-      if (i != 0 && i != mTimeMin) {
+      if (i != 0 && i != 45 && i != mTimeMin) {
         continue;
       }
       // 当前场上情况
@@ -76,19 +90,19 @@ public class OddModel75 extends Model {
       }
 
       // 亚盘
-      keys.add("min" + i + "_" + "scoreOdd");
-      keys.add("min" + i + "_" + "scoreOddOfVictory");
-      keys.add("min" + i + "_" + "scoreOddOfDefeat");
-
-      // 欧盘
-      keys.add("min" + i + "_" + "victoryOdd");
-      keys.add("min" + i + "_" + "drewOdd");
-      keys.add("min" + i + "_" + "defeatOdd");
-
-      // 大小球
-      keys.add("min" + i + "_" + "bigOdd");
-      keys.add("min" + i + "_" + "bigOddOfVictory");
-      keys.add("min" + i + "_" + "bigOddOfDefeat");
+      // keys.add("min" + i + "_" + "scoreOdd");
+      // keys.add("min" + i + "_" + "scoreOddOfVictory");
+      // keys.add("min" + i + "_" + "scoreOddOfDefeat");
+      //
+      // // 欧盘
+      // keys.add("min" + i + "_" + "victoryOdd");
+      // keys.add("min" + i + "_" + "drewOdd");
+      // keys.add("min" + i + "_" + "defeatOdd");
+      //
+      // // 大小球
+      // keys.add("min" + i + "_" + "bigOdd");
+      // keys.add("min" + i + "_" + "bigOddOfVictory");
+      // keys.add("min" + i + "_" + "bigOddOfDefeat");
 
 
       keys.forEach(key -> xValues.add(valueOfFloat(dbMap.get(key))));
@@ -99,19 +113,17 @@ public class OddModel75 extends Model {
 
   @Override
   public Float yValue(Match match) {
-    float delta = calScoreDelta(match);
+    float delta = deltaScore(match);
     return delta > 0 ? 0 : (delta == 0 ? 1f : 2);
   }
 
-  public float calScoreDelta(Match match) {
+  public float deltaScore(Match match) {
     Map<String, Object> dbMap = new HashMap<>(match.mDbMap);
     int hostScore = valueOfInt(dbMap.get(HOST_SCORE));
     int customScore = valueOfInt(dbMap.get(CUSTOM_SCORE));
     int timeHostScore = valueOfInt(dbMap.get("min" + mTimeMin + "_hostScore"));
     int timeCustomScore = valueOfInt(dbMap.get("min" + mTimeMin + "_customScore"));
     float timeScoreOdd = valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOdd"));
-
-    // return (hostScore - customScore);
 
     return (hostScore - customScore) - (timeHostScore - timeCustomScore) + timeScoreOdd;
   }
@@ -121,7 +133,8 @@ public class OddModel75 extends Model {
     Map<String, Object> dbMap = new HashMap<>(match.mDbMap);
     float scoreOddOfVictory = valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOddOfVictory")) - 1;
     float scoreOddOfDefeat = valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOddOfDefeat")) - 1;
-    float deltaScore = calScoreDelta(match);
+    float deltaScore = deltaScore(match);
+
 
     if (est.mValue == 0) { // 判断主队
       if (deltaScore >= 0.5) return scoreOddOfVictory;
@@ -130,8 +143,9 @@ public class OddModel75 extends Model {
       if (deltaScore >= -0.25) return -0.5f;
       if (deltaScore <= -0.5) return -1;
     }
-    if (est.mValue == 1) { // 判断走水, 不买
-      return 0;
+    if (est.mValue == 1) { //
+      if (deltaScore == 0) return 1;
+      return -1;
     }
     if (est.mValue == 2) { // 判断客队
       if (deltaScore >= 0.5) return -1;
