@@ -22,14 +22,14 @@ y_data = np.loadtxt(sys.argv[2]).astype(np.float32)
 
 # We evaluate the x and y by sklearn to get a sense of the coefficients.
 # reg = OneVsRestClassifier(svm.SVC(C=1.0, kernel='rbf', gamma='scale', probability=True))
-reg=DecisionTreeClassifier()
+# reg=DecisionTreeClassifier()
 # reg=XGBClassifier()
 # reg=GradientBoostingClassifier()
 # reg=ExtraTreeClassifier()
 # reg=MLPClassifier()
 # reg = RandomForestClassifier(n_estimators=100)
 # reg = linear_model.LinearRegression(fit_intercept=False)
-# reg = linear_model.LogisticRegression(solver='liblinear', multi_class='auto')
+reg = linear_model.LogisticRegression(solver='sag', multi_class='auto')
 reg.fit(SimpleImputer(missing_values=999.00, strategy='mean').fit_transform(x_data), y_data)
 # reg.fit(x_data, y_data)
 

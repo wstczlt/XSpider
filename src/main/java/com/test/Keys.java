@@ -94,6 +94,13 @@ public interface Keys {
   String OPENING_BIG_ODD_OF_VICTORY = "opening_bigOddOfVictory";
   String OPENING_BIG_ODD_OF_DEFEAT = "opening_bigOddOfDefeat";
 
+  String HISTORY_VICTORY_RATE_OF_HOST = "historyVictoryRateOfHost";
+  String RECENT_VICTORY_RATE_OF_HOST = "recentVictoryRateOfHost";
+  String RECENT_VICTORY_RATE_OF_CUSTOM = "recentVictoryRateOfCustom";
+  String RECENT_GOAL_OF_HOST = "recentGoalOfHost";
+  String RECENT_GOAL_OF_CUSTOM = "recentGoalOfCustom";
+  String RECENT_LOSS_OF_HOST = "recentLossOfHost";
+  String RECENT_LOSS_OF_CUSTOM = "recentLossOfCustom";
 
 
   String HOST_SCORE_OF_3 = "hostScoreOf3";

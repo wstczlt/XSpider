@@ -14,7 +14,7 @@ import com.test.entity.Model;
 
 public class OddModel75 extends Model {
 
-  private final int mTimeMin = 50;
+  private final int mTimeMin = 45;
 
   @Override
   public String name() {
@@ -43,6 +43,21 @@ public class OddModel75 extends Model {
     xValues.add(valueOfFloat(dbMap.get(ORIGINAL_BIG_ODD)));
     xValues.add(valueOfFloat(dbMap.get(ORIGINAL_BIG_ODD_OF_VICTORY)));
     xValues.add(valueOfFloat(dbMap.get(ORIGINAL_BIG_ODD_OF_DEFEAT)));
+
+    float val = valueOfFloat(dbMap.get(HISTORY_VICTORY_RATE_OF_HOST));
+    xValues.add(val == -1 ? 999 : val);
+    val = valueOfFloat(dbMap.get(RECENT_VICTORY_RATE_OF_HOST));
+    xValues.add(val == -1 ? 999 : val);
+    val = valueOfFloat(dbMap.get(RECENT_VICTORY_RATE_OF_CUSTOM));
+    xValues.add(val == -1 ? 999 : val);
+    val = valueOfFloat(dbMap.get(RECENT_GOAL_OF_HOST));
+    xValues.add(val == -1 ? 999 : val);
+    val = valueOfFloat(dbMap.get(RECENT_GOAL_OF_CUSTOM));
+    xValues.add(val == -1 ? 999 : val);
+    val = valueOfFloat(dbMap.get(RECENT_LOSS_OF_HOST));
+    xValues.add(val == -1 ? 999 : val);
+    val = valueOfFloat(dbMap.get(RECENT_LOSS_OF_CUSTOM));
+    xValues.add(val == -1 ? 999 : val);
 
 
     for (int i = 0; i <= mTimeMin; i++) {
@@ -95,6 +110,8 @@ public class OddModel75 extends Model {
     int timeHostScore = valueOfInt(dbMap.get("min" + mTimeMin + "_hostScore"));
     int timeCustomScore = valueOfInt(dbMap.get("min" + mTimeMin + "_customScore"));
     float timeScoreOdd = valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOdd"));
+
+    // return (hostScore - customScore);
 
     return (hostScore - customScore) - (timeHostScore - timeCustomScore) + timeScoreOdd;
   }

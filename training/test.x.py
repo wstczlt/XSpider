@@ -19,10 +19,9 @@ y_data = reg.predict_proba(SimpleImputer(missing_values=999, strategy='mean').fi
 # for y in y_data:
 #     print y
 
-print "分类器:"
-print reg.score(SimpleImputer(missing_values=999.00, strategy='mean').fit_transform(x_data), np.loadtxt('temp/odd75_y_test.dat').astype(np.float32))
-# print reg.score(x_data, np.loadtxt('temp/odd75_y_test.dat').astype(np.float32))
+print "拟合算法:"
+print reg.score(SimpleImputer(missing_values=999.00, strategy='mean').fit_transform(x_data), np.loadtxt('temp/odd75_y_test.dat.x').astype(np.float32))
+# print reg.score(x_data, np.loadtxt('temp/odd75_y_test.dat.x').astype(np.float32))
 print "\n"
-
 # y_data_test = np.loadtxt(sys.argv[3]).astype(np.float32)
 # print reg.score(x_data_std, y_data_test)

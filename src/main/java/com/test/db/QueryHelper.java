@@ -4,23 +4,28 @@ import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 
 import com.test.Keys;
 import com.test.entity.Match;
+import com.test.tools.Pair;
 
 public class QueryHelper implements Keys {
 
-  public static final String SQL_BASE =
-      "select * from football where 1=1 " +
-          "AND cast(timeMin as int) >0 AND cast(timeMin as int) <= 100 " +
+  public static final String SQL_SELECT = "select * from football where 1=1 ";
+
+  public static final String SQL_AND =
+      "AND cast(timeMin as int) >0 AND cast(timeMin as int) <= 100 " +
           "AND cast(hostScore as int) >=0 " +
           "AND cast(customScore as int) >=0 " +
           "AND league is not null " +
@@ -42,20 +47,24 @@ public class QueryHelper implements Keys {
           "AND cast(min15_hostDanger as int) >=0 " +
           "AND cast(min15_customDanger as int) >=0 ";
 
+  public static final String SQL_BASE = SQL_SELECT + SQL_AND;
 
   public static final String SQL_MIDDLE =
-      "AND cast(min75_scoreOdd as number)=0 " +
-          "AND cast(min45_scoreOddOfVictory as number)>0.7 " +
-          "AND cast(min45_scoreOddOfDefeat as number)>0.7 " +
-          "AND abs(cast(min45_scoreOdd as number)) in (0.5,1) " +
-          // "AND abs(cast(min75_hostScore as number) - cast(min75_customScore as number)) >= 1 " +
-          // "AND abs(cast(min75_hostBestShoot as number) - cast(min75_customBestShoot as number))
-          // >= 3 "
-          // +
-          "AND 1=1 ";
+      // "AND cast(min75_scoreOdd as number)=0 " +
+      // "AND cast(min75_scoreOddOfVictory as number)>0.7 " +
+      // "AND cast(min0_scoreOdd as number)=0.5 " +
+      // "AND cast(min75_hostScore as int) - cast(min75_customScore as int) >=0 " +
+      // "AND cast(min75_hostBestShoot as int) - cast(min75_customBestShoot as int) >=1 " +
+      // "AND abs(cast(min45_scoreOdd as number)) in (0.5,1) " +
+      // "AND abs(cast(min75_hostScore as number) - cast(min75_customScore as number)) >= 1 " +
+      // "AND abs(cast(min75_hostBestShoot as number) - cast(min75_customBestShoot as number))
+      // >= 3 "
+      // +
+      // "AND league like '%英超%' " +
+      "AND 1=1 ";
 
   // 进行中的比赛
-  public static String SQL_RT = "AND matchStatus>=1 AND matchStatus<=4 ";
+  public static String SQL_RT = "AND matchStatus=1 ";
 
   // 已结束的比赛
   public static String SQL_ST = "AND matchStatus=3 ";
@@ -77,28 +86,62 @@ public class QueryHelper implements Keys {
     return matches;
   }
 
+  public static Set<String> queryLeagues() throws Exception {
+    String sql = "select distinct(league) from football where 1=1 " + SQL_AND;
+    final DataSource ds = new DbHelper().open();
+    QueryRunner runner = new QueryRunner(ds);
+    List<Object[]> leagues = runner.query(sql, new ArrayListHandler());
+    final Set<String> list = new HashSet<>();
+    for (Object[] league : leagues) {
+      list.add((String) league[0]);
+    }
+
+    System.out.println(list);
+    return list;
+  }
+
 
   public static void updateHistory() throws Exception {
-    String sql = SQL_BASE + "order by matchTime desc limit 10000";
-    List<Match> all = doQuery(sql);
-    for (Match match : all) {
-      float historyVictoryRateOfHost = historyVictoryRateOfHost(match, all);
-      float recentVictoryRateOfHost =
-          recentVictoryRate(match.mMatchTime, match.mHostNamePinyin, all);
-      float recentVictoryRateOfCustom =
-          recentVictoryRate(match.mMatchTime, match.mCustomNamePinyin, all);
+    int updated = 0;
+    final Set<String> leagues = queryLeagues();
+    final QueryRunner runner = new QueryRunner(new DbHelper().open());
+    for (String league : leagues) {
+      String sql = SQL_BASE + "and league='" + league + "' order by matchTime desc limit 10000";
+      List<Match> all = doQuery(sql);
+      for (Match match : all) {
+        float historyVictoryRateOfHost = historyVictoryRateOfHost(match, all);
+        float recentVictoryRateOfHost =
+            recentVictoryRate(match.mMatchTime, match.mHostNamePinyin, all);
+        float recentVictoryRateOfCustom =
+            recentVictoryRate(match.mMatchTime, match.mCustomNamePinyin, all);
+        Pair<Float, Float> recentGoal = recentGoal(match.mMatchTime, match.mCustomNamePinyin, all);
+        Pair<Float, Float> recentLoss = recentLoss(match.mMatchTime, match.mCustomNamePinyin, all);
 
-      String updateSql = String.format(
-          "update football set historyVictoryRateOfHost='%s', recentVictoryRateOfHost='%s', recentVictoryRateOfCustom='%s' where matchID=%d",
-          historyVictoryRateOfHost,
-          recentVictoryRateOfHost,
-          recentVictoryRateOfCustom,
-          match.mMatchID);
+        String updateSql = String.format(
+            "update football set historyVictoryRateOfHost='%.2f', " +
+                "recentVictoryRateOfHost='%.2f', " +
+                "recentVictoryRateOfCustom='%.2f', " +
+                "recentGoalOfHost='%.2f', " +
+                "recentGoalOfCustom='%.2f', " +
+                "recentLossOfHost='%.2f', " +
+                "recentLossOfCustom='%.2f' " +
+                "where matchID=%d",
+            historyVictoryRateOfHost,
+            recentVictoryRateOfHost,
+            recentVictoryRateOfCustom,
+            recentGoal.first,
+            recentGoal.second,
+            recentLoss.first,
+            recentLoss.second,
+            match.mMatchID);
 
-      final DataSource ds = new DbHelper().open();
-      QueryRunner runner = new QueryRunner(ds);
-      int updateCount = runner.update(updateSql);
-      System.out.println(updateCount);
+        try {
+          updated += runner.update(updateSql);
+          System.out.println("Updated=" + updated);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
     }
   }
 
@@ -108,12 +151,12 @@ public class QueryHelper implements Keys {
         .filter(match -> thisMatch.mMatchTime > match.mMatchTime) // 必须是本场比赛以前发生的比赛
         .filter(match -> match.mHostNamePinyin.equals(thisMatch.mHostNamePinyin)
             && match.mCustomNamePinyin.equals(thisMatch.mCustomNamePinyin))
-        .limit(3).collect(Collectors.toList());
+        .limit(10).collect(Collectors.toList());
     List<Match> awayMatches = all.stream()
         .filter(match -> thisMatch.mMatchTime > match.mMatchTime)
         .filter(match -> match.mHostNamePinyin.equals(thisMatch.mCustomNamePinyin)
-            && match.mCustomNamePinyin.equals(thisMatch.mCustomNamePinyin))
-        .limit(3).collect(Collectors.toList());
+            && match.mCustomNamePinyin.equals(thisMatch.mHostNamePinyin))
+        .limit(10).collect(Collectors.toList());
 
     int hostVictory = (int) hostMatches.stream()
         .filter(other -> other.mHostScore - other.mCustomScore + other.mOriginalScoreOdd > 0)
@@ -123,6 +166,7 @@ public class QueryHelper implements Keys {
         .count();
 
     int total = hostMatches.size() + awayMatches.size();
+    if (total == 0) return -1;
     return total > 0 ? hostVictory * 1.00f / total : 0.5f;
   }
 
@@ -131,11 +175,11 @@ public class QueryHelper implements Keys {
     List<Match> hostMatches = all.stream()
         .filter(match -> matchTime > match.mMatchTime)
         .filter(match -> match.mHostNamePinyin.equals(pinyin))
-        .limit(5).collect(Collectors.toList());
+        .limit(10).collect(Collectors.toList());
     List<Match> awayMatches = all.stream()
         .filter(match -> matchTime > match.mMatchTime)
         .filter(match -> match.mCustomNamePinyin.equals(pinyin))
-        .limit(5).collect(Collectors.toList());
+        .limit(10).collect(Collectors.toList());
     int hostVictory = (int) hostMatches.stream()
         .filter(other -> other.mHostScore - other.mCustomScore + other.mOriginalScoreOdd > 0)
         .count();
@@ -144,7 +188,42 @@ public class QueryHelper implements Keys {
         .count();
 
     int total = hostMatches.size() + awayMatches.size();
-    return total > 0 ? hostVictory * 1.00f / total : 0.5f;
+    if (total == 0) return -1;
+    return hostVictory * 1.00f / total;
+  }
+
+  public static Pair<Float, Float> recentGoal(long matchTime, String pinyin, List<Match> all) {
+    List<Match> hostMatches = all.stream()
+        .filter(match -> matchTime > match.mMatchTime)
+        .filter(match -> match.mHostNamePinyin.equals(pinyin))
+        .limit(10).collect(Collectors.toList());
+    List<Match> awayMatches = all.stream()
+        .filter(match -> matchTime > match.mMatchTime)
+        .filter(match -> match.mCustomNamePinyin.equals(pinyin))
+        .limit(10).collect(Collectors.toList());
+    int goalOnHost = hostMatches.stream().mapToInt(match -> match.mHostScore).sum();
+    int goalOnAway = awayMatches.stream().mapToInt(match -> match.mCustomScore).sum();
+
+    float onHost = hostMatches.isEmpty() ? -1 : goalOnHost * 1f / hostMatches.size();
+    float onAway = awayMatches.isEmpty() ? -1 : goalOnAway * 1f / awayMatches.size();
+    return new Pair<>(onHost, onAway);
+  }
+
+  public static Pair<Float, Float> recentLoss(long matchTime, String pinyin, List<Match> all) {
+    List<Match> hostMatches = all.stream()
+        .filter(match -> matchTime > match.mMatchTime)
+        .filter(match -> match.mHostNamePinyin.equals(pinyin))
+        .limit(10).collect(Collectors.toList());
+    List<Match> awayMatches = all.stream()
+        .filter(match -> matchTime > match.mMatchTime)
+        .filter(match -> match.mCustomNamePinyin.equals(pinyin))
+        .limit(10).collect(Collectors.toList());
+    int lossOnHost = hostMatches.stream().mapToInt(match -> match.mCustomScore).sum();
+    int lossOnAway = awayMatches.stream().mapToInt(match -> match.mHostScore).sum();
+
+    float onHost = hostMatches.isEmpty() ? -1 : lossOnHost * 1f / hostMatches.size();
+    float onAway = awayMatches.isEmpty() ? -1 : lossOnAway * 1f / awayMatches.size();
+    return new Pair<>(onHost, onAway);
   }
 
   public static String buildSqlIn(List<Integer> matchIds) {

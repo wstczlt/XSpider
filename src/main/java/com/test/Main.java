@@ -1,6 +1,6 @@
 package com.test;
 
-import com.test.dszuqiu.DsHelper;
+import com.test.db.QueryHelper;
 
 public class Main {
 
@@ -8,8 +8,9 @@ public class Main {
 
     // DsSpider.runSt(630000, 640000);
 
-    DsHelper.read("/Users/Jesse/Desktop/dszuqiu");
+//    DsHelper.read("/Users/Jesse/Desktop/dszuqiu");
 
+    QueryHelper.updateHistory();
   }
 
 }
