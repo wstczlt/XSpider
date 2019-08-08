@@ -19,6 +19,6 @@ for y in y_data:
 if sys.argv[3]:
     print "分类算法:"
     print reg.score(x_data, np.loadtxt(sys.argv[3]).astype(np.float32))
-    #print(reg.feature_importances_)
+    print(reg.feature_importances_)
     print "\n"
 

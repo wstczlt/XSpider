@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,10 +27,10 @@ import com.test.tools.Utils;
 public class PhoenixInputs {
 
   private final Model mModel;
-  public final List<Match> mMatches;
+  public final List<Map<String, Object>> mMatches;
   private final boolean mIsTrain; // train 是否是训练集, false为测试集.
 
-  public PhoenixInputs(Model model, List<Match> matches, boolean isTrain) {
+  public PhoenixInputs(Model model, List<Map<String, Object>> matches, boolean isTrain) {
     mModel = model;
     mMatches = matches;
     mIsTrain = isTrain;
@@ -39,12 +40,12 @@ public class PhoenixInputs {
     writeAll(mMatches);
   }
 
-  private void writeAll(List<Match> matches) throws Exception {
+  private void writeAll(List<Map<String, Object>> matches) throws Exception {
     List<String> xValue = new ArrayList<>();
     List<String> yValue = new ArrayList<>();
     List<String> yMetric = new ArrayList<>();
     for (int i = 0; i < matches.size(); i++) {
-      Match match = matches.get(i);
+      Map<String, Object> match = matches.get(i);
       xValue.add(StringUtils.join(mModel.xValues(match), "   "));
       yValue.add(mModel.yValue(match) + "");
       yMetric.add(Utils.yMetric(mModel.yValue(match)));

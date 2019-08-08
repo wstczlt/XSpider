@@ -1,19 +1,14 @@
 package com.test.learning;
 
-import static com.test.db.QueryHelper.SQL_AND;
-import static com.test.db.QueryHelper.SQL_ORDER;
-import static com.test.db.QueryHelper.SQL_ST;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.test.db.QueryHelper;
 import com.test.entity.Estimation;
-import com.test.entity.Match;
 import com.test.entity.Model;
-import com.test.learning.model.OddModel;
 import com.test.tools.Pair;
 
 public class PhoenixTester {
@@ -21,28 +16,27 @@ public class PhoenixTester {
   private static final int TOTAL_ROUND = 3;// 测试轮数
   private static final int TEST_SET_COUNT = 2000; // 测试集长度
   private static final float[] THRESHOLDS = new float[] {
-      // 0.50f};
-      // 0.4f, 0.45f, 0.5f, 0.53f, 0.55f, 0.58f};
-      0.50f, 0.55f, 0.60f, 0.65f, 0.70f, 0.75f, 0.76f, 0.78f, 0.80f, 0.85f, 0.90f, 0.95f}; // 高概率要求的阈值
+      0.50f};
+  // 0.4f, 0.45f, 0.5f, 0.53f, 0.55f, 0.58f};
+  // 0.50f, 0.55f, 0.60f, 0.65f, 0.70f, 0.75f, 0.76f, 0.78f, 0.80f, 0.85f, 0.90f, 0.95f}; //
+  // 高概率要求的阈值
 
   public static void runTest(Model model) throws Exception {
-    String querySql = "select " + OddModel.keys(0) + " from football where 1=1 " + SQL_AND
-        + model.querySql() + SQL_ST + SQL_ORDER;
-
-    final List<Match> matches = QueryHelper.doQuery(querySql, 40000);
+    final List<Map<String, Object>> matches = QueryHelper.doQuery(model.querySql(), 50000);
     for (float threshold : THRESHOLDS) {
       trainAndTest(model, threshold, matches);
       Thread.sleep(1000); // 等待资源释放
     }
   }
 
-  private static void trainAndTest(Model model, float threshold, List<Match> matches)
+  private static void trainAndTest(Model model, float threshold, List<Map<String, Object>> matches)
       throws Exception {
     final List<Pair<EstScore, EstScore>> results = new ArrayList<>();
     for (int i = 0; i < TOTAL_ROUND; i++) {
       Collections.shuffle(matches);
-      List<Match> trainMatches = matches.subList(0, matches.size() - TEST_SET_COUNT);
-      List<Match> testMatches = matches.subList(matches.size() - TEST_SET_COUNT, matches.size());
+      List<Map<String, Object>> trainMatches = matches.subList(0, matches.size() - TEST_SET_COUNT);
+      List<Map<String, Object>> testMatches =
+          matches.subList(matches.size() - TEST_SET_COUNT, matches.size());
 
       PhoenixInputs trainData = new PhoenixInputs(model, trainMatches, true);
       PhoenixInputs testData = new PhoenixInputs(model, testMatches, false);
@@ -57,7 +51,7 @@ public class PhoenixTester {
     display(model, threshold, results);
   }
 
-  private static Pair<EstScore, EstScore> score(Model model, List<Match> matches,
+  private static Pair<EstScore, EstScore> score(Model model, List<Map<String, Object>> matches,
       List<Estimation> estimations, double threshold) {
     int normalTotalCount = 0, highProbTotalCount = 0, normalPositiveHitCount = 0,
         maxContinueHitCount = 0, maxContinueMissCount = 0;
@@ -70,7 +64,7 @@ public class PhoenixTester {
     int continueHit = 0, continueMiss = 0, highContinueHit = 0, highContinueMiss = 0;
     boolean lastHit = false, highLastHit = false;
     for (int i = 0; i < estimations.size(); i++) {
-      final Match match = matches.get(i);
+      final Map<String, Object> match = matches.get(i);
       // 随机结果
       final Estimation randomEst = new Estimation(new Random().nextInt(3), 0.5f);
       final float randomGain = model.calGain(match, randomEst);

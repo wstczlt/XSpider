@@ -1,19 +1,21 @@
 package com.test.learning.model;
 
+import static com.test.db.QueryHelper.SQL_AND;
+import static com.test.db.QueryHelper.SQL_ORDER;
+import static com.test.db.QueryHelper.SQL_ST;
 import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.test.entity.Estimation;
-import com.test.entity.Match;
 import com.test.entity.Model;
 
 /**
@@ -34,38 +36,38 @@ public class OddModel extends Model {
 
   @Override
   public String querySql() {
-    return String.format(
-        // "AND cast(min0_scoreOdd as number)=0 " +
-        // "AND cast(min%d_scoreOdd as number) in (0,0.5,1,1.5,2) " +
-        "AND cast(min%d_scoreOddOfVictory as number)>1.7 " +
-            "AND cast(min%d_scoreOddOfDefeat as number)>1.7 ",
-        // "AND cast(min%d_victoryOdd as number)>1.7 " +
-        // "AND cast(min%d_drewOdd as number)>1.7 " +
-        // "AND cast(min%d_defeatOdd as number)>1.7 ",
-        // mTimeMin,
-        mTimeMin,
-        mTimeMin);
+    Set<String> keys = new HashSet<>();
+    keys.addAll(xKeys());
+    keys.addAll(yKeys());
+    final String selectSql =
+        "select " + StringUtils.join(keys, ", ") + " from football where 1=1 ";
+
+    final String andSql = mTimeMin < 0
+        ? ""
+        : String.format(
+            // "AND cast(min0_scoreOdd as number)=0 " +
+            // "AND cast(min%d_scoreOdd as number) in (0,0.5,1,1.5,2) " +
+            "AND cast(min%d_scoreOddOfVictory as number)>1.7 " +
+                "AND cast(min%d_scoreOddOfDefeat as number)>1.7 ",
+            // mTimeMin,
+            mTimeMin,
+            mTimeMin);
+
+
+    return selectSql
+        + SQL_AND
+        + andSql
+        + SQL_ST
+        + SQL_ORDER;
   }
 
+
   @Override
-  public List<Float> xValues(Match match) {
-    Map<String, Object> dbMap = new HashMap<>(match.mDbMap);
-    List<Float> xValues = new ArrayList<>();
+  public List<Float> xValues(Map<String, Object> match) {
+    return xKeys().stream().map(s -> valueOfFloat(match.get(s))).collect(Collectors.toList());
+  }
 
-    // xValues.add(valueOfFloat(dbMap.get(HOST_SCORE)));
-    // xValues.add(valueOfFloat(dbMap.get(CUSTOM_SCORE)));
-    // xValues.add(valueOfFloat(dbMap.get("min" + mTimeMin + "_" + "scoreOdd")));
-    // xValues.add(valueOfFloat(dbMap.get("min" + mTimeMin + "_" + "hostScore")));
-    // xValues.add(valueOfFloat(dbMap.get("min" + mTimeMin + "_" + "customScore")));
-
-    // xValues.add(valueOfFloat(dbMap.get(HISTORY_VICTORY_RATE_OF_HOST)));
-    // xValues.add(valueOfFloat(dbMap.get(RECENT_VICTORY_RATE_OF_HOST)));
-    // xValues.add(valueOfFloat(dbMap.get(RECENT_VICTORY_RATE_OF_CUSTOM)));
-    // xValues.add(valueOfFloat(dbMap.get(RECENT_GOAL_OF_HOST)));
-    // xValues.add(valueOfFloat(dbMap.get(RECENT_GOAL_OF_CUSTOM)));
-    // xValues.add(valueOfFloat(dbMap.get(RECENT_LOSS_OF_HOST)));
-    // xValues.add(valueOfFloat(dbMap.get(RECENT_LOSS_OF_CUSTOM)));
-
+  private List<String> xKeys() {
     List<String> keys = new ArrayList<>();
     keys.add(ORIGINAL_SCORE_ODD);
     keys.add(ORIGINAL_SCORE_ODD_OF_VICTORY);
@@ -78,7 +80,7 @@ public class OddModel extends Model {
     keys.add(ORIGINAL_BIG_ODD_OF_DEFEAT);
 
     for (int i = 0; i <= mTimeMin; i++) {
-      if (i != 0 && i != 45 && i != mTimeMin) {
+      if (i != 0 && i != mTimeMin) {
         continue;
       }
       // 当前场上情况
@@ -107,85 +109,43 @@ public class OddModel extends Model {
       keys.add("min" + i + "_" + "bigOddOfDefeat");
     }
 
-    keys.forEach(key -> xValues.add(valueOfFloat(dbMap.get(key))));
-
-    return xValues;
+    return keys;
   }
 
-  public static String keys(int timeMin) {
+  private List<String> yKeys() {
     List<String> keys = new ArrayList<>();
-    keys.add(ORIGINAL_SCORE_ODD);
-    keys.add(ORIGINAL_SCORE_ODD_OF_VICTORY);
-    keys.add(ORIGINAL_SCORE_ODD_OF_DEFEAT);
-    keys.add(ORIGINAL_VICTORY_ODD);
-    keys.add(ORIGINAL_DREW_ODD);
-    keys.add(ORIGINAL_DEFEAT_ODD);
-    keys.add(ORIGINAL_BIG_ODD);
-    keys.add(ORIGINAL_BIG_ODD_OF_VICTORY);
-    keys.add(ORIGINAL_BIG_ODD_OF_DEFEAT);
-
-    for (int i = 0; i <= timeMin; i++) {
-      if (i != 0 && i != 45 && i != timeMin) {
-        continue;
-      }
-      // 当前场上情况
-      if (i > 0) {
-        keys.add("min" + i + "_" + "hostScore");
-        keys.add("min" + i + "_" + "customScore");
-        keys.add("min" + i + "_" + "hostDanger");
-        keys.add("min" + i + "_" + "customDanger");
-        keys.add("min" + i + "_" + "hostBestShoot");
-        keys.add("min" + i + "_" + "customBestShoot");
-      }
-
-      // 亚盘
-      keys.add("min" + i + "_" + "scoreOdd");
-      keys.add("min" + i + "_" + "scoreOddOfVictory");
-      keys.add("min" + i + "_" + "scoreOddOfDefeat");
-
-      // 欧盘
-      keys.add("min" + i + "_" + "victoryOdd");
-      keys.add("min" + i + "_" + "drewOdd");
-      keys.add("min" + i + "_" + "defeatOdd");
-
-      // 大小球
-      keys.add("min" + i + "_" + "bigOdd");
-      keys.add("min" + i + "_" + "bigOddOfVictory");
-      keys.add("min" + i + "_" + "bigOddOfDefeat");
+    keys.add(HOST_SCORE);
+    keys.add(CUSTOM_SCORE);
+    if (mTimeMin >= 0) {
+      keys.add("min" + mTimeMin + "_hostScore");
+      keys.add("min" + mTimeMin + "_customScore");
+      keys.add("min" + mTimeMin + "_scoreOdd");
     }
 
-    System.out.println(keys);
-
-    Set<String> copy = new HashSet<>(keys);
-    copy.add(HOST_SCORE);
-    copy.add(CUSTOM_SCORE);
-    copy.add("min" + timeMin + "_hostScore");
-    copy.add("min" + timeMin + "_customScore");
-    copy.add("min" + timeMin + "_scoreOdd");
-
-    return StringUtils.join(copy, ", ");
+    return keys;
   }
+
+
 
   @Override
-  public Float yValue(Match match) {
+  public Float yValue(Map<String, Object> match) {
     float delta = deltaScore(match);
     return delta > 0 ? 0 : (delta == 0 ? 1f : 2);
   }
 
-  public float deltaScore(Match match) {
-    Map<String, Object> dbMap = new HashMap<>(match.mDbMap);
-    int hostScore = valueOfInt(dbMap.get(HOST_SCORE));
-    int customScore = valueOfInt(dbMap.get(CUSTOM_SCORE));
-    int timeHostScore = valueOfInt(dbMap.get("min" + mTimeMin + "_hostScore"));
-    int timeCustomScore = valueOfInt(dbMap.get("min" + mTimeMin + "_customScore"));
-    float timeScoreOdd = valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOdd"));
+  public float deltaScore(Map<String, Object> match) {
+    int hostScore = valueOfInt(match.get(HOST_SCORE));
+    int customScore = valueOfInt(match.get(CUSTOM_SCORE));
+    int timeHostScore = valueOfInt(match.get("min" + mTimeMin + "_hostScore"));
+    int timeCustomScore = valueOfInt(match.get("min" + mTimeMin + "_customScore"));
+    float timeScoreOdd = valueOfFloat(match.get("min" + mTimeMin + "_scoreOdd"));
 
     return (hostScore - customScore) - (timeHostScore - timeCustomScore) + timeScoreOdd;
   }
 
   @Override
-  public float calGain(Match match, Estimation est) {
-    return est.mValue == yValue(match) ? 1.2f : -1;
+  public float calGain(Map<String, Object> dbMap, Estimation est) {
+    return est.mValue == yValue(dbMap) ? 1.2f : -1;
     // Map<String, Object> dbMap = new HashMap<>(match.mDbMap);
     // float scoreOddOfVictory = valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOddOfVictory")) -
     // 1;

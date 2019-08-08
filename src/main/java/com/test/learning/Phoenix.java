@@ -17,7 +17,7 @@ import com.test.tools.Utils;
 public class Phoenix {
 
   public static void main(String[] args) throws Exception {
-    PhoenixTester.runTest(new OddModel(0));
+    PhoenixTester.runTest(new OddModel(-1));
   }
 
   /**

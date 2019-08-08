@@ -1,6 +1,7 @@
 package com.test.entity;
 
 import java.util.List;
+import java.util.Map;
 
 import com.test.Keys;
 
@@ -18,13 +19,12 @@ public abstract class Model implements Keys {
   /**
    * 需要训练的数据集X.
    */
-  public abstract List<Float> xValues(Match match);
+  public abstract List<Float> xValues(Map<String, Object> match);
 
   /**
    * 训练集的结果集的Y.
    */
-  public abstract Float yValue(Match match);
-
+  public abstract Float yValue(Map<String, Object> match);
 
   /**
    * 查询语句.
@@ -41,5 +41,5 @@ public abstract class Model implements Keys {
   /**
    * 计算盈利.
    */
-  public abstract float calGain(Match match, Estimation est);
+  public abstract float calGain(Map<String, Object> attrs, Estimation est);
 }
