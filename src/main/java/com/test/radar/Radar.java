@@ -81,7 +81,7 @@ public class Radar {
 
     PhoenixInputs input = new PhoenixInputs(model, matches, false);
     input.prepare(); // 写入数据
-    List<Estimation> results = Phoenix.runEstimate(model, input);
+    List<Estimation> results = Phoenix.runEst(model, input);
 
     for (int i = 0; i < results.size(); i++) {
       if (trick && i == 1) { // trick的数据不要

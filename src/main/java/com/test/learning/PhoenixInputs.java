@@ -47,7 +47,7 @@ public class PhoenixInputs {
       Match match = matches.get(i);
       xValue.add(StringUtils.join(mModel.xValues(match), "   "));
       yValue.add(mModel.yValue(match) + "");
-      yMetric.add(Utils.yMatric(mModel.yValue(match)));
+      yMetric.add(Utils.yMetric(mModel.yValue(match)));
     }
     Writer xWriter = null;
     Writer yValueWriter = null;

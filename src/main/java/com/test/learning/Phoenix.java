@@ -5,6 +5,7 @@ import static com.test.tools.Utils.nameOfModel;
 import static com.test.tools.Utils.nameOfTestX;
 import static com.test.tools.Utils.nameOfX;
 import static com.test.tools.Utils.nameOfY;
+import static com.test.tools.Utils.nameOfYMetric;
 
 import java.util.List;
 
@@ -31,11 +32,29 @@ public class Phoenix {
   /**
    * 预测结果.
    */
-  public static List<Estimation> runEstimate(Model model, PhoenixInputs trainData)
+  public static List<Estimation> runEst(Model model, PhoenixInputs trainData)
       throws Exception {
     trainData.prepare(); // 写入数据
     String output =
         exec("python training/test.py " + nameOfTestX(model) + " " + nameOfModel(model));
+
+    return Utils.readResult(output);
+  }
+
+  public static void runTrainMetric(Model model, PhoenixInputs testData) throws Exception {
+    testData.prepare(); // 写入数据
+    exec("python training/train.metric.py " + nameOfX(model) + " " + nameOfYMetric(model) + " "
+        + nameOfModel(model));
+  }
+
+  /**
+   * 预测结果.
+   */
+  public static List<Estimation> runEstMetric(Model model, PhoenixInputs trainData)
+      throws Exception {
+    trainData.prepare(); // 写入数据
+    String output =
+        exec("python training/test.metric.py " + nameOfTestX(model) + " " + nameOfModel(model));
 
     return Utils.readResult(output);
   }

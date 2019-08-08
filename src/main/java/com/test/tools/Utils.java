@@ -93,7 +93,7 @@ public class Utils {
     return estimations;
   }
 
-  public static String yMatric(float yValue) {
+  public static String yMetric(float yValue) {
     switch ((int) yValue) {
       case 0:
         return "1   0   0";

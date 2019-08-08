@@ -38,7 +38,7 @@ public class PhoenixTester {
 
   private static void trainAndTest(Model model, float threshold, List<Match> matches)
       throws Exception {
-    final List<Pair<PhoenixSummary, PhoenixSummary>> results = new ArrayList<>();
+    final List<Pair<EstScore, EstScore>> results = new ArrayList<>();
     for (int i = 0; i < TOTAL_ROUND; i++) {
       Collections.shuffle(matches);
       List<Match> trainMatches = matches.subList(0, matches.size() - TEST_SET_COUNT);
@@ -47,18 +47,18 @@ public class PhoenixTester {
       PhoenixInputs trainData = new PhoenixInputs(model, trainMatches, true);
       PhoenixInputs testData = new PhoenixInputs(model, testMatches, false);
       // 训练
-      Phoenix.runTrain(model, trainData);
+      Phoenix.runTrainMetric(model, trainData);
       // 测试
-      Pair<PhoenixSummary, PhoenixSummary> result = doTest(model, testData, threshold);
-      results.add(result);
+      List<Estimation> ests = Phoenix.runEstMetric(model, testData);
+      // 展示结果
+      results.add(score(model, testMatches, ests, threshold));
     }
 
     display(model, threshold, results);
   }
 
-  private static Pair<PhoenixSummary, PhoenixSummary> doTest(Model model,
-      PhoenixInputs data, double threshold) throws Exception {
-    List<Estimation> estimations = Phoenix.runEstimate(model, data);
+  private static Pair<EstScore, EstScore> score(Model model, List<Match> matches,
+      List<Estimation> estimations, double threshold) {
     int normalTotalCount = 0, highProbTotalCount = 0, normalPositiveHitCount = 0,
         maxContinueHitCount = 0, maxContinueMissCount = 0;
     float normalProfit = 0;
@@ -70,7 +70,7 @@ public class PhoenixTester {
     int continueHit = 0, continueMiss = 0, highContinueHit = 0, highContinueMiss = 0;
     boolean lastHit = false, highLastHit = false;
     for (int i = 0; i < estimations.size(); i++) {
-      final Match match = data.mMatches.get(i);
+      final Match match = matches.get(i);
       // 随机结果
       final Estimation randomEst = new Estimation(new Random().nextInt(3), 0.5f);
       final float randomGain = model.calGain(match, randomEst);
@@ -140,12 +140,12 @@ public class PhoenixTester {
       }
     }
 
-    PhoenixSummary normalResult =
-        new PhoenixSummary(normalTotalCount, normalHitCount, normalDrewCount,
+    EstScore normalResult =
+        new EstScore(normalTotalCount, normalHitCount, normalDrewCount,
             normalPositiveHitCount,
             normalProfit, maxContinueHitCount, maxContinueMissCount);
-    PhoenixSummary highProbResult =
-        new PhoenixSummary(highProbTotalCount, highProbHitCount, highProbDrewCount,
+    EstScore highProbResult =
+        new EstScore(highProbTotalCount, highProbHitCount, highProbDrewCount,
             highPositiveProbHitCount,
             highProbProfit, highMaxContinueHitCount, highMaxContinueMissCount);
 
@@ -153,14 +153,14 @@ public class PhoenixTester {
   }
 
   private static void display(Model model, float threshold,
-      List<Pair<PhoenixSummary, PhoenixSummary>> results) {
+      List<Pair<EstScore, EstScore>> results) {
     int totalRound = results.size();
     float totalCount = 0, hitCount = 0, drewCount = 0, positiveHitCount = 0, profit = 0,
         continueHitCount = 0, continueMissCount = 0;
     float totalCountOfHigh = 0, hitCountOfHigh = 0, drewCountOfHigh = 0, positiveHitCountOfHigh = 0,
         profitOfHigh = 0, highContinueHitCount = 0, highContinueMissCount = 0;
 
-    for (Pair<PhoenixSummary, PhoenixSummary> pair : results) {
+    for (Pair<EstScore, EstScore> pair : results) {
       totalCount += pair.first.mTotalCount;
       hitCount += pair.first.mHitCount;
       drewCount += pair.first.mDrewCount;
@@ -179,12 +179,12 @@ public class PhoenixTester {
     }
 
 
-    PhoenixSummary normalResult = new PhoenixSummary(totalCount / totalRound, hitCount / totalRound,
+    EstScore normalResult = new EstScore(totalCount / totalRound, hitCount / totalRound,
         drewCount / totalRound,
         positiveHitCount / totalRound, profit / totalRound,
         continueHitCount / totalRound, continueMissCount / totalRound);
-    PhoenixSummary highProbResult =
-        new PhoenixSummary(totalCountOfHigh / totalRound, hitCountOfHigh / totalRound,
+    EstScore highProbResult =
+        new EstScore(totalCountOfHigh / totalRound, hitCountOfHigh / totalRound,
             drewCountOfHigh / totalRound,
             positiveHitCountOfHigh / totalRound, profitOfHigh / totalRound,
             highContinueHitCount / totalRound, highContinueMissCount / totalRound);

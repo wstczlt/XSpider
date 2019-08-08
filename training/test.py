@@ -16,6 +16,9 @@ y_data = reg.predict_proba(x_data)
 for y in y_data:
     print y
 
-print "拟合算法:"
-print reg.score(x_data, np.loadtxt('temp/odd0_y_test.dat').astype(np.float32))
-print "\n"
+
+if sys.argv[3]:
+    print "拟合算法:"
+    print reg.score(x_data, np.loadtxt('temp/odd0_y_test.dat').astype(np.float32))
+    print "\n"
+

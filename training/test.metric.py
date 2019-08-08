@@ -12,11 +12,13 @@ x_data = np.loadtxt(sys.argv[1]).astype(np.float32)
 
 reg = joblib.load(sys.argv[2])
 x_data = SimpleImputer(missing_values=999.00, strategy='mean').fit_transform(x_data)
-y_data = reg.predict_proba(x_data)
+y_data = reg.predict(x_data)
 for y in y_data:
     print y
 
-print "分类算法:"
-print reg.score(x_data, np.loadtxt('temp/odd0_y_metric_test.dat').astype(np.float32))
-print(reg.feature_importances_)
-print "\n"
+if sys.argv[3]:
+    print "分类算法:"
+    print reg.score(x_data, np.loadtxt(sys.argv[3]).astype(np.float32))
+    #print(reg.feature_importances_)
+    print "\n"
+
