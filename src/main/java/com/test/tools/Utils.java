@@ -75,6 +75,8 @@ public class Utils {
       // } else {
       // est = new Estimation(2, valueOfFloat(arr[2]) + valueOfFloat(arr[1]));
       // }
+      // estimations.add(est);
+
       float maxProb = 0;
       float indexOfMax = -1;
       for (int i = 0; i < 3; i++) { // 0=主, 1=走，2=客
@@ -86,7 +88,6 @@ public class Utils {
       }
       // System.out.println("value=" + indexOfMax + ", prob=" + maxProb);
       est = new Estimation(indexOfMax, maxProb);
-
       estimations.add(est);
     });
 

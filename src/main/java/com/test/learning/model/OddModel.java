@@ -23,9 +23,11 @@ import com.test.entity.Model;
 public class OddModel extends Model {
 
   private final int mTimeMin;
+  private final String mPrefix;
 
   public OddModel(int timeMin) {
     mTimeMin = timeMin;
+    mPrefix = mTimeMin < 0 ? "original" : ("min" + mTimeMin);
   }
 
   @Override
@@ -44,14 +46,13 @@ public class OddModel extends Model {
     final String oddSql = mTimeMin < 0
         ? ""
         : String.format(
-            // "AND cast(min0_scoreOdd as number)=0 " +
-            // "AND cast(min%d_scoreOdd as number) in (0,0.5,1,1.5,2) " +
-            "AND cast(min%d_scoreOddOfVictory as number)>1.7 " +
-                "AND cast(min%d_scoreOddOfDefeat as number)>1.7 ",
-            // mTimeMin,
-            mTimeMin,
-            mTimeMin);
-
+            "AND cast(min0_scoreOdd as number)=0 " +
+                "AND cast(%s_scoreOdd as number) in (0) " +
+                "AND cast(%s_scoreOddOfVictory as number)>1.7 " +
+                "AND cast(%s_scoreOddOfDefeat as number)>1.7 ",
+            mPrefix,
+            mPrefix,
+            mPrefix);
 
     return selectSql
         + SQL_AND
@@ -77,6 +78,14 @@ public class OddModel extends Model {
     keys.add(ORIGINAL_BIG_ODD);
     keys.add(ORIGINAL_BIG_ODD_OF_VICTORY);
     keys.add(ORIGINAL_BIG_ODD_OF_DEFEAT);
+
+    keys.add(HISTORY_VICTORY_RATE_OF_HOST);
+    keys.add(RECENT_VICTORY_RATE_OF_HOST);
+    keys.add(RECENT_VICTORY_RATE_OF_CUSTOM);
+    keys.add(RECENT_GOAL_OF_HOST);
+    keys.add(RECENT_GOAL_OF_CUSTOM);
+    keys.add(RECENT_LOSS_OF_HOST);
+    keys.add(RECENT_LOSS_OF_CUSTOM);
 
     for (int i = 0; i <= mTimeMin; i++) {
       if (i != 0 && i != mTimeMin) {
@@ -108,7 +117,7 @@ public class OddModel extends Model {
       keys.add("min" + i + "_" + "bigOddOfDefeat");
     }
 
-    return keys;
+    return keys.stream().distinct().collect(Collectors.toList());
   }
 
   private List<String> basicKeys() {
@@ -122,14 +131,13 @@ public class OddModel extends Model {
     keys.add(HOST_SCORE);
     keys.add(CUSTOM_SCORE);
     if (mTimeMin >= 0) {
-      keys.add("min" + mTimeMin + "_hostScore");
-      keys.add("min" + mTimeMin + "_customScore");
-      keys.add("min" + mTimeMin + "_scoreOdd");
+      keys.add(mPrefix + "_hostScore");
+      keys.add(mPrefix + "_customScore");
+      keys.add(mPrefix + "_scoreOdd");
     }
 
     return keys;
   }
-
 
 
   @Override
@@ -142,47 +150,41 @@ public class OddModel extends Model {
     int hostScore = valueOfInt(match.get(HOST_SCORE));
     int customScore = valueOfInt(match.get(CUSTOM_SCORE));
     if (mTimeMin < 0) {
-
       float timeScoreOdd = valueOfFloat(match.get(ORIGINAL_SCORE_ODD));
       return (hostScore - customScore) + timeScoreOdd;
     } else {
-      int timeHostScore = valueOfInt(match.get("min" + mTimeMin + "_hostScore"));
-      int timeCustomScore = valueOfInt(match.get("min" + mTimeMin + "_customScore"));
-      float timeScoreOdd = valueOfFloat(match.get("min" + mTimeMin + "_scoreOdd"));
-
+      int timeHostScore = valueOfInt(match.get(mPrefix + "_hostScore"));
+      int timeCustomScore = valueOfInt(match.get(mPrefix + "_customScore"));
+      float timeScoreOdd = valueOfFloat(match.get(mPrefix + "_scoreOdd"));
       return (hostScore - timeHostScore) - (customScore - timeCustomScore) + timeScoreOdd;
     }
   }
 
   @Override
   public float calGain(Map<String, Object> dbMap, Estimation est) {
-    return est.mValue == yValue(dbMap) ? 1.2f : -1;
-    // Map<String, Object> dbMap = new HashMap<>(match.mDbMap);
-    // float scoreOddOfVictory = valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOddOfVictory")) -
-    // 1;
-    // float scoreOddOfDefeat = valueOfFloat(dbMap.get("min" + mTimeMin + "_scoreOddOfDefeat")) - 1;
-    // float deltaScore = deltaScore(match);
-    //
-    //
-    // if (est.mValue == 0) { // 判断主队
-    // if (deltaScore >= 0.5) return scoreOddOfVictory;
-    // if (deltaScore >= 0.25) return scoreOddOfVictory * 0.5f;
-    // if (deltaScore == 0) return 0;
-    // if (deltaScore >= -0.25) return -0.5f;
-    // if (deltaScore <= -0.5) return -1;
-    // }
-    // if (est.mValue == 1) { //
-    // if (deltaScore == 0) return 1;
-    // return -1;
-    // }
-    // if (est.mValue == 2) { // 判断客队
-    // if (deltaScore >= 0.5) return -1;
-    // if (deltaScore >= 0.25) return -0.5f;
-    // if (deltaScore == 0) return 0;
-    // if (deltaScore >= -0.25) return scoreOddOfDefeat * 0.5f;
-    // if (deltaScore <= -0.5) return scoreOddOfDefeat;
-    // }
-    //
-    // return 0;
+    // 让球算法
+    float victory = valueOfFloat(dbMap.get(mPrefix + "_scoreOddOfVictory")) - 1;
+    float defeat = valueOfFloat(dbMap.get(mPrefix + "_scoreOddOfDefeat")) - 1;
+    float deltaScore = deltaScore(dbMap);
+
+    if (est.mValue == 0) { // 判断主队
+      if (deltaScore >= 0.5) return victory;
+      if (deltaScore >= 0.25) return victory * 0.5f;
+      if (deltaScore == 0) return 0;
+      if (deltaScore >= -0.25) return -0.5f;
+      if (deltaScore <= -0.5) return -1;
+    }
+    if (est.mValue == 1) { // 不买
+      return 0;
+    }
+    if (est.mValue == 2) { // 判断客队
+      if (deltaScore >= 0.5) return -1;
+      if (deltaScore >= 0.25) return -0.5f;
+      if (deltaScore == 0) return 0;
+      if (deltaScore >= -0.25) return defeat * 0.5f;
+      if (deltaScore <= -0.5) return defeat;
+    }
+
+    return 0;
   }
 }

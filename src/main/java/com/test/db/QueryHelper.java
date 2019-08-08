@@ -30,23 +30,6 @@ public class QueryHelper implements Keys {
           "AND cast(original_bigOdd as number) >=1 " +
           "AND cast(original_bigOddOfVictory as number) >=1.7 " +
           "AND cast(original_bigOddOfDefeat as number) >=1.7 ";
-  //
-  // "AND min0_scoreOdd is not null " +
-  // "AND cast(min0_scoreOddOfVictory as number) >=1.7 " +
-  // "AND cast(min0_scoreOddOfDefeat as number) >=1.7 " +
-  // "AND cast(min0_victoryOdd as number) >=0 " +
-  // "AND cast(min0_drewOdd as number) >=0 " +
-  // "AND cast(min0_defeatOdd as number) >=0 " +
-  // "AND cast(min0_bigOdd as number) >=1 " +
-  // "AND cast(min0_bigOddOfVictory as number) >=1.7 " +
-  // "AND cast(min0_bigOddOfDefeat as number) >=1.7 " +
-  //
-  //
-  // // 需要能抓取到场上基本的数据
-  // "AND cast(min15_hostBestShoot as int) >=0 " +
-  // "AND cast(min15_customBestShoot as int) >=0 " +
-  // "AND cast(min15_hostDanger as int) >=0 " +
-  // "AND cast(min15_customDanger as int) >=0 ";
 
   // 进行中的比赛
   public static String SQL_RT = "AND matchStatus=1 ";
@@ -62,12 +45,12 @@ public class QueryHelper implements Keys {
 
 
   public static List<Map<String, Object>> doQuery(String sql, int limit) throws Exception {
-    System.out.println(sql);
     final DataSource ds = new DbHelper().open();
     final QueryRunner runner = new QueryRunner(ds);
     String newSql = sql + " limit " + limit;
 
     final List<Map<String, Object>> matches = runner.query(newSql, new MapListHandler());
+    System.out.println(sql);
     System.out.println("查询结果条数: " + matches.size() + "\n\n");
     return matches;
   }

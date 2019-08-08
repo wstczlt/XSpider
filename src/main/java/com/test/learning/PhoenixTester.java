@@ -18,10 +18,9 @@ public class PhoenixTester {
   private static final int TOTAL_ROUND = 3;// 测试轮数
   private static final int TEST_SET_COUNT = 2000; // 测试集长度
   private static final float[] THRESHOLDS = new float[] {
-      0.50f};
-  // 0.4f, 0.45f, 0.5f, 0.53f, 0.55f, 0.58f};
-  // 0.50f, 0.55f, 0.60f, 0.65f, 0.70f, 0.75f, 0.76f, 0.78f, 0.80f, 0.85f, 0.90f, 0.95f}; //
-  // 高概率要求的阈值
+      // 0.50f};
+      0.35f, 0.4f, 0.45f, 0.5f};
+  // 0.70f, 0.75f, 0.78f, 0.8f}; //
 
   public static void runTest(Model model) throws Exception {
     final List<Map<String, Object>> matches = QueryHelper.doQuery(model.querySql(SQL_ST), 50000);
@@ -33,21 +32,29 @@ public class PhoenixTester {
 
   private static void trainAndTest(Model model, float threshold, List<Map<String, Object>> matches)
       throws Exception {
-    final List<Pair<EstScore, EstScore>> results = new ArrayList<>();
+    final List<Pair<EstScore, EstScore>> lr = new ArrayList<>();
+    final List<Pair<EstScore, EstScore>> metric = new ArrayList<>();
     for (int i = 0; i < TOTAL_ROUND; i++) {
       Collections.shuffle(matches);
       List<Map<String, Object>> trainMatches = matches.subList(0, matches.size() - TEST_SET_COUNT);
       List<Map<String, Object>> testMatches =
           matches.subList(matches.size() - TEST_SET_COUNT, matches.size());
+
       // 训练
-      Phoenix.runTrainMetric(model, trainMatches);
+      Phoenix.runTrain(model, trainMatches);
       // 测试
-      List<Estimation> ests = Phoenix.runEstMetric(model, testMatches);
-      // 展示结果
-      results.add(score(model, testMatches, ests, threshold));
+      lr.add(score(model, testMatches, Phoenix.runEst(model, testMatches), threshold));
+
+      // // 训练
+      // Phoenix.runTrainMetric(model, trainMatches);
+      // // 展示结果
+      // metric.add(score(model, testMatches, Phoenix.runEstMetric(model, testMatches), threshold));
     }
 
-    display(model, threshold, results);
+    System.out.println("拟合算法结果:");
+    display(model, threshold, lr);
+    // System.out.println("分类算法结果:");
+    // display(model, threshold, metric);
   }
 
   private static Pair<EstScore, EstScore> score(Model model, List<Map<String, Object>> matches,
