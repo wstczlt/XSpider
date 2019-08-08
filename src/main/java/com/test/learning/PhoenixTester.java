@@ -1,5 +1,7 @@
 package com.test.learning;
 
+import static com.test.db.QueryHelper.SQL_ST;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +24,7 @@ public class PhoenixTester {
   // 高概率要求的阈值
 
   public static void runTest(Model model) throws Exception {
-    final List<Map<String, Object>> matches = QueryHelper.doQuery(model.querySql(), 50000);
+    final List<Map<String, Object>> matches = QueryHelper.doQuery(model.querySql(SQL_ST), 50000);
     for (float threshold : THRESHOLDS) {
       trainAndTest(model, threshold, matches);
       Thread.sleep(1000); // 等待资源释放

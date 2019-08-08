@@ -2,7 +2,6 @@ package com.test.learning.model;
 
 import static com.test.db.QueryHelper.SQL_AND;
 import static com.test.db.QueryHelper.SQL_ORDER;
-import static com.test.db.QueryHelper.SQL_ST;
 import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
@@ -35,14 +34,14 @@ public class OddModel extends Model {
   }
 
   @Override
-  public String querySql() {
+  public String querySql(String andSql) {
     Set<String> keys = new HashSet<>();
     keys.addAll(xKeys());
     keys.addAll(yKeys());
     final String selectSql =
         "select " + StringUtils.join(keys, ", ") + " from football where 1=1 ";
 
-    final String andSql = mTimeMin < 0
+    final String oddSql = mTimeMin < 0
         ? ""
         : String.format(
             // "AND cast(min0_scoreOdd as number)=0 " +
@@ -57,7 +56,7 @@ public class OddModel extends Model {
     return selectSql
         + SQL_AND
         + andSql
-        + SQL_ST
+        + oddSql
         + SQL_ORDER;
   }
 

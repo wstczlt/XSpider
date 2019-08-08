@@ -13,7 +13,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.test.Config;
 import com.test.dszuqiu.parser.RaceParser;
 import com.test.http.HttpJob;
-import com.test.pipeline.FilePipeline;
 import com.test.tools.Utils;
 
 import okhttp3.Request;
@@ -25,11 +24,8 @@ public class RaceJob extends HttpJob {
   private static final String REQUEST_URL =
       "http://vipapi.dszuqiu.com/v9/race/view?token=327596-b1487f27682bf00f9cfbbde55729aae9&race_id=%s";
 
-  private final FilePipeline mPipeline;
-
   public RaceJob(int matchID) {
     super(matchID);
-    mPipeline = new FilePipeline("dszuqiu", ".txt");
   }
 
   @Override
@@ -50,6 +46,9 @@ public class RaceJob extends HttpJob {
           String.format("[%s], matchID=%d, Error=%s", getClass().getSimpleName(), mMatchID, error));
       return;
     }
+
+    // 处理Json
+    new RaceParser(text, items).doParse();
 
     JSONObject race = json.getJSONObject("race");
     JSONObject host = race.getJSONObject("host");
@@ -72,7 +71,5 @@ public class RaceJob extends HttpJob {
         leagueName,
         hostName,
         customName));
-
-    mPipeline.process(mMatchID + "", text);
   }
 }

@@ -45,6 +45,9 @@ public class DsJobFactory {
     return mJobs;
   }
 
+  public List<Integer> getMatchIDs() {
+    return mMatchIDs;
+  }
 
   private List<Integer> realtime() throws Exception {
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -61,9 +64,12 @@ public class DsJobFactory {
   }
 
   private List<Integer> request(String requestUrl) throws Exception {
-    Request request = new Request.Builder().url(requestUrl).build();
+    Request request = new Request.Builder().url(requestUrl)
+        .header("User-Agent", "Android 6.0.1/CLT-AL00/9")
+        .build();
     Response response = mClient.newCall(request).execute();
     if (!response.isSuccessful() || response.body() == null) {
+      System.out.println("Request Failed: " + response.code());
       return Collections.emptyList();
     }
 

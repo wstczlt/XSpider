@@ -134,6 +134,9 @@ public class RaceParser implements Keys {
           Utils.convertDsOdd(race_start_first.getString("daxiao_handicap")) + "");
       mItems.put(ORIGINAL_BIG_ODD_OF_VICTORY, race_start_first.getString("daxiao_up_sp"));
       mItems.put(ORIGINAL_BIG_ODD_OF_DEFEAT, race_start_first.getString("daxiao_low_sp"));
+
+    } else { // 初始赔率必须要求有
+      setSkip(mItems);
     }
 
 

@@ -1,5 +1,7 @@
 package com.test.radar;
 
+import static com.test.db.QueryHelper.buildSqlIn;
+import static com.test.db.QueryHelper.doQuery;
 import static com.test.tools.Utils.valueOfLong;
 
 import java.text.SimpleDateFormat;
@@ -17,7 +19,7 @@ import com.test.entity.Model;
 import com.test.http.HttpEngine;
 import com.test.learning.Phoenix;
 import com.test.learning.model.OddModel;
-import com.test.pipeline.MemoryPipeline;
+import com.test.pipeline.DbPipeline;
 
 public class Radar implements Keys {
 
@@ -55,16 +57,20 @@ public class Radar implements Keys {
         "\n\n\n\n\n\n当前时间: " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
 
     // 运行爬虫
-    final MemoryPipeline pipeline = new MemoryPipeline();
+    final DbPipeline pipeline = new DbPipeline();
     DsJobFactory factory = new DsJobFactory(new DsJobBuilder());
     HttpEngine dragon = new HttpEngine(factory.build(), pipeline);
     dragon.start();
 
-    List<Map<String, Object>> matches = pipeline.getMaps();
-    System.out.println("进行中的比赛场次: " + matches.size());
+    final List<Integer> matchIDs = factory.getMatchIDs();
+    Config.LOGGER.log("Find MatchIDs: " + matchIDs);
     // 运行AI
     for (Model model : mModels) {
+      // String andSql = SQL_RT + buildSqlIn(matchIDs);
+      String andSql = buildSqlIn(matchIDs);
+      List<Map<String, Object>> matches = doQuery(model.querySql(andSql), 1000);
       System.out.println("-----------------模型: " + model.name() + "--------------------");
+      System.out.println("比赛总场次: " + matches.size());
       loopOne(model, matches);
     }
   }
@@ -83,7 +89,7 @@ public class Radar implements Keys {
       trick = true;
     }
 
-    List<Estimation> results = Phoenix.runEst(model, matches);
+    List<Estimation> results = Phoenix.runEstMetric(model, matches);
 
     for (int i = 0; i < results.size(); i++) {
       if (trick && i == 1) { // trick的数据不要

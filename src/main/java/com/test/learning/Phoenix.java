@@ -12,13 +12,13 @@ import java.util.Map;
 
 import com.test.entity.Estimation;
 import com.test.entity.Model;
-import com.test.learning.model.BallModel;
+import com.test.learning.model.OddModel;
 import com.test.tools.Utils;
 
 public class Phoenix {
 
   public static void main(String[] args) throws Exception {
-    PhoenixTester.runTest(new BallModel(-1));
+    PhoenixTester.runTest(new OddModel(-1));
   }
 
   public static void runTrain(Model model, List<Map<String, Object>> trainMatches)
