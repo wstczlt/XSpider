@@ -1,34 +1,41 @@
 package com.test.radar;
 
-import static com.test.db.QueryHelper.SQL_BASE;
-import static com.test.db.QueryHelper.SQL_ORDER;
-import static com.test.db.QueryHelper.SQL_RT;
-import static com.test.db.QueryHelper.buildSqlIn;
+import static com.test.tools.Utils.valueOfLong;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.test.Config;
-import com.test.db.QueryHelper;
+import com.test.Keys;
+import com.test.dszuqiu.DsJobBuilder;
+import com.test.dszuqiu.DsJobFactory;
+import com.test.entity.Estimation;
 import com.test.entity.Model;
-import com.test.win007.Win007Spider;
+import com.test.http.HttpEngine;
+import com.test.learning.Phoenix;
+import com.test.learning.model.OddModel;
+import com.test.pipeline.MemoryPipeline;
 
-public class Radar {
+public class Radar implements Keys {
 
-  private static final Model[] MODELS = new Model[] {
-  };
+  private final Model[] mModels;
+  private final EstimationConsumer[] mConsumers;
 
-  private static final EstimationConsumer[] CONSUMERS = new EstimationConsumer[] {
-      new ConsoleConsumer(), new FileConsumer()
-  };
-
-  public static void main(String[] args) throws Exception {
-    run(1000);
+  public Radar(Model[] models, EstimationConsumer[] consumers) {
+    mModels = models;
+    mConsumers = consumers;
   }
 
-  public static void run(int loop) throws Exception {
+  public static void main(String[] args) throws Exception {
+    new Radar(
+        new Model[] {new OddModel(-1)},
+        new EstimationConsumer[] {new ConsoleConsumer()}).run(1);
+  }
+
+  public void run(int loop) throws Exception {
     long sleep = 0;
     while (loop-- > 0) {
       try {
@@ -43,47 +50,48 @@ public class Radar {
     }
   }
 
-  private static void loopMain() throws Exception {
+  private void loopMain() throws Exception {
     System.out.println(
         "\n\n\n\n\n\n当前时间: " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
 
     // 运行爬虫
-    List<Integer> matchIDs = Win007Spider.runRt();
-    // 查询数据
-    String querySql = SQL_BASE + SQL_RT + buildSqlIn(matchIDs) + SQL_ORDER;
-    List<Map<String, Object>> matches = QueryHelper.doQuery(querySql, 1000);
-    System.out.println("进行中的比赛场次: " + matches.size());
+    final MemoryPipeline pipeline = new MemoryPipeline();
+    DsJobFactory factory = new DsJobFactory(new DsJobBuilder());
+    HttpEngine dragon = new HttpEngine(factory.build(), pipeline);
+    dragon.start();
 
+    List<Map<String, Object>> matches = pipeline.getMaps();
+    System.out.println("进行中的比赛场次: " + matches.size());
     // 运行AI
-    for (Model model : MODELS) {
+    for (Model model : mModels) {
       System.out.println("-----------------模型: " + model.name() + "--------------------");
-      // loopOne(model, matches);
+      loopOne(model, matches);
     }
   }
-  //
-  // private static void loopOne(Model model, List<Map<String, Object>> matches) throws Exception {
-  // matches = matches.stream()
-  // .sorted((o1, o2) -> o1.mLeague.compareTo(o2.mLeague)).collect(Collectors.toList());
-  // if (matches.isEmpty()) {
-  // return;
-  // }
-  // boolean trick = false;
-  // if (matches.size() == 1) { // 单条无法训练, 做一个trick
-  // matches.add(matches.get(0));
-  // trick = true;
-  // }
-  //
-  // PhoenixInputs input = new PhoenixInputs(model, matches, false);
-  // input.prepare(); // 写入数据
-  // List<Estimation> results = Phoenix.runEst(model, input);
-  //
-  // for (int i = 0; i < results.size(); i++) {
-  // if (trick && i == 1) { // trick的数据不要
-  // continue;
-  // }
-  // for (EstimationConsumer consumer : CONSUMERS) {
-  // consumer.accept(input.mMatches.get(i), model, results.get(i));
-  // }
-  // }
-  // }
+
+  private void loopOne(Model model, List<Map<String, Object>> matches) throws Exception {
+    matches = matches.stream()
+        .sorted(
+            (o1, o2) -> (int) (valueOfLong(o2.get(MATCH_TIME)) - valueOfLong(o1.get(MATCH_TIME))))
+        .collect(Collectors.toList());
+    if (matches.isEmpty()) {
+      return;
+    }
+    boolean trick = false;
+    if (matches.size() == 1) { // 单条无法训练, 做一个trick
+      matches.add(matches.get(0));
+      trick = true;
+    }
+
+    List<Estimation> results = Phoenix.runEst(model, matches);
+
+    for (int i = 0; i < results.size(); i++) {
+      if (trick && i == 1) { // trick的数据不要
+        continue;
+      }
+      for (EstimationConsumer consumer : mConsumers) {
+        consumer.accept(matches.get(i), model, results.get(i));
+      }
+    }
+  }
 }

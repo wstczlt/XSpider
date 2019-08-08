@@ -8,23 +8,23 @@ import static com.test.tools.Utils.nameOfY;
 import static com.test.tools.Utils.nameOfYMetric;
 
 import java.util.List;
+import java.util.Map;
 
 import com.test.entity.Estimation;
 import com.test.entity.Model;
-import com.test.learning.model.OddModel;
+import com.test.learning.model.BallModel;
 import com.test.tools.Utils;
 
 public class Phoenix {
 
   public static void main(String[] args) throws Exception {
-    PhoenixTester.runTest(new OddModel(-1));
+    PhoenixTester.runTest(new BallModel(-1));
   }
 
-  /**
-   * 训练.
-   */
-  public static void runTrain(Model model, PhoenixInputs testData) throws Exception {
-    testData.prepare(); // 写入数据
+  public static void runTrain(Model model, List<Map<String, Object>> trainMatches)
+      throws Exception {
+    PhoenixInputs trainData = new PhoenixInputs(model, trainMatches, true);
+    trainData.prepare(); // 写入数据
     exec("python training/train.py " + nameOfX(model) + " " + nameOfY(model) + " "
         + nameOfModel(model));
   }
@@ -32,17 +32,20 @@ public class Phoenix {
   /**
    * 预测结果.
    */
-  public static List<Estimation> runEst(Model model, PhoenixInputs trainData)
+  public static List<Estimation> runEst(Model model, List<Map<String, Object>> testMatches)
       throws Exception {
-    trainData.prepare(); // 写入数据
+    PhoenixInputs testData = new PhoenixInputs(model, testMatches, false);
+    testData.prepare(); // 写入数据
     String output =
         exec("python training/test.py " + nameOfTestX(model) + " " + nameOfModel(model));
 
     return Utils.readResult(output);
   }
 
-  public static void runTrainMetric(Model model, PhoenixInputs testData) throws Exception {
-    testData.prepare(); // 写入数据
+  public static void runTrainMetric(Model model, List<Map<String, Object>> trainMatches)
+      throws Exception {
+    PhoenixInputs trainData = new PhoenixInputs(model, trainMatches, true);
+    trainData.prepare(); // 写入数据
     exec("python training/train.metric.py " + nameOfX(model) + " " + nameOfYMetric(model) + " "
         + nameOfModel(model));
   }
@@ -50,9 +53,10 @@ public class Phoenix {
   /**
    * 预测结果.
    */
-  public static List<Estimation> runEstMetric(Model model, PhoenixInputs trainData)
+  public static List<Estimation> runEstMetric(Model model, List<Map<String, Object>> testMatches)
       throws Exception {
-    trainData.prepare(); // 写入数据
+    PhoenixInputs testData = new PhoenixInputs(model, testMatches, false);
+    testData.prepare(); // 写入数据
     String output =
         exec("python training/test.metric.py " + nameOfTestX(model) + " " + nameOfModel(model));
 

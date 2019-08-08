@@ -9,7 +9,7 @@ import org.apache.http.util.TextUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.test.Config;
-import com.test.dszuqiu.RaceParser;
+import com.test.dszuqiu.parser.RaceParser;
 import com.test.http.HttpJob;
 import com.test.pipeline.FilePipeline;
 

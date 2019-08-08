@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 
+import com.test.dszuqiu.parser.OddParser;
+import com.test.dszuqiu.parser.RaceParser;
 import com.test.pipeline.DbPipeline;
 
 public class DsHelper {

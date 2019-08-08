@@ -37,13 +37,10 @@ public class PhoenixTester {
       List<Map<String, Object>> trainMatches = matches.subList(0, matches.size() - TEST_SET_COUNT);
       List<Map<String, Object>> testMatches =
           matches.subList(matches.size() - TEST_SET_COUNT, matches.size());
-
-      PhoenixInputs trainData = new PhoenixInputs(model, trainMatches, true);
-      PhoenixInputs testData = new PhoenixInputs(model, testMatches, false);
       // 训练
-      Phoenix.runTrainMetric(model, trainData);
+      Phoenix.runTrainMetric(model, trainMatches);
       // 测试
-      List<Estimation> ests = Phoenix.runEstMetric(model, testData);
+      List<Estimation> ests = Phoenix.runEstMetric(model, testMatches);
       // 展示结果
       results.add(score(model, testMatches, ests, threshold));
     }

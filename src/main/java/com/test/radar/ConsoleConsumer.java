@@ -1,61 +1,43 @@
 package com.test.radar;
 
-import org.apache.http.util.TextUtils;
+import static com.test.tools.Utils.valueOfInt;
+
+import java.util.Map;
 
 import com.test.entity.Estimation;
-import com.test.entity.Match;
 import com.test.entity.Model;
+import com.test.learning.model.OddModel;
 
 public class ConsoleConsumer implements EstimationConsumer {
 
   @Override
-  public void accept(Match match, Model model, Estimation est) {
-//    if (model instanceof OddModel45) {
-//      displayOddHalf(match, model, est);
-//    } else if (model instanceof BallModel45) {
-//      displayBallHalf(match, model, est);
-//    }
+  public void accept(Map<String, Object> match, Model model, Estimation est) {
+    if (model instanceof OddModel) {
+      display(match, model, est);
+    }
+
   }
 
-  private void displayBallHalf(Match match, Model model, Estimation est) {
+  private void display(Map<String, Object> match, Model model, Estimation est) {
     if (est.mProbability < model.bestThreshold()) { // 只展示高概率比赛
       return;
     }
-    String hostName = match.mHostName;
-    String customName = match.mCustomName;
-    String league = !TextUtils.isEmpty(match.mLeague) ? match.mLeague : "野鸡";
+    String hostName = (String) match.get(HOST_NAME);
+    String customName = (String) match.get(CUSTOM_NAME);
+    String league = (String) match.get(LEAGUE);
+    int timeMin = valueOfInt(match.get(TIME_MIN));
+    int hostScore = valueOfInt(match.get(HOST_SCORE));
+    int customScore = valueOfInt(match.get(CUSTOM_SCORE));
+    String scoreOdd = (String) match.get(ORIGINAL_SCORE_ODD);
 
     System.out.println(
-        String.format("%d', [%s], %s VS %s", match.mTimeMin, league, hostName, customName));
-    System.out.println(
-        String.format("     中场比分: %d : %d", match.mMiddleHostScore, match.mMiddleCustomScore));
-    System.out.println(String.format("     当前比分: %d : %d", match.mHostScore, match.mCustomScore));
+        String.format("%d', [%s], %s VS %s", timeMin, league, hostName, customName));
+    System.out.println(String.format("     当前比分: %d : %d", hostScore, customScore));
     System.out.println(String.format("     盘口: %s， 概率: %.2f[历史命中率: %s]",
-        match.mMiddleBigOdd + "[" + (est.mValue == 0 ? "小" : "大") + "]",
+        scoreOdd + "[" + (est.mValue == 0 ? "客" : "主") + "]",
         est.mProbability,
-        ((int) (est.mProbability * 100 + 5)) + "%"));
+        ((int) (est.mProbability * 100)) + "%"));
 
     System.out.println("\n\n");
-  }
-
-  private void displayOddHalf(Match match, Model model, Estimation est) {
-    if (est.mProbability < model.bestThreshold()) { // 只展示高概率比赛
-      return;
-    }
-    // int matchID = match.mMatchID;
-    String hostName = match.mHostName;
-    String customName = match.mCustomName;
-    String league = !TextUtils.isEmpty(match.mLeague) ? match.mLeague : "野鸡";
-
-    System.out.println("\n\n");
-    System.out.println(
-        String.format("%d', [%s], %s VS %s", match.mTimeMin, league, hostName, customName));
-    System.out.println(
-        String.format("     中场比分: %d : %d", match.mMiddleHostScore, match.mMiddleCustomScore));
-    System.out.println(String.format("     当前比分: %d : %d", match.mHostScore, match.mCustomScore));
-    System.out.println(String.format("     盘口: %s， 概率: %.2f[历史命中率: %s]",
-        match.mMiddleScoreOdd + "[" + (est.mValue == 0 ? "客" : "主") + "]",
-        est.mProbability,
-        ((int) (est.mProbability * 100 + 5)) + "%"));
   }
 }

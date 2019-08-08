@@ -1,6 +1,6 @@
 package com.test;
 
-import com.test.db.QueryHelper;
+import com.test.radar.Radar;
 
 public class Main {
 
@@ -8,9 +8,11 @@ public class Main {
 
     // DsSpider.runSt(630000, 640000);
 
-//    DsHelper.read("/Users/Jesse/Desktop/dszuqiu");
+    // DsHelper.read("/Users/Jesse/Desktop/dszuqiu");
 
-//    QueryHelper.queryLeagues();
+    // QueryHelper.queryLeagues();
+
+    Radar.main(null);
   }
 
 }

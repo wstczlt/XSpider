@@ -1,4 +1,4 @@
-package com.test.dszuqiu;
+package com.test.dszuqiu.parser;
 
 import java.util.Map;
 
