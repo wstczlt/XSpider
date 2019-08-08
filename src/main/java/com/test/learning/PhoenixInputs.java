@@ -11,20 +11,22 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.test.entity.Match;
+import com.test.Keys;
 import com.test.entity.Model;
+import com.test.learning.model.OddModel;
 import com.test.tools.Utils;
 
 /**
  * 数据集.
  */
-public class PhoenixInputs {
+public class PhoenixInputs implements Keys {
 
   private final Model mModel;
   public final List<Map<String, Object>> mMatches;
@@ -44,15 +46,27 @@ public class PhoenixInputs {
     List<String> xValue = new ArrayList<>();
     List<String> yValue = new ArrayList<>();
     List<String> yMetric = new ArrayList<>();
+    List<String> raw = new ArrayList<>();
     for (int i = 0; i < matches.size(); i++) {
       Map<String, Object> match = matches.get(i);
       xValue.add(StringUtils.join(mModel.xValues(match), "   "));
       yValue.add(mModel.yValue(match) + "");
       yMetric.add(Utils.yMetric(mModel.yValue(match)));
+
+      String matchID = (String) match.get(MATCH_ID);
+      String hostScore = (String) match.get(HOST_SCORE);
+      String customScore = (String) match.get(CUSTOM_SCORE);
+      String originalScoreOdd = (String) match.get(ORIGINAL_SCORE_ODD);
+      float delta = ((OddModel) mModel).deltaScore(match);
+      float value = mModel.yValue(match);
+      raw.add(StringUtils.join(
+          Arrays.asList(matchID, hostScore, customScore, originalScoreOdd, delta + "", value + ""),
+          ", "));
     }
     Writer xWriter = null;
     Writer yValueWriter = null;
     Writer yMetricWriter = null;
+    Writer rawWriter = null;
     try {
       xWriter = new OutputStreamWriter(
           new FileOutputStream(mIsTrain ? nameOfX(mModel) : nameOfTestX(mModel)), "utf-8");
@@ -61,13 +75,19 @@ public class PhoenixInputs {
       yMetricWriter = new OutputStreamWriter(
           new FileOutputStream(mIsTrain ? nameOfYMetric(mModel) : nameOfTestYMetric(mModel)),
           "utf-8");
+      rawWriter = new OutputStreamWriter(new FileOutputStream(
+          mIsTrain
+              ? "temp/" + mModel.name() + ".raw.dat"
+              : "temp/" + mModel.name() + "_test.raw.dat"));
       IOUtils.writeLines(xValue, null, xWriter);
       IOUtils.writeLines(yValue, null, yValueWriter);
       IOUtils.writeLines(yMetric, null, yMetricWriter);
+      IOUtils.writeLines(raw, null, rawWriter);
     } finally {
       IOUtils.closeQuietly(xWriter);
       IOUtils.closeQuietly(yValueWriter);
       IOUtils.closeQuietly(yMetricWriter);
+      IOUtils.closeQuietly(rawWriter);
     }
   }
 }

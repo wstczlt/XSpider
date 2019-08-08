@@ -18,7 +18,7 @@ import com.test.tools.Utils;
 public class Phoenix {
 
   public static void main(String[] args) throws Exception {
-    PhoenixTester.runTest(new OddModel(-1));
+    PhoenixTester.runTest(new OddModel(45));
   }
 
   public static void runTrain(Model model, List<Map<String, Object>> trainMatches)

@@ -37,7 +37,7 @@ public class OddModel extends Model {
   public String querySql(String andSql) {
     Set<String> keys = new HashSet<>();
     keys.addAll(xKeys());
-    keys.addAll(yKeys());
+    keys.addAll(basicKeys());
     final String selectSql =
         "select " + StringUtils.join(keys, ", ") + " from football where 1=1 ";
 
@@ -111,8 +111,14 @@ public class OddModel extends Model {
     return keys;
   }
 
-  private List<String> yKeys() {
+  private List<String> basicKeys() {
     List<String> keys = new ArrayList<>();
+    keys.add(HOST_NAME);
+    keys.add(CUSTOM_NAME);
+    keys.add(LEAGUE);
+    keys.add(MATCH_TIME);
+    keys.add(TIME_MIN);
+    keys.add(MATCH_STATUS);
     keys.add(HOST_SCORE);
     keys.add(CUSTOM_SCORE);
     if (mTimeMin >= 0) {
@@ -135,11 +141,17 @@ public class OddModel extends Model {
   public float deltaScore(Map<String, Object> match) {
     int hostScore = valueOfInt(match.get(HOST_SCORE));
     int customScore = valueOfInt(match.get(CUSTOM_SCORE));
-    int timeHostScore = valueOfInt(match.get("min" + mTimeMin + "_hostScore"));
-    int timeCustomScore = valueOfInt(match.get("min" + mTimeMin + "_customScore"));
-    float timeScoreOdd = valueOfFloat(match.get("min" + mTimeMin + "_scoreOdd"));
+    if (mTimeMin < 0) {
 
-    return (hostScore - customScore) - (timeHostScore - timeCustomScore) + timeScoreOdd;
+      float timeScoreOdd = valueOfFloat(match.get(ORIGINAL_SCORE_ODD));
+      return (hostScore - customScore) + timeScoreOdd;
+    } else {
+      int timeHostScore = valueOfInt(match.get("min" + mTimeMin + "_hostScore"));
+      int timeCustomScore = valueOfInt(match.get("min" + mTimeMin + "_customScore"));
+      float timeScoreOdd = valueOfFloat(match.get("min" + mTimeMin + "_scoreOdd"));
+
+      return (hostScore - timeHostScore) - (customScore - timeCustomScore) + timeScoreOdd;
+    }
   }
 
   @Override

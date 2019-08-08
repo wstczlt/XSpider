@@ -1,6 +1,5 @@
 package com.test.db;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,18 +63,11 @@ public class QueryHelper implements Keys {
 
   public static List<Map<String, Object>> doQuery(String sql, int limit) throws Exception {
     System.out.println(sql);
-    final List<Map<String, Object>> matches = new ArrayList<>();
     final DataSource ds = new DbHelper().open();
     final QueryRunner runner = new QueryRunner(ds);
-    while (matches.size() < limit) {
-      String newSql = sql + " limit " + Math.min(4000, limit - matches.size());
-      List<Map<String, Object>> mapList = runner.query(newSql, new MapListHandler());
-      if (mapList.isEmpty()) {
-        break;
-      }
-      matches.addAll(mapList);
-    }
+    String newSql = sql + " limit " + limit;
 
+    final List<Map<String, Object>> matches = runner.query(newSql, new MapListHandler());
     System.out.println("查询结果条数: " + matches.size() + "\n\n");
     return matches;
   }

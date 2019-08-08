@@ -1,5 +1,6 @@
 package com.test.radar;
 
+import static com.test.db.QueryHelper.SQL_ST;
 import static com.test.db.QueryHelper.buildSqlIn;
 import static com.test.db.QueryHelper.doQuery;
 import static com.test.tools.Utils.valueOfLong;
@@ -67,7 +68,7 @@ public class Radar implements Keys {
     // 运行AI
     for (Model model : mModels) {
       // String andSql = SQL_RT + buildSqlIn(matchIDs);
-      String andSql = buildSqlIn(matchIDs);
+      String andSql = SQL_ST + buildSqlIn(matchIDs);
       List<Map<String, Object>> matches = doQuery(model.querySql(andSql), 1000);
       System.out.println("-----------------模型: " + model.name() + "--------------------");
       System.out.println("比赛总场次: " + matches.size());
@@ -79,6 +80,7 @@ public class Radar implements Keys {
     matches = matches.stream()
         .sorted(
             (o1, o2) -> (int) (valueOfLong(o2.get(MATCH_TIME)) - valueOfLong(o1.get(MATCH_TIME))))
+        .distinct()
         .collect(Collectors.toList());
     if (matches.isEmpty()) {
       return;
