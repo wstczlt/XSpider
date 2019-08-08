@@ -19,7 +19,7 @@ import com.test.entity.Estimation;
 import com.test.entity.Model;
 import com.test.http.HttpEngine;
 import com.test.learning.Phoenix;
-import com.test.learning.model.OddModel;
+import com.test.learning.model.Odd45;
 import com.test.pipeline.DbPipeline;
 
 public class Radar implements Keys {
@@ -34,7 +34,7 @@ public class Radar implements Keys {
 
   public static void main(String[] args) throws Exception {
     new Radar(
-        new Model[] {new OddModel(-1)},
+        new Model[] {new Odd45()},
         new EstimationConsumer[] {new ConsoleConsumer()}).run(1);
   }
 

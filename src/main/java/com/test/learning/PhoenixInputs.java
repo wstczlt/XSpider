@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.test.Keys;
 import com.test.entity.Model;
-import com.test.learning.model.OddModel;
 import com.test.tools.Utils;
 
 /**
@@ -57,10 +56,11 @@ public class PhoenixInputs implements Keys {
       String hostScore = (String) match.get(HOST_SCORE);
       String customScore = (String) match.get(CUSTOM_SCORE);
       String originalScoreOdd = (String) match.get(ORIGINAL_SCORE_ODD);
-      float delta = ((OddModel) mModel).deltaScore(match);
+      String originalBigOdd = (String) match.get(ORIGINAL_BIG_ODD);
       float value = mModel.yValue(match);
       raw.add(StringUtils.join(
-          Arrays.asList(matchID, hostScore, customScore, originalScoreOdd, delta + "", value + ""),
+          Arrays.asList(matchID, hostScore, customScore, originalScoreOdd, originalBigOdd,
+              value + ""),
           ", "));
     }
     Writer xWriter = null;

@@ -16,11 +16,11 @@ import com.test.tools.Pair;
 public class PhoenixTester {
 
   private static final int TOTAL_ROUND = 3;// 测试轮数
-  private static final int TEST_SET_COUNT = 2000; // 测试集长度
   private static final float[] THRESHOLDS = new float[] {
       // 0.50f};
-      0.35f, 0.4f, 0.45f, 0.5f};
-  // 0.70f, 0.75f, 0.78f, 0.8f}; //
+      // 0.35f, 0.4f, 0.45f, 0.5f};
+      // 0.5f, 0.55f, 0.60f, 0.65f};
+      0.70f, 0.75f, 0.78f, 0.8f}; //
 
   public static void runTest(Model model) throws Exception {
     final List<Map<String, Object>> matches = QueryHelper.doQuery(model.querySql(SQL_ST), 50000);
@@ -36,9 +36,10 @@ public class PhoenixTester {
     final List<Pair<EstScore, EstScore>> metric = new ArrayList<>();
     for (int i = 0; i < TOTAL_ROUND; i++) {
       Collections.shuffle(matches);
-      List<Map<String, Object>> trainMatches = matches.subList(0, matches.size() - TEST_SET_COUNT);
+      int testSetCount = (int) (matches.size() * 0.25);
+      List<Map<String, Object>> trainMatches = matches.subList(0, matches.size() - testSetCount);
       List<Map<String, Object>> testMatches =
-          matches.subList(matches.size() - TEST_SET_COUNT, matches.size());
+          matches.subList(matches.size() - testSetCount, matches.size());
 
       // 训练
       Phoenix.runTrain(model, trainMatches);
@@ -72,7 +73,7 @@ public class PhoenixTester {
     for (int i = 0; i < estimations.size(); i++) {
       final Map<String, Object> match = matches.get(i);
       // 随机结果
-      final Estimation randomEst = new Estimation(new Random().nextInt(3), 0.5f);
+      final Estimation randomEst = new Estimation(new Random().nextInt(2) * 2, 0.5f);
       final float randomGain = model.calGain(match, randomEst);
       final boolean isRandomHit = randomGain > 0;
       final boolean isRandomDrew = randomGain == 0;

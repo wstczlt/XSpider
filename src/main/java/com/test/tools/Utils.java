@@ -67,28 +67,31 @@ public class Utils {
       // System.out.println(line);
       Estimation est;
       String[] arr = line.replace("[", "").replace("]", "").split("\\s+");
+      if (arr.length == 2) {
+        arr = new String[] {arr[0], "0", arr[1]};
+      }
       if (arr.length != 3) {
         throw new RuntimeException(line);
       }
-      // if (valueOfFloat(arr[0]) > valueOfFloat(arr[2])) {
-      // est = new Estimation(0, valueOfFloat(arr[0]) + valueOfFloat(arr[1]));
-      // } else {
-      // est = new Estimation(2, valueOfFloat(arr[2]) + valueOfFloat(arr[1]));
-      // }
-      // estimations.add(est);
-
-      float maxProb = 0;
-      float indexOfMax = -1;
-      for (int i = 0; i < 3; i++) { // 0=主, 1=走，2=客
-        float prob = valueOfFloat(arr[i]);
-        if (prob > maxProb) {
-          indexOfMax = i;
-          maxProb = prob;
-        }
+      if (valueOfFloat(arr[0]) > valueOfFloat(arr[2])) {
+        est = new Estimation(0, valueOfFloat(arr[0]) + valueOfFloat(arr[1]));
+      } else {
+        est = new Estimation(2, valueOfFloat(arr[2]) + valueOfFloat(arr[1]));
       }
-      // System.out.println("value=" + indexOfMax + ", prob=" + maxProb);
-      est = new Estimation(indexOfMax, maxProb);
       estimations.add(est);
+
+      // float maxProb = 0;
+      // float indexOfMax = -1;
+      // for (int i = 0; i < 3; i++) { // 0=主, 1=走，2=客
+      // float prob = valueOfFloat(arr[i]);
+      // if (prob > maxProb) {
+      // indexOfMax = i;
+      // maxProb = prob;
+      // }
+      // }
+      // // System.out.println("value=" + indexOfMax + ", prob=" + maxProb);
+      // est = new Estimation(indexOfMax, maxProb);
+      // estimations.add(est);
     });
 
     return estimations;

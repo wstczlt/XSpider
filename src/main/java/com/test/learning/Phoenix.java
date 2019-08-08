@@ -12,16 +12,16 @@ import java.util.Map;
 
 import com.test.entity.Estimation;
 import com.test.entity.Model;
-import com.test.learning.model.OddModel;
+import com.test.learning.model.Odd45;
 import com.test.tools.Utils;
 
 public class Phoenix {
 
   public static void main(String[] args) throws Exception {
-    System.out.println("模型测试: OddModel[0]");
-    PhoenixTester.runTest(new OddModel(0));
-    // System.out.println("\n\n\n\n\n模型测试: OddModel[45]");
-    // PhoenixTester.runTest(new OddModel(45));
+    System.out.println("模型测试: OddModel[45]");
+    PhoenixTester.runTest(new Odd45());
+    // System.out.println("模型测试: BallModel[73]");
+    // PhoenixTester.runTest(new BallModel(73));
   }
 
   public static void runTrain(Model model, List<Map<String, Object>> trainMatches)

@@ -20,19 +20,24 @@ import com.test.entity.Model;
 /**
  * 指定时刻让球胜平负.
  */
-public class OddModel extends Model {
+public class Odd45 extends Model {
 
   private final int mTimeMin;
   private final String mPrefix;
 
-  public OddModel(int timeMin) {
-    mTimeMin = timeMin;
-    mPrefix = mTimeMin < 0 ? "original" : ("min" + mTimeMin);
+  public Odd45() {
+    mTimeMin = 45;
+    mPrefix = "min" + mTimeMin;
   }
 
   @Override
   public String name() {
     return "odd" + mTimeMin;
+  }
+
+  @Override
+  public float bestThreshold() {
+    return 0.75f;
   }
 
   @Override
@@ -150,7 +155,7 @@ public class OddModel extends Model {
     return delta > 0 ? 0 : (delta == 0 ? 1f : 2);
   }
 
-  public float deltaScore(Map<String, Object> match) {
+  private float deltaScore(Map<String, Object> match) {
     int hostScore = valueOfInt(match.get(HOST_SCORE));
     int customScore = valueOfInt(match.get(CUSTOM_SCORE));
     if (mTimeMin < 0) {

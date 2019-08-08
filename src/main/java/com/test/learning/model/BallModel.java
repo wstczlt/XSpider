@@ -20,19 +20,19 @@ import com.test.entity.Model;
 /**
  * 指定时刻让球胜平负.
  */
-public class OddModel extends Model {
+public class BallModel extends Model {
 
   private final int mTimeMin;
   private final String mPrefix;
 
-  public OddModel(int timeMin) {
+  public BallModel(int timeMin) {
     mTimeMin = timeMin;
     mPrefix = mTimeMin < 0 ? "original" : ("min" + mTimeMin);
   }
 
   @Override
   public String name() {
-    return "odd" + mTimeMin;
+    return "ball" + mTimeMin;
   }
 
   @Override
@@ -46,13 +46,10 @@ public class OddModel extends Model {
     final String oddSql = mTimeMin < 0
         ? ""
         : String.format(
-            "AND cast(%s_scoreOdd as number) in (0) " +
-                "AND cast(%s_scoreOddOfVictory as number)>1.7 " +
-                "AND cast(%s_scoreOddOfDefeat as number)>1.7 " +
-                "AND abs(cast(%s_hostScore as int) - cast(%s_customScore as int)) <=1 ",
-            // "AND abs(cast(%s_hostDanger as int) - cast(%s_customDanger as int)) >=10 " +
-            // "AND abs(cast(%s_hostBestShoot as int) - cast(%s_customBestShoot as int)) >=0 ",
-            mPrefix,
+            // "AND cast(min0_bigOdd as number)=0 " +
+            "AND cast(%s_bigOdd as number) - cast(%s_bigOdd as int) =0.5 " +
+                "AND cast(%s_bigOddOfVictory as number)>1.8 " +
+                "AND cast(%s_bigOddOfDefeat as number)>1.8 ",
             mPrefix,
             mPrefix,
             mPrefix,
@@ -153,22 +150,16 @@ public class OddModel extends Model {
   public float deltaScore(Map<String, Object> match) {
     int hostScore = valueOfInt(match.get(HOST_SCORE));
     int customScore = valueOfInt(match.get(CUSTOM_SCORE));
-    if (mTimeMin < 0) {
-      float timeScoreOdd = valueOfFloat(match.get(ORIGINAL_SCORE_ODD));
-      return (hostScore - customScore) + timeScoreOdd;
-    } else {
-      int timeHostScore = valueOfInt(match.get(mPrefix + "_hostScore"));
-      int timeCustomScore = valueOfInt(match.get(mPrefix + "_customScore"));
-      float timeScoreOdd = valueOfFloat(match.get(mPrefix + "_scoreOdd"));
-      return (hostScore - timeHostScore) - (customScore - timeCustomScore) + timeScoreOdd;
-    }
+
+    float bigOdd = valueOfFloat(match.get(mPrefix + "_bigOdd"));
+    return hostScore + customScore - bigOdd;
   }
 
   @Override
   public float calGain(Map<String, Object> dbMap, Estimation est) {
     // 让球算法
-    float victory = valueOfFloat(dbMap.get(mPrefix + "_scoreOddOfVictory")) - 1;
-    float defeat = valueOfFloat(dbMap.get(mPrefix + "_scoreOddOfDefeat")) - 1;
+    float victory = valueOfFloat(dbMap.get(mPrefix + "_bigOddOfVictory")) - 1;
+    float defeat = valueOfFloat(dbMap.get(mPrefix + "_bigOddOfDefeat")) - 1;
     float deltaScore = deltaScore(dbMap);
 
     if (est.mValue == 0) { // 判断主队
