@@ -46,10 +46,15 @@ public class BallModel extends Model {
     final String oddSql = mTimeMin < 0
         ? ""
         : String.format(
-            // "AND cast(min0_bigOdd as number)=0 " +
-            "AND cast(%s_bigOdd as number) - cast(%s_bigOdd as int) =0.5 " +
-                "AND cast(%s_bigOddOfVictory as number)>1.8 " +
-                "AND cast(%s_bigOddOfDefeat as number)>1.8 ",
+            "AND cast(%s_scoreOdd as number) in (0) " +
+                "AND cast(%s_scoreOddOfVictory as number)>1.7 " +
+                "AND cast(%s_scoreOddOfDefeat as number)>1.7 " +
+                "AND cast(%s_bigOddOfVictory as number)>1.7 " +
+                "AND cast(%s_bigOddOfDefeat as number)>1.7 " +
+                "AND abs(cast(%s_hostScore as int) - cast(%s_customScore as int)) <=1 ",
+            mPrefix,
+            mPrefix,
+            mPrefix,
             mPrefix,
             mPrefix,
             mPrefix,
@@ -123,6 +128,7 @@ public class BallModel extends Model {
 
   private List<String> basicKeys() {
     List<String> keys = new ArrayList<>();
+    keys.add(MATCH_ID);
     keys.add(HOST_NAME);
     keys.add(CUSTOM_NAME);
     keys.add(LEAGUE);

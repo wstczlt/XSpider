@@ -35,10 +35,10 @@ public class Odd45 extends Model {
     return "odd" + mTimeMin;
   }
 
-//  @Override
-//  public float bestThreshold() {
-//    return 0.75f;
-//  }
+  @Override
+  public float bestThreshold() {
+    return 0.75f;
+  }
 
   @Override
   public String querySql(String andSql) {
@@ -131,6 +131,7 @@ public class Odd45 extends Model {
 
   private List<String> basicKeys() {
     List<String> keys = new ArrayList<>();
+    keys.add(MATCH_ID);
     keys.add(HOST_NAME);
     keys.add(CUSTOM_NAME);
     keys.add(LEAGUE);

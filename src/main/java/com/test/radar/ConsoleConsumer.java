@@ -8,15 +8,12 @@ import java.util.Map;
 
 import com.test.entity.Estimation;
 import com.test.entity.Model;
-import com.test.learning.model.OddModel;
 
 public class ConsoleConsumer implements EstimationConsumer {
 
   @Override
   public void accept(Map<String, Object> match, Model model, Estimation est) {
-    if (model instanceof OddModel) {
-      display(match, model, est);
-    }
+    display(match, model, est);
   }
 
   private void display(Map<String, Object> match, Model model, Estimation est) {
@@ -31,7 +28,8 @@ public class ConsoleConsumer implements EstimationConsumer {
     int matchStatus = valueOfInt(match.get(MATCH_STATUS));
     int hostScore = valueOfInt(match.get(HOST_SCORE));
     int customScore = valueOfInt(match.get(CUSTOM_SCORE));
-    String scoreOdd = (String) match.get(ORIGINAL_SCORE_ODD);
+    int min45HostScore = valueOfInt(match.get("min45_hostScore"));
+    int min45CustomScore = valueOfInt(match.get("min45_customScore"));
     String matchTimeStr = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(matchTime);
     String matchStatusStr =
         matchStatus == 0 ? "未开始" : (matchStatus == 1 ? "进行中" : (matchStatus == 3 ? "已结束" : "未知"));
@@ -40,10 +38,10 @@ public class ConsoleConsumer implements EstimationConsumer {
     System.out.println(
         String.format("%d', [%s], %s VS %s", timeMin, league, hostName, customName));
     System.out.println(String.format("     当前比分: %d : %d", hostScore, customScore));
-    System.out.println(String.format("     盘口: %s， 概率: %.2f[历史命中率: %s]",
-        scoreOdd + "[" + (est.mValue == 0 ? "主" : (est.mValue == 1 ? "和" : "客")) + "]",
-        est.mProbability,
-        ((int) (est.mProbability * 100)) + "%"));
+    System.out.println(String.format("     中场比分: %d : %d", min45HostScore, min45CustomScore));
+    System.out.println(String.format("     中场盘口: %s， 预测概率: %.2f",
+        "平手" + "[" + (est.mValue == 0 ? "主" : (est.mValue == 1 ? "和" : "客")) + "]",
+        est.mProbability));
 
     System.out.println("\n\n");
   }

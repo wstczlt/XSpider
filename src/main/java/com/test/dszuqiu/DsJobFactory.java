@@ -59,6 +59,13 @@ public class DsJobFactory {
     List<Integer> matchIDs = new ArrayList<>();
     matchIDs.addAll(request(todayUrl));
     matchIDs.addAll(request(tomorrowUrl));
+    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000)))));
+    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000 * 2)))));
+    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000 * 3)))));
+    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000 * 4)))));
+    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000 * 5)))));
+    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000 * 6)))));
+    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000 * 7)))));
 
     return matchIDs;
   }

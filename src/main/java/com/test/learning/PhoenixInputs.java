@@ -52,11 +52,11 @@ public class PhoenixInputs implements Keys {
       yValue.add(mModel.yValue(match) + "");
       yMetric.add(Utils.yMetric(mModel.yValue(match)));
 
-      String matchID = (String) match.get(MATCH_ID);
-      String hostScore = (String) match.get(HOST_SCORE);
-      String customScore = (String) match.get(CUSTOM_SCORE);
-      String originalScoreOdd = (String) match.get(ORIGINAL_SCORE_ODD);
-      String originalBigOdd = (String) match.get(ORIGINAL_BIG_ODD);
+      String matchID = match.get(MATCH_ID) + "";
+      String hostScore = match.get(HOST_SCORE) + "";
+      String customScore = match.get(CUSTOM_SCORE) + "";
+      String originalScoreOdd = match.get(ORIGINAL_SCORE_ODD) + "";
+      String originalBigOdd = match.get(ORIGINAL_BIG_ODD) + "";
       float value = mModel.yValue(match);
       raw.add(StringUtils.join(
           Arrays.asList(matchID, hostScore, customScore, originalScoreOdd, originalBigOdd,

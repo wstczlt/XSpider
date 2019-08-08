@@ -22,6 +22,9 @@ public class Phoenix {
     PhoenixTester.runTest(new Odd45());
     // System.out.println("模型测试: BallModel[73]");
     // PhoenixTester.runTest(new BallModel(73));
+    //
+    // System.out.println("模型测试: BallModel[45]");
+    // PhoenixTester.runTest(new BallModel(45));
   }
 
   public static void runTrain(Model model, List<Map<String, Object>> trainMatches)

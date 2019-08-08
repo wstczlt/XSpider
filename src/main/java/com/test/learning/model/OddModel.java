@@ -126,6 +126,7 @@ public class OddModel extends Model {
 
   private List<String> basicKeys() {
     List<String> keys = new ArrayList<>();
+    keys.add(MATCH_ID);
     keys.add(HOST_NAME);
     keys.add(CUSTOM_NAME);
     keys.add(LEAGUE);
