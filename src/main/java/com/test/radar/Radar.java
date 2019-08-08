@@ -91,7 +91,7 @@ public class Radar implements Keys {
       trick = true;
     }
 
-    List<Estimation> results = Phoenix.runEstMetric(model, matches);
+    List<Estimation> results = Phoenix.runEst(model, matches);
 
     for (int i = 0; i < results.size(); i++) {
       if (trick && i == 1) { // trick的数据不要

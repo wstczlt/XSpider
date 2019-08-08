@@ -35,10 +35,10 @@ public class Odd45 extends Model {
     return "odd" + mTimeMin;
   }
 
-  @Override
-  public float bestThreshold() {
-    return 0.75f;
-  }
+//  @Override
+//  public float bestThreshold() {
+//    return 0.75f;
+//  }
 
   @Override
   public String querySql(String andSql) {
