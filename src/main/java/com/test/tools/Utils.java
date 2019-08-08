@@ -70,27 +70,40 @@ public class Utils {
       if (arr.length != 3) {
         throw new RuntimeException(line);
       }
-       if (valueOfFloat(arr[0]) > valueOfFloat(arr[2])) {
-       est = new Estimation(0, valueOfFloat(arr[0]) + valueOfFloat(arr[1]));
-       } else {
-       est = new Estimation(2, valueOfFloat(arr[2]) + valueOfFloat(arr[1]));
-       }
-      // float maxProb = 0;
-      // float indexOfMax = -1;
-      // for (int i = 0; i < 3; i++) { // 0=主, 1=走，2=客
-      // float prob = valueOfFloat(arr[i]);
-      // if (prob > maxProb) {
-      // indexOfMax = i;
-      // maxProb = prob;
+      // if (valueOfFloat(arr[0]) > valueOfFloat(arr[2])) {
+      // est = new Estimation(0, valueOfFloat(arr[0]) + valueOfFloat(arr[1]));
+      // } else {
+      // est = new Estimation(2, valueOfFloat(arr[2]) + valueOfFloat(arr[1]));
       // }
-      // }
-      // // System.out.println("value=" + indexOfMax + ", prob=" + maxProb);
-      // est = new Estimation(indexOfMax, maxProb);
+      float maxProb = 0;
+      float indexOfMax = -1;
+      for (int i = 0; i < 3; i++) { // 0=主, 1=走，2=客
+        float prob = valueOfFloat(arr[i]);
+        if (prob > maxProb) {
+          indexOfMax = i;
+          maxProb = prob;
+        }
+      }
+      // System.out.println("value=" + indexOfMax + ", prob=" + maxProb);
+      est = new Estimation(indexOfMax, maxProb);
 
       estimations.add(est);
     });
 
     return estimations;
+  }
+
+  public static String yMatric(float yValue) {
+    switch ((int) yValue) {
+      case 0:
+        return "1   0   0";
+      case 1:
+        return "0   1   0";
+      case 2:
+        return "0   0   1";
+      default:
+        throw new RuntimeException(yValue + "");
+    }
   }
 
   /**
@@ -112,12 +125,20 @@ public class Utils {
     return "temp/" + model.name() + "_y" + ".dat";
   }
 
+  public static String nameOfYMetric(Model model) {
+    return "temp/" + model.name() + "_y_metric" + ".dat";
+  }
+
   public static String nameOfTestX(Model model) {
     return "temp/" + model.name() + "_x_test" + ".dat";
   }
 
   public static String nameOfTestY(Model model) {
     return "temp/" + model.name() + "_y_test" + ".dat";
+  }
+
+  public static String nameOfTestYMetric(Model model) {
+    return "temp/" + model.name() + "_y_metric_test" + ".dat";
   }
 
   public static String nameOfModel(Model model) {

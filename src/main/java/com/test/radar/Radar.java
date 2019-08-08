@@ -57,7 +57,7 @@ public class Radar {
     List<Integer> matchIDs = Win007Spider.runRt();
     // 查询数据
     String querySql = SQL_BASE + SQL_RT + buildSqlIn(matchIDs) + SQL_ORDER;
-    List<Match> matches = QueryHelper.doQuery(querySql);
+    List<Match> matches = QueryHelper.doQuery(querySql, 1000);
     System.out.println("进行中的比赛场次: " + matches.size());
 
     // 运行AI

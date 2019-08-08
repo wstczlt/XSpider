@@ -10,7 +10,7 @@ public class Main {
 
 //    DsHelper.read("/Users/Jesse/Desktop/dszuqiu");
 
-    QueryHelper.updateHistory();
+    QueryHelper.queryLeagues();
   }
 
 }

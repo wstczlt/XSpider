@@ -27,9 +27,9 @@ public abstract class Model implements Keys {
 
 
   /**
-   * 追加的查询语句.
+   * 查询语句.
    */
-  public abstract String andSql();
+  public abstract String querySql();
 
   /**
    * 优选高概率的结果.

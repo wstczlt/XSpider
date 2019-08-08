@@ -2,8 +2,10 @@ package com.test.learning;
 
 import static com.test.tools.Utils.nameOfTestX;
 import static com.test.tools.Utils.nameOfTestY;
+import static com.test.tools.Utils.nameOfTestYMetric;
 import static com.test.tools.Utils.nameOfX;
 import static com.test.tools.Utils.nameOfY;
+import static com.test.tools.Utils.nameOfYMetric;
 
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -16,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.test.entity.Match;
 import com.test.entity.Model;
-import com.test.tools.Pair;
+import com.test.tools.Utils;
 
 /**
  * 数据集.
@@ -40,50 +42,31 @@ public class PhoenixInputs {
   private void writeAll(List<Match> matches) throws Exception {
     List<String> xValue = new ArrayList<>();
     List<String> yValue = new ArrayList<>();
+    List<String> yMetric = new ArrayList<>();
     for (int i = 0; i < matches.size(); i++) {
       Match match = matches.get(i);
-      Pair<String, String> trainLine = writeLine(match, mModel);
-      xValue.add(trainLine.first);
-      yValue.add(trainLine.second);
+      xValue.add(StringUtils.join(mModel.xValues(match), "   "));
+      yValue.add(mModel.yValue(match) + "");
+      yMetric.add(Utils.yMatric(mModel.yValue(match)));
     }
     Writer xWriter = null;
-    Writer yWriter = null;
+    Writer yValueWriter = null;
+    Writer yMetricWriter = null;
     try {
       xWriter = new OutputStreamWriter(
           new FileOutputStream(mIsTrain ? nameOfX(mModel) : nameOfTestX(mModel)), "utf-8");
-      yWriter = new OutputStreamWriter(
+      yValueWriter = new OutputStreamWriter(
           new FileOutputStream(mIsTrain ? nameOfY(mModel) : nameOfTestY(mModel)), "utf-8");
+      yMetricWriter = new OutputStreamWriter(
+          new FileOutputStream(mIsTrain ? nameOfYMetric(mModel) : nameOfTestYMetric(mModel)),
+          "utf-8");
       IOUtils.writeLines(xValue, null, xWriter);
-      IOUtils.writeLines(yValue, null, yWriter);
+      IOUtils.writeLines(yValue, null, yValueWriter);
+      IOUtils.writeLines(yMetric, null, yMetricWriter);
     } finally {
       IOUtils.closeQuietly(xWriter);
-      IOUtils.closeQuietly(yWriter);
+      IOUtils.closeQuietly(yValueWriter);
+      IOUtils.closeQuietly(yMetricWriter);
     }
-  }
-
-
-  private static Pair<String, String> writeLine(Match match, Model model) {
-    List<String> list = new ArrayList<>();
-    for (float xValue : model.xValues(match)) {
-      list.add(String.format("%.2f", xValue));
-    }
-
-    String trainLineX = StringUtils.join(list, "   ");
-
-    List<String> yList = new ArrayList<>();
-    yList.add(model.yValue(match).intValue() + "");
-    String trainLineY = StringUtils.join(yList, " ");
-
-    // int yValue = model.yValue(match).intValue();
-    // String trainLineY; // 0=主, 1=和, 2=客
-    // if (yValue == 0) { // 转化为多标签问题
-    // trainLineY = "1 0 0";
-    // } else if (yValue == 1) {
-    // trainLineY = "0 1 0";
-    // } else {
-    // trainLineY = "0 0 1";
-    // }
-
-    return new Pair<>(trainLineX, trainLineY);
   }
 }

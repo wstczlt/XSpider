@@ -23,7 +23,7 @@ public class BallModel45 extends Model {
   }
 
   @Override
-  public String andSql() {
+  public String querySql() {
     return "";
   }
 
