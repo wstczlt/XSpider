@@ -8,7 +8,7 @@ import okhttp3.OkHttpClient;
 
 public class HttpUtils {
   // 超时时间
-  private static final long DEFAULT_TIMEOUT_MILLS = 2000L;
+  private static final long DEFAULT_TIMEOUT_MILLS = 5000L;
 
   public static OkHttpClient buildHttpClient() {
     OkHttpClient.Builder builder = new OkHttpClient.Builder()

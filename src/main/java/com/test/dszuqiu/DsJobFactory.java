@@ -18,7 +18,7 @@ import okhttp3.Response;
 public class DsJobFactory {
 
   private static final String REQUEST_URL =
-      "http://api.dszuqiu.com/v6/diary?day=%s&page=1&token=&only_need=0&per_page=2000";
+      "http://api.dszuqiu.com/v6/diary?day=%s&page=1&token=&only_need=0&per_page=5000";
 
   private final OkHttpClient mClient;
   private final HttpJobBuilder mBuilder;
@@ -51,21 +51,11 @@ public class DsJobFactory {
 
   private List<Integer> realtime() throws Exception {
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-    String today = sdf.format(new Date());
-    String todayUrl = String.format(REQUEST_URL, today);
-    String tomorrow = sdf.format(new Date(System.currentTimeMillis() + 86400000));
-    String tomorrowUrl = String.format(REQUEST_URL, tomorrow);
-
     List<Integer> matchIDs = new ArrayList<>();
-    matchIDs.addAll(request(todayUrl));
-    matchIDs.addAll(request(tomorrowUrl));
-    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000)))));
-    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000 * 2)))));
-    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000 * 3)))));
-    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000 * 4)))));
-    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000 * 5)))));
-    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000 * 6)))));
-    matchIDs.addAll(request(String.format(REQUEST_URL, sdf.format(new Date(System.currentTimeMillis() - 86400000 * 7)))));
+    for (int i = -14; i <= 1; i++) { // 过去到未来
+      matchIDs.addAll(request(String.format(REQUEST_URL,
+          sdf.format(new Date(System.currentTimeMillis() + 86400000 * i)))));
+    }
 
     return matchIDs;
   }
