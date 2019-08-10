@@ -17,9 +17,9 @@ public class ConsoleConsumer implements EstimationConsumer {
   }
 
   private void display(Map<String, Object> match, Model model, Estimation est) {
-    if (est.mProbability < model.bestThreshold()) { // 只展示高概率比赛
-      return;
-    }
+//    if (est.mProbability < model.bestThreshold()) { // 只展示高概率比赛
+//      return;
+//    }
     String hostName = (String) match.get(HOST_NAME);
     String customName = (String) match.get(CUSTOM_NAME);
     String league = (String) match.get(LEAGUE);

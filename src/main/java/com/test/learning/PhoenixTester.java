@@ -19,8 +19,8 @@ public class PhoenixTester {
   private static final float[] THRESHOLDS = new float[] {
       // 0.50f};
       // 0.35f, 0.4f, 0.45f, 0.5f};
-      0.6f, 0.62f, 0.64f, 0.66f, 0.68f};
-  // 0.70f, 0.72f, 0.73f, 0.74f, 0.75f, 0.76f, 0.77f, 0.78f, 0.79f, 0.8f}; //
+      // 0.6f, 0.62f, 0.64f, 0.66f, 0.68f};
+      0.70f, 0.71f, 0.72f, 0.73f, 0.74f, 0.75f, 0.76f, 0.77f, 0.78f, 0.79f, 0.8f}; //
 
   public static void runTest(Model model) throws Exception {
     final List<Map<String, Object>> matches = QueryHelper.doQuery(model.querySql(SQL_ST), 1000000);

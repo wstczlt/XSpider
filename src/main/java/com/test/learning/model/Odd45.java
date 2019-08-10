@@ -37,7 +37,7 @@ public class Odd45 extends Model {
 
   @Override
   public float bestThreshold() {
-    return 0.74f; // 最优
+    return 0.73f; // 最优
   }
 
   @Override

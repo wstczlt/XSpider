@@ -12,14 +12,14 @@ import java.util.Map;
 
 import com.test.entity.Estimation;
 import com.test.entity.Model;
-import com.test.learning.model.Odd;
+import com.test.learning.model.Odd45;
 import com.test.tools.Utils;
 
 public class Phoenix {
 
   public static void main(String[] args) throws Exception {
     System.out.println("模型测试: OddModel[45]");
-    PhoenixTester.runTest(new Odd());
+    PhoenixTester.runTest(new Odd45());
     // System.out.println("模型测试: BallModel[73]");
     // PhoenixTester.runTest(new BallModel(73));
     //
