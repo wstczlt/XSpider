@@ -15,14 +15,14 @@ public class Estimation {
   public final float mProb1; // 1的概率
   public final float mProb2; // 2的概率
 
-  public Estimation(Model model, Map<String, Object> match, float value, float probability,
+  public Estimation(Model model, Map<String, Object> match, float value,
       float prob0, float prob1, float prob2) {
     mModel = model;
     mMatch = match;
     mValue = value;
-    mProbability = probability;
     mProb0 = prob0;
     mProb1 = prob1;
     mProb2 = prob2;
+    mProbability = Math.abs(prob0 - prob2);
   }
 }

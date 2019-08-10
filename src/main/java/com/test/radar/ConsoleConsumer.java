@@ -16,19 +16,14 @@ public class ConsoleConsumer implements Consumer<Estimation>, Keys {
 
   private static final Map<String, String> DISPLAY = new HashMap<>();
   static {
-    DISPLAY.put("<0.70", "不建议购买");
-    DISPLAY.put("0.70", "胜率=33%，走率=39%，败率=27%, 盈利率=0%");
-    DISPLAY.put("0.71", "胜率=34%，走率=39%，败率=26%，盈利率=1%");
-    DISPLAY.put("0.72", "胜率=34%，走率=39%，败率=26%，盈利率=2%");
-    DISPLAY.put("0.73", "胜率=35%，走率=39%，败率=25%，盈利率=4%");
-    DISPLAY.put("0.74", "胜率=36%，走率=39%，败率=24%，盈利率=5%");
-    DISPLAY.put("0.75", "胜率=39%，走率=37%，败率=23%，盈利率=9%");
-    DISPLAY.put("0.76", "胜率=42%，走率=36%，败率=21%，盈利率=14%");
-    DISPLAY.put("0.77", "胜率=46%，走率=33%，败率=19%，盈利率=19%");
-    DISPLAY.put("0.78", "胜率=50%，走率=32%，败率=16%，盈利率=26%");
-    DISPLAY.put("0.79", "胜率=54%，走率=30%，败率=14%，盈利率=31%");
-    DISPLAY.put("0.80", "胜率=56%，走率=29%，败率=14%，盈利率=33%");
-    DISPLAY.put(">0.80", "胜率=56%+，走率=29%+，败率=14%+，盈利率=33%+");
+    DISPLAY.put("<0.25", "不建议购买");
+    DISPLAY.put("0.25", "胜率=65%，走率=23%，败率=10%，盈利率=46%");
+    DISPLAY.put("0.26", "胜率=66%，走率=21%，败率=11%，盈利率=48%");
+    DISPLAY.put("0.27", "胜率=67%，走率=22%，败率=9%，盈利率=50%");
+    DISPLAY.put("0.28", "胜率=69%，走率=21%，败率=8%，盈利率=52%");
+    DISPLAY.put("0.29", "胜率=69%，走率=21%，败率=9%，盈利率=52%");
+    DISPLAY.put("0.30", "胜率=68%，走率=23%，败率=7% 盈利率=51%");
+    DISPLAY.put(">0.30", "稳胆必须买!");
   }
 
   @Override
@@ -57,9 +52,10 @@ public class ConsoleConsumer implements Consumer<Estimation>, Keys {
 
     System.out
         .println(String.format("[%s], 日期: %s, 状态: %s", matchID, matchTimeStr, matchStatusStr));
-    String display = est.mProbability < 0.7
-        ? "<0.70"
-        : (est.mProbability > 0.8 ? ">0.80" : String.format("%.2f", est.mProbability));
+    final float probDis = Math.abs(est.mProb0 - est.mProb2);
+    String display = probDis < 0.25
+        ? "<0.25"
+        : (probDis > 0.3 ? ">0.30" : String.format("%.2f", probDis));
     System.out.println(
         String.format("预测概率:  %.2f，历史数据参考: %s", est.mProbability, DISPLAY.get(display)));
     System.out.println(

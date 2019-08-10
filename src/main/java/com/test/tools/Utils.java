@@ -59,7 +59,8 @@ public class Utils {
     return output;
   }
 
-  public static List<Estimation> readResult(String result, Model model, List<Map<String, Object>> matches) {
+  public static List<Estimation> readResult(String result, Model model,
+      List<Map<String, Object>> matches) {
     final List<Estimation> estimations = new ArrayList<>();
     final String[] lines = result.replace("\r", "").split("\n");
     for (int i = 0; i < lines.length; i++) {
@@ -77,12 +78,10 @@ public class Utils {
       float prob2 = valueOfFloat(arr[2]);
       if (prob0 > prob2) {
         est = new Estimation(model, matches.get(i),
-            0, prob0 + prob1,
-            prob0, prob1, prob2);
+            0, prob0, prob1, prob2);
       } else {
         est = new Estimation(model, matches.get(i),
-            2, prob2 + prob1,
-            prob0, prob1, prob2);
+            2, prob0, prob1, prob2);
       }
       estimations.add(est);
     }

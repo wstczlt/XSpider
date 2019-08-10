@@ -42,11 +42,6 @@ public class Odd45 extends Model {
   }
 
   @Override
-  public float bestThreshold() {
-    return 0.76f; // 最优
-  }
-
-  @Override
   public String querySql(String andSql) {
     Set<String> keys = new HashSet<>();
     keys.addAll(xKeys());

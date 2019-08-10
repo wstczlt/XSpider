@@ -32,13 +32,6 @@ public abstract class Model implements Keys {
   public abstract String querySql(String andSql);
 
   /**
-   * 优选高概率的结果.
-   */
-  public float bestThreshold() { // 大于等于此概率, 才会选择这场比赛
-    return 0.50f;
-  }
-
-  /**
    * 计算盈利.
    */
   public abstract float calGain(Map<String, Object> attrs, Estimation est);
