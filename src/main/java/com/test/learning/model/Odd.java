@@ -20,13 +20,13 @@ import com.test.entity.Model;
 /**
  * 指定时刻让球胜平负.
  */
-public class Odd45 extends Model {
+public class Odd extends Model {
 
   private final int mTimeMin;
   private final String mPrefix;
 
-  public Odd45() {
-    mTimeMin = 45;
+  public Odd() {
+    mTimeMin = -1;
     mPrefix = "min" + mTimeMin;
   }
 
@@ -48,23 +48,7 @@ public class Odd45 extends Model {
     final String selectSql =
         "select " + StringUtils.join(keys, ", ") + " from football where 1=1 ";
 
-    final String oddSql = mTimeMin < 0
-        ? ""
-        : String.format(
-            "AND cast(timeMin as int)+5>=%d " +
-                "AND cast(%s_scoreOdd as number) in (0) " +
-                "AND cast(%s_scoreOddOfVictory as number)>1.7 " +
-                "AND cast(%s_scoreOddOfDefeat as number)>1.7 " +
-                "AND abs(cast(%s_hostScore as int) - cast(%s_customScore as int)) <=1 ",
-            // "AND abs(cast(%s_hostDanger as int) - cast(%s_customDanger as int)) >=10 " +
-            // "AND abs(cast(%s_hostBestShoot as int) - cast(%s_customBestShoot as int)) >=0 ",
-            mTimeMin,
-            mPrefix,
-            mPrefix,
-            mPrefix,
-            mPrefix,
-            mPrefix);
-
+    final String oddSql = "";
     return selectSql
         + SQL_AND
         + andSql

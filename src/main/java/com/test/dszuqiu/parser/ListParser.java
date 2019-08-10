@@ -30,6 +30,9 @@ public class ListParser {
     }
     JSONArray races = json.getJSONArray("races");
     if (races == null || races.isEmpty()) {
+      races =  json.getJSONArray("rs");
+    }
+    if (races == null || races.isEmpty()) {
       return Collections.emptyList();
     }
     final List<Integer> matchIDs = new ArrayList<>();

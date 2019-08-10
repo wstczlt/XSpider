@@ -78,9 +78,11 @@ public class RaceParser implements Keys {
     mItems.put(CUSTOM_XIAO_RATE, guest.getString("xiao_rate"));
 
 
+
     // 场上实时数据
-    JSONObject race_data = json.getJSONObject("race_data");
-    if (race_data != null && !race_data.keySet().isEmpty()) {
+    Object obj = json.get("race_data");
+    if (obj instanceof JSONObject && !((JSONObject) obj).keySet().isEmpty()) {
+      JSONObject race_data = (JSONObject) obj;
       mItems.put(HOST_SCORE, race_data.getString("host_goal"));
       mItems.put(CUSTOM_SCORE, race_data.getString("guest_goal"));
       mItems.put(HOST_CORNER_SCORE, race_data.getString("host_corner"));
@@ -91,14 +93,13 @@ public class RaceParser implements Keys {
       mItems.put(CUSTOM_RED_CARD, race_data.getString("guest_redcard"));
     }
 
-    JSONObject race_plus =
-        (race.get("race_plus") instanceof JSONObject) ? race.getJSONObject("race_plus") : null;
-    // 外层找一下
-    if (race_plus == null || race_plus.keySet().isEmpty()) {
-      race_plus =
-          (json.get("race_plus") instanceof JSONObject) ? json.getJSONObject("race_plus") : null;
+    obj = race.get("race_plus");
+    if (!(obj instanceof JSONObject)) {
+      // 外层找一下
+      obj = json.get("race_plus");
     }
-    if (race_plus != null && !race_plus.keySet().isEmpty()) {
+    if (obj instanceof JSONObject && !((JSONObject) obj).keySet().isEmpty()) {
+      JSONObject race_plus = (JSONObject) obj;
       mItems.put(HOST_DANGER, race_plus.getString("host_danger"));
       mItems.put(CUSTOM_DANGER, race_plus.getString("guest_danger"));
       mItems.put(HOST_BEST_SHOOT, race_plus.getString("host_shotongoal"));
@@ -107,8 +108,9 @@ public class RaceParser implements Keys {
       mItems.put(CUSTOM_CONTROL_RATE, race_plus.getString("guest_qiuquan"));
     }
 
-    JSONObject race_half = race.getJSONObject("race_half");
-    if (race_half != null && !race_half.keySet().isEmpty()) {
+    obj = race.get("race_half");
+    if (obj instanceof JSONObject && !((JSONObject) obj).keySet().isEmpty()) {
+      JSONObject race_half = (JSONObject) obj;
       mItems.put(MIDDLE_HOST_SCORE, race_half.getString("host_goal"));
       mItems.put(MIDDLE_CUSTOM_SCORE, race_half.getString("guest_goal"));
       mItems.put(MIDDLE_HOST_CORNER_SCORE, race_half.getString("host_corner"));
@@ -119,8 +121,9 @@ public class RaceParser implements Keys {
       mItems.put(MIDDLE_CUSTOM_RED_CARD, race_half.getString("guest_redcard"));
     }
 
-    JSONObject race_start_first = race.getJSONObject("race_start_first");
-    if (race_start_first != null && !race_start_first.keySet().isEmpty()) {
+    obj = race.get("race_start_first");
+    if (obj instanceof JSONObject && !((JSONObject) obj).keySet().isEmpty()) {
+      JSONObject race_start_first = (JSONObject) obj;
       mItems.put(ORIGINAL_VICTORY_ODD, race_start_first.getString("host_sp"));
       mItems.put(ORIGINAL_DREW_ODD, race_start_first.getString("tie_sp"));
       mItems.put(ORIGINAL_DEFEAT_ODD, race_start_first.getString("guest_sp"));
@@ -140,8 +143,9 @@ public class RaceParser implements Keys {
     }
 
 
-    JSONObject race_start = race.getJSONObject("race_start");
-    if (race_start != null && !race_start.keySet().isEmpty()) {
+    obj = race.get("race_start");
+    if (obj instanceof JSONObject && !((JSONObject) obj).keySet().isEmpty()) {
+      JSONObject race_start = (JSONObject) obj;
       mItems.put(OPENING_VICTORY_ODD, race_start.getString("host_sp"));
       mItems.put(OPENING_DRAW_ODD, race_start.getString("tie_sp"));
       mItems.put(OPENING_DEFEAT_ODD, race_start.getString("guest_sp"));

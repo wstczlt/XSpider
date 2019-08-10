@@ -24,6 +24,7 @@ public abstract class HttpJob implements Keys {
   }
 
   public void onFailed(Throwable t) {
+    t.printStackTrace();
     Config.LOGGER.log(String.format("[%s], matchID=%d, Failed: %s",
         getClass().getSimpleName(),
         mMatchID,

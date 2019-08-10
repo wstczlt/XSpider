@@ -1,6 +1,5 @@
 package com.test.http;
 
-import static com.test.Config.MAX_THREAD_COUNT;
 import static com.test.tools.Utils.isSkip;
 import static com.test.tools.Utils.setSkip;
 
@@ -30,11 +29,11 @@ public class HttpEngine {
   private final ExecutorService mPool;
   private final ThreadLocal<OkHttpClient> mClientThreadLocal;
 
-  public HttpEngine(List<List<HttpJob>> jobs, HttpPipeline pipeline) {
+  public HttpEngine(List<List<HttpJob>> jobs, HttpPipeline pipeline, int threadCount) {
     mJobs = jobs;
     mProcessor = pipeline;
     mClientThreadLocal = new ThreadLocal<>();
-    mPool = Executors.newFixedThreadPool(MAX_THREAD_COUNT);
+    mPool = Executors.newFixedThreadPool(threadCount);
   }
 
   public final void start() throws Exception {
