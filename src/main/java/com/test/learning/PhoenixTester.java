@@ -20,10 +20,10 @@ public class PhoenixTester {
       // 0.50f};
       // 0.35f, 0.4f, 0.45f, 0.5f};
       // 0.5f, 0.55f, 0.60f, 0.65f};
-      0.70f, 0.75f, 0.78f, 0.8f}; //
+      0.70f, 0.72f, 0.73f, 0.74f, 0.75f, 0.76f, 0.77f, 0.78f, 0.79f, 0.8f}; //
 
   public static void runTest(Model model) throws Exception {
-    final List<Map<String, Object>> matches = QueryHelper.doQuery(model.querySql(SQL_ST), 50000);
+    final List<Map<String, Object>> matches = QueryHelper.doQuery(model.querySql(SQL_ST), 10000);
     for (float threshold : THRESHOLDS) {
       trainAndTest(model, threshold, matches);
       Thread.sleep(1000); // 等待资源释放
@@ -32,8 +32,8 @@ public class PhoenixTester {
 
   private static void trainAndTest(Model model, float threshold, List<Map<String, Object>> matches)
       throws Exception {
+
     final List<Pair<EstScore, EstScore>> lr = new ArrayList<>();
-    final List<Pair<EstScore, EstScore>> metric = new ArrayList<>();
     for (int i = 0; i < TOTAL_ROUND; i++) {
       Collections.shuffle(matches);
       int testSetCount = (int) (matches.size() * 0.25);
@@ -45,16 +45,25 @@ public class PhoenixTester {
       Phoenix.runTrain(model, trainMatches);
       // 测试
       lr.add(score(model, testMatches, Phoenix.runEst(model, testMatches), threshold));
-
-      // // 训练
-      // Phoenix.runTrainMetric(model, trainMatches);
-      // // 展示结果
-      // metric.add(score(model, testMatches, Phoenix.runEstMetric(model, testMatches), threshold));
     }
 
-    System.out.println("拟合算法结果:");
+    System.out.println("拟合算法结果: 概率>=" + threshold);
     display(model, threshold, lr);
-    // System.out.println("分类算法结果:");
+
+
+    // final List<Pair<EstScore, EstScore>> metric = new ArrayList<>();
+    // for (int i = 0; i < TOTAL_ROUND; i++) {
+    // Collections.shuffle(matches);
+    // int testSetCount = (int) (matches.size() * 0.25);
+    // List<Map<String, Object>> trainMatches = matches.subList(0, matches.size() - testSetCount);
+    // List<Map<String, Object>> testMatches =
+    // matches.subList(matches.size() - testSetCount, matches.size());
+    // // 训练
+    // Phoenix.runTrainMetric(model, trainMatches);
+    // // 展示结果
+    // metric.add(score(model, testMatches, Phoenix.runEstMetric(model, testMatches), threshold));
+    // }
+    // System.out.println("分类算法结果: 概率>=" + threshold);
     // display(model, threshold, metric);
   }
 
@@ -190,12 +199,10 @@ public class PhoenixTester {
             positiveHitCountOfHigh / totalRound, profitOfHigh / totalRound,
             highContinueHitCount / totalRound, highContinueMissCount / totalRound);
 
-    System.out.println("Test For threshold = " + threshold);
     System.out.println(String.format(
-        "Model=%s, 随机场次=%.2f, 命中次数=%.2f, 命中主队次数=%.2f，胜率=%d%%，走率=%d%%，败率=%d%%，最多连红=%.2f, 最多连黑=%.2f, 盈利=%.2f, 盈利率=%d%%",
+        "Model=%s, 随机场次=%.2f, 筛选比例=%d%%, 胜率=%d%%，走率=%d%%，败率=%d%%，最多连红=%.2f, 最多连黑=%.2f, 盈利=%.2f, 盈利率=%d%%",
         model.name(), normalResult.mTotalCount,
-        normalResult.mHitCount,
-        normalResult.mPositiveHitCount,
+        100,
         (int) (normalResult.mHitCount * 100 / normalResult.mTotalCount),
         (int) (normalResult.mDrewCount * 100 / normalResult.mTotalCount),
         (int) ((normalResult.mTotalCount - normalResult.mHitCount - normalResult.mDrewCount) * 100
@@ -203,14 +210,13 @@ public class PhoenixTester {
         normalResult.mMaxContinueHitCount,
         normalResult.mMaxContinueMissCount,
         normalResult.mProfit,
-        (int) (normalResult.mProfit * 100 / (normalResult.mTotalCount - normalResult.mDrewCount))));
+        (int) (normalResult.mProfit * 100 / (normalResult.mTotalCount))));
 
     System.out
         .println(String.format(
-            "Model=%s, 筛选场次=%.2f, 命中次数=%.2f, 命中主队次数=%.2f，胜率=%d%%，走率=%d%%，败率=%d%%，最多连红=%.2f, 最多连黑=%.2f, 盈利=%.2f, 盈利率=%d%%",
+            "Model=%s, 筛选场次=%.2f, 筛选比例=%d%%，胜率=%d%%，走率=%d%%，败率=%d%%，最多连红=%.2f, 最多连黑=%.2f, 盈利=%.2f, 盈利率=%d%%",
             model.name(), highProbResult.mTotalCount,
-            highProbResult.mHitCount,
-            highProbResult.mPositiveHitCount,
+            (int) (highProbResult.mTotalCount * 100 / normalResult.mTotalCount),
             (int) (highProbResult.mHitCount * 100 / highProbResult.mTotalCount),
             (int) (highProbResult.mDrewCount * 100 / highProbResult.mTotalCount),
             (int) ((highProbResult.mTotalCount - highProbResult.mHitCount
@@ -218,8 +224,7 @@ public class PhoenixTester {
             highProbResult.mMaxContinueHitCount,
             highProbResult.mMaxContinueMissCount,
             highProbResult.mProfit,
-            (int) (highProbResult.mProfit * 100
-                / (highProbResult.mTotalCount - highProbResult.mDrewCount))));
+            (int) (highProbResult.mProfit * 100 / (highProbResult.mTotalCount))));
 
     System.out.println();
     System.out.println();
