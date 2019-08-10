@@ -15,12 +15,12 @@ import com.test.tools.Pair;
 
 public class PhoenixTester {
 
-  private static final int TOTAL_ROUND = 3;// 测试轮数
+  private static final int TOTAL_ROUND = 2;// 测试轮数
   private static final float[] THRESHOLDS = new float[] {
       // 0.50f};
-      // 0.35f, 0.4f, 0.45f, 0.5f};
+       0.05f, 0.1f, 0.15f, 0.2f};
       // 0.6f, 0.62f, 0.64f, 0.66f, 0.68f};
-      0.70f, 0.71f, 0.72f, 0.73f, 0.74f, 0.75f, 0.76f, 0.77f, 0.78f, 0.79f, 0.8f}; //
+//      0.70f, 0.71f, 0.72f, 0.73f, 0.74f, 0.75f, 0.76f, 0.77f, 0.78f, 0.79f, 0.8f}; //
 
   public static void runTest(Model model) throws Exception {
     final List<Map<String, Object>> matches = QueryHelper.doQuery(model.querySql(SQL_ST), 1000000);
@@ -82,7 +82,9 @@ public class PhoenixTester {
     for (int i = 0; i < estimations.size(); i++) {
       final Map<String, Object> match = matches.get(i);
       // 随机结果
-      final Estimation randomEst = new Estimation(new Random().nextInt(2) * 2, 0.5f);
+      final Estimation randomEst = new Estimation(model, match,
+          new Random().nextInt(2) * 2,
+          1f, 1f, 1f, 1f);
       final float randomGain = model.calGain(match, randomEst);
       final boolean isRandomHit = randomGain > 0;
       final boolean isRandomDrew = randomGain == 0;
@@ -122,7 +124,8 @@ public class PhoenixTester {
       // System.out.println(est.mValue + ", " + model.yValue(match) + ", "
       // + ((OddModel) model).deltaScore(match) + ", " + aiGain);
       // 高概率
-      if (est.mProbability >= threshold) {
+//      if (est.mProbability >= threshold) {
+      if (Math.abs(est.mProb0 - est.mProb2) >= threshold && est.mProbability > est.mProb1) {
         highProbTotalCount++;
         highProbProfit += aiGain;
         if (isAiHit) { // 实际阳性

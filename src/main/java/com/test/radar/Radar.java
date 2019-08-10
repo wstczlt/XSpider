@@ -4,13 +4,13 @@ import static com.test.Config.RADAR_THREAD_COUNT;
 import static com.test.db.QueryHelper.SQL_RT;
 import static com.test.db.QueryHelper.buildSqlIn;
 import static com.test.db.QueryHelper.doQuery;
-import static com.test.tools.Utils.valueOfLong;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 import com.test.Config;
 import com.test.Keys;
@@ -25,18 +25,19 @@ import com.test.pipeline.DbPipeline;
 
 public class Radar implements Keys {
 
-  private final Model[] mModels;
-  private final EstimationConsumer[] mConsumers;
+  private final List<Model> mModels;
+  private final List<Consumer<Estimation>> mConsumers;
 
-  public Radar(Model[] models, EstimationConsumer[] consumers) {
+  public Radar(List<Model> models, List<Consumer<Estimation>> consumers) {
     mModels = models;
     mConsumers = consumers;
   }
 
   public static void main(String[] args) throws Exception {
-    new Radar(
-        new Model[] {new Odd45()},
-        new EstimationConsumer[] {new ConsoleConsumer()}).run(1);
+    final List<Model> models = Collections.singletonList(new Odd45());
+    final List<Consumer<Estimation>> consumers = Collections.singletonList(new ConsoleConsumer());
+
+    new Radar(models, consumers).run(1);
   }
 
   public void run(int loop) throws Exception {
@@ -78,28 +79,15 @@ public class Radar implements Keys {
   }
 
   private void loopOne(Model model, List<Map<String, Object>> matches) throws Exception {
-    matches = matches.stream()
-        .sorted(
-            (o1, o2) -> (int) (valueOfLong(o2.get(MATCH_TIME)) - valueOfLong(o1.get(MATCH_TIME))))
-        .collect(Collectors.toList());
     if (matches.isEmpty()) {
       return;
     }
-    boolean trick = false;
     if (matches.size() == 1) { // 单条无法训练, 做一个trick
       matches.add(matches.get(0));
-      trick = true;
     }
 
-    List<Estimation> results = Phoenix.runEst(model, matches);
-
-    for (int i = 0; i < results.size(); i++) {
-      if (trick && i == 1) { // trick的数据不要
-        continue;
-      }
-      for (EstimationConsumer consumer : mConsumers) {
-        consumer.accept(matches.get(i), model, results.get(i));
-      }
-    }
+    Phoenix.runEst(model, matches).stream()
+        .sorted((o1, o2) -> (int) (o2.mProbability * 1000 - o1.mProbability))
+        .forEach(est -> mConsumers.forEach(consumer -> consumer.accept(est)));
   }
 }

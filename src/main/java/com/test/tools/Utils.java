@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -60,11 +59,11 @@ public class Utils {
     return output;
   }
 
-  public static List<Estimation> readResult(String result) {
+  public static List<Estimation> readResult(String result, Model model, List<Map<String, Object>> matches) {
     final List<Estimation> estimations = new ArrayList<>();
     final String[] lines = result.replace("\r", "").split("\n");
-    Arrays.stream(lines).forEach(line -> {
-      // System.out.println(line);
+    for (int i = 0; i < lines.length; i++) {
+      String line = lines[i];
       Estimation est;
       String[] arr = line.replace("[", "").replace("]", "").split("\\s+");
       if (arr.length == 2) {
@@ -73,26 +72,20 @@ public class Utils {
       if (arr.length != 3) {
         throw new RuntimeException(line);
       }
-      if (valueOfFloat(arr[0]) > valueOfFloat(arr[2])) {
-        est = new Estimation(0, valueOfFloat(arr[0]) + valueOfFloat(arr[1]));
+      float prob0 = valueOfFloat(arr[0]);
+      float prob1 = valueOfFloat(arr[1]);
+      float prob2 = valueOfFloat(arr[2]);
+      if (prob0 > prob2) {
+        est = new Estimation(model, matches.get(i),
+            0, prob0 + prob1,
+            prob0, prob1, prob2);
       } else {
-        est = new Estimation(2, valueOfFloat(arr[2]) + valueOfFloat(arr[1]));
+        est = new Estimation(model, matches.get(i),
+            2, prob2 + prob1,
+            prob0, prob1, prob2);
       }
       estimations.add(est);
-
-      // float maxProb = 0;
-      // float indexOfMax = -1;
-      // for (int i = 0; i < 3; i++) { // 0=主, 1=走，2=客
-      // float prob = valueOfFloat(arr[i]);
-      // if (prob > maxProb) {
-      // indexOfMax = i;
-      // maxProb = prob;
-      // }
-      // }
-      // // System.out.println("value=" + indexOfMax + ", prob=" + maxProb);
-      // est = new Estimation(indexOfMax, maxProb);
-      // estimations.add(est);
-    });
+    }
 
     return estimations;
   }

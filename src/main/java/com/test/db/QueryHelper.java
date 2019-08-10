@@ -14,13 +14,26 @@ import com.test.Keys;
 public class QueryHelper implements Keys {
 
   public static final String SQL_LEAGUE =
-      "and league is not null and league not like '%友谊%' and league not like '%降%' and league not like '%业余%' and league not like '%备%'  and league not like '%丙%' and league not like '%U19%'  and league not like '%2%' and league not like '%3%' and league not like '%C%'  and league not like '%D%' and league not like '%E%' ";
+      "and league is not null " +
+          "and (league like '%欧%' " +
+          "or league like '%冠%' " +
+          "or league like '%杯%' " +
+          "or league like '%超%' " +
+          "or league like '%友谊%' " +
+          "or hostLeagueRank<>'null') " +
+
+          "and league not like '%降%' " +
+          "and league not like '%业余%' " +
+          "and league not like '%沙滩%' " +
+          "and league not like '南非%' " +
+          "and league not like '土%' " +
+          "";
 
   public static final String SQL_AND =
       "AND cast(timeMin as int) >0 AND cast(timeMin as int) <= 100 " +
           "AND cast(hostScore as int) >=0 " +
           "AND cast(customScore as int) >=0 " +
-//          SQL_LEAGUE +
+          SQL_LEAGUE +
           "AND original_scoreOdd is not null " +
           "AND cast(original_scoreOddOfVictory as number) >=1.7 " +
           "AND cast(original_scoreOddOfDefeat as number) >=1.7 " +

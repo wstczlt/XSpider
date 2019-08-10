@@ -5,6 +5,7 @@ import static com.test.db.QueryHelper.SQL_ORDER;
 import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.test.entity.Estimation;
@@ -21,6 +23,10 @@ import com.test.entity.Model;
  * 指定时刻让球胜平负.
  */
 public class Odd45 extends Model {
+
+  public static void main(String[] args) throws Exception {
+    System.out.println(StringUtils.join(FileUtils.readLines(new File("cup.txt")), "\',\'"));
+  }
 
   private final int mTimeMin;
   private final String mPrefix;
@@ -37,7 +43,7 @@ public class Odd45 extends Model {
 
   @Override
   public float bestThreshold() {
-    return 0.73f; // 最优
+    return 0.76f; // 最优
   }
 
   @Override
@@ -51,11 +57,12 @@ public class Odd45 extends Model {
     final String oddSql = mTimeMin < 0
         ? ""
         : String.format(
-            "AND cast(timeMin as int)+5>=%d " +
+            "AND cast(timeMin as int)>=%d " +
                 "AND cast(%s_scoreOdd as number) in (0) " +
                 "AND cast(%s_scoreOddOfVictory as number)>1.7 " +
                 "AND cast(%s_scoreOddOfDefeat as number)>1.7 " +
                 "AND abs(cast(%s_hostScore as int) - cast(%s_customScore as int)) <=1 ",
+
             // "AND abs(cast(%s_hostDanger as int) - cast(%s_customDanger as int)) >=10 " +
             // "AND abs(cast(%s_hostBestShoot as int) - cast(%s_customBestShoot as int)) >=0 ",
             mTimeMin,
@@ -89,14 +96,6 @@ public class Odd45 extends Model {
     keys.add(ORIGINAL_BIG_ODD);
     keys.add(ORIGINAL_BIG_ODD_OF_VICTORY);
     keys.add(ORIGINAL_BIG_ODD_OF_DEFEAT);
-
-    keys.add(HISTORY_VICTORY_RATE_OF_HOST);
-    keys.add(RECENT_VICTORY_RATE_OF_HOST);
-    keys.add(RECENT_VICTORY_RATE_OF_CUSTOM);
-    keys.add(RECENT_GOAL_OF_HOST);
-    keys.add(RECENT_GOAL_OF_CUSTOM);
-    keys.add(RECENT_LOSS_OF_HOST);
-    keys.add(RECENT_LOSS_OF_CUSTOM);
 
     for (int i = 0; i <= mTimeMin; i++) {
       if (i != 0 && i != mTimeMin) {

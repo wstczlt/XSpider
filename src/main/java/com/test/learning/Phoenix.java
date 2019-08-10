@@ -45,7 +45,7 @@ public class Phoenix {
     String output =
         exec("python training/test.py " + nameOfTestX(model) + " " + nameOfModel(model));
 
-    return Utils.readResult(output);
+    return Utils.readResult(output, model, testMatches);
   }
 
   public static void runTrainMetric(Model model, List<Map<String, Object>> trainMatches)
@@ -66,6 +66,6 @@ public class Phoenix {
     String output =
         exec("python training/test.metric.py " + nameOfTestX(model) + " " + nameOfModel(model));
 
-    return Utils.readResult(output);
+    return Utils.readResult(output, model, testMatches);
   }
 }
