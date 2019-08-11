@@ -89,12 +89,16 @@ public class DbPipeline implements HttpPipeline {
       QueryRunner runner = new QueryRunner(mDbHelper.open());
       Map<String, Object> resultMap =
           runner.query("select matchID from football where matchID=" + matchID, new MapHandler());
+
+      String updateSql;
       if (resultMap != null && resultMap.size() > 0) {// 做update
-        runner.update(buildUpdateSQL(matchID, items));
+        updateSql = buildUpdateSQL(matchID, items);
       } else { // 做insert
-        runner.update(buildInsertSQL(matchID, items));
+        updateSql = buildInsertSQL(matchID, items);
       }
 
+      runner.update(updateSql);
+//      System.out.println(updateSql);
       final float victoryOdd = Utils.valueOfFloat(items.get(ORIGINAL_VICTORY_ODD));
       int cnt = mValueCount.getAndIncrement();
       Config.LOGGER.log(

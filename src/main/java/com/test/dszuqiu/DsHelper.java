@@ -6,8 +6,10 @@ import static com.test.tools.Utils.valueOfInt;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -54,7 +56,19 @@ public class DsHelper {
       // 写入Database
       if (!isSkip(items)) {
         pipeline.process(items);
+        // sKeys.addAll(items.keySet());
+        // sInt++;
+        //
+        // if (sInt >= 1000) {
+        // sKeys.stream().distinct().sorted()
+        // .filter(s -> !s.equalsIgnoreCase("matchID"))
+        // .forEach(System.out::println);
+        // return;
+        // }
       }
     }
   }
+
+  private static Set<String> sKeys = new HashSet<>();
+  private static int sInt = 0;
 }
