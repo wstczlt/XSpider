@@ -15,9 +15,9 @@ import com.test.tools.Pair;
 
 public class PhoenixTester {
 
-  private static final int TOTAL_ROUND = 3;// 测试轮数
+  private static final int TOTAL_ROUND = 10;// 测试轮数
   private static final float[] THRESHOLDS = new float[] {
-      0.05f, 0.07f, 0.1f, 0.15f, 0.2f};
+      0.03f, 0.04f, 0.05f, 0.06f, 0.07f, 0.08f, 0.1f};
   // 0.05f, 0.06f, 0.07f, 0.08f, 0.09f,
   // 0.1f, 0.11f, 0.12f, 0.13f, 0.14f,
   // 0.15f, 0.16f, 0.17f, 0.18f, 0.19f,

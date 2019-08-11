@@ -55,16 +55,16 @@ public class DsHelper {
 
       // 写入Database
       if (!isSkip(items)) {
-        pipeline.process(items);
-        // sKeys.addAll(items.keySet());
-        // sInt++;
-        //
-        // if (sInt >= 1000) {
-        // sKeys.stream().distinct().sorted()
-        // .filter(s -> !s.equalsIgnoreCase("matchID"))
-        // .forEach(System.out::println);
-        // return;
-        // }
+//        pipeline.process(items);
+         sKeys.addAll(items.keySet());
+         sInt++;
+
+         if (sInt >= 1000) {
+         sKeys.stream().distinct().sorted()
+         .filter(s -> !s.equalsIgnoreCase("matchID"))
+         .forEach(s -> System.out.print(s + ","));
+         return;
+         }
       }
     }
   }
