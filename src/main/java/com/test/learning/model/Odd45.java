@@ -30,10 +30,12 @@ public class Odd45 extends Model {
 
   private final int mTimeMin;
   private final String mPrefix;
+  private final String mPrefixX;
 
   public Odd45() {
     mTimeMin = 45;
     mPrefix = "min" + mTimeMin;
+    mPrefixX = "min" + (mTimeMin + 5);
   }
 
   @Override
@@ -56,6 +58,8 @@ public class Odd45 extends Model {
                 "AND cast(%s_scoreOdd as number) in (0) " +
                 "AND cast(%s_scoreOddOfVictory as number)>1.7 " +
                 "AND cast(%s_scoreOddOfDefeat as number)>1.7 " +
+                "AND cast(%s_hostScore as int)=cast(%s_hostScore as int)  " +
+                "AND cast(%s_customScore as int)=cast(%s_customScore as int)  " +
                 "AND abs(cast(%s_hostScore as int) - cast(%s_customScore as int)) <=1 ",
 
             // "AND abs(cast(%s_hostDanger as int) - cast(%s_customDanger as int)) >=10 " +
@@ -64,6 +68,7 @@ public class Odd45 extends Model {
             mPrefix,
             mPrefix,
             mPrefix,
+            mPrefix, mPrefixX, mPrefix, mPrefixX,
             mPrefix,
             mPrefix);
 

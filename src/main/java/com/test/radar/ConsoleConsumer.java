@@ -16,7 +16,8 @@ public class ConsoleConsumer implements Consumer<Estimation>, Keys {
 
   private static final Map<String, String> DISPLAY = new HashMap<>();
   static {
-    DISPLAY.put("<0.25", "不建议购买");
+    DISPLAY.put("<0.24", "不建议购买");
+    DISPLAY.put("0.24", "胜率=65%，走率=22%，败率=11%，盈利率=45%");
     DISPLAY.put("0.25", "胜率=65%，走率=23%，败率=10%，盈利率=46%");
     DISPLAY.put("0.26", "胜率=66%，走率=21%，败率=11%，盈利率=48%");
     DISPLAY.put("0.27", "胜率=67%，走率=22%，败率=9%，盈利率=50%");
@@ -53,8 +54,8 @@ public class ConsoleConsumer implements Consumer<Estimation>, Keys {
     System.out
         .println(String.format("[%s], 日期: %s, 状态: %s", matchID, matchTimeStr, matchStatusStr));
     final float probDis = Math.abs(est.mProb0 - est.mProb2);
-    String display = probDis < 0.25
-        ? "<0.25"
+    String display = probDis < 0.24
+        ? "<0.24"
         : (probDis > 0.3 ? ">0.30" : String.format("%.2f", probDis));
     System.out.println(
         String.format("预测概率:  %.2f，历史数据参考: %s", est.mProbability, DISPLAY.get(display)));

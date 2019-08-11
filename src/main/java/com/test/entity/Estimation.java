@@ -24,5 +24,6 @@ public class Estimation {
     mProb1 = prob1;
     mProb2 = prob2;
     mProbability = Math.abs(prob0 - prob2);
+    // mProbability = prob0 > prob2 ? (prob0 + prob1) : (prob2 + prob1);
   }
 }
