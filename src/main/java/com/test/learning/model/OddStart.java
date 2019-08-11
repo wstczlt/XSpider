@@ -22,20 +22,21 @@ import com.test.entity.Model;
  */
 public class OddStart extends Model {
 
-  // 1=Macauslot(澳门), 8=bet365, 22=10bet, 24=12bet, 3=Crown, 12=Easybets, 9=William Hill
-  private static final int[] CIDS =
-      new int[] {8, 12, 22};
+  // 1=Macauslot(澳门), 3=Crown, 7=ManbetX， 8=bet365, 12=Easybets, 22=10bet, 24=12bet, 9=William Hill
+  private static final int[] CIDS = new int[] {7, 8, 12};
   // new int[] {1, 8, 9, 22, 12};
 
-  private final float mScoreOdd;
+  private final float[] mScoreOdds;
+  private final String mInSql;
 
-  public OddStart(float scoreOdd) {
-    mScoreOdd = scoreOdd;
+  public OddStart(float... scoreOdds) {
+    mScoreOdds = scoreOdds;
+    mInSql = "(" + StringUtils.join(mScoreOdds, ',') + ")";
   }
 
   @Override
   public String name() {
-    return "odd-chu";
+    return "odd-chu" + mInSql;
   }
 
   @Override
@@ -47,7 +48,7 @@ public class OddStart extends Model {
         "select " + StringUtils.join(keys, ", ") + " from football where 1=1 ";
 
     final String oddSql = buildAndSql() +
-        "and cast(original_scoreOdd as number)=" + mScoreOdd + " " +
+        "and cast(original_scoreOdd as number) in " + mInSql + " " +
         "and 1=1 ";
     return selectSql
         + SQL_AND
@@ -73,9 +74,9 @@ public class OddStart extends Model {
   private List<String> xKeys() {
     List<String> keys = new ArrayList<>();
     for (int cID : CIDS) {
-      // keys.add("start_" + cID + "_drewOdd");
+      keys.add("start_" + cID + "_drewOdd");
       keys.add("start_" + cID + "_victoryOdd");
-      // keys.add("start_" + cID + "_defeatOdd");
+      keys.add("start_" + cID + "_defeatOdd");
       keys.add("start_" + cID + "_scoreOdd");
       // keys.add("start_" + cID + "_bigOdd");
       // keys.add("start_" + cID + "_bigOddOfVictory");

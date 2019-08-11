@@ -1,5 +1,13 @@
 package com.test.learning;
 
+import static com.test.Keys.CUSTOM_SCORE;
+import static com.test.Keys.HOST_SCORE;
+import static com.test.Keys.MATCH_ID;
+import static com.test.Keys.OPENING_SCORE_ODD;
+import static com.test.Keys.OPENING_SCORE_ODD_OF_VICTORY;
+import static com.test.Keys.ORIGINAL_SCORE_ODD;
+import static com.test.Keys.ORIGINAL_SCORE_ODD_OF_VICTORY;
+import static com.test.Keys.ORIGINAL_VICTORY_ODD;
 import static com.test.db.QueryHelper.SQL_ST;
 
 import java.util.ArrayList;
@@ -15,11 +23,12 @@ import com.test.tools.Pair;
 
 public class PhoenixTester {
 
-  private static final int TOTAL_ROUND = 10;// 测试轮数
+  private static final int TOTAL_ROUND = 1;// 测试轮数
   private static final float[] THRESHOLDS = new float[] {
       // 0.03f, 0.04f, 0.05f, 0.06f, 0.07f, 0.08f, 0.1f};
       // 0.12f, 0.14f, 0.16f, 0.18f};
-      0.2f, 0.22f, 0.24f, 0.25f, 0.26f, 0.28f, 0.3f};
+      // 0.2f, 0.22f, 0.24f, 0.25f, 0.26f, 0.28f, 0.3f};
+      0.30f};
   // 0.05f, 0.06f, 0.07f, 0.08f, 0.09f,
   // 0.1f, 0.11f, 0.12f, 0.13f, 0.14f,
   // 0.15f, 0.16f, 0.17f, 0.18f, 0.19f,
@@ -56,22 +65,6 @@ public class PhoenixTester {
 
     System.out.println("拟合算法结果: 概率>=" + threshold);
     display(model, threshold, lr);
-
-
-    // final List<Pair<EstScore, EstScore>> metric = new ArrayList<>();
-    // for (int i = 0; i < TOTAL_ROUND; i++) {
-    // Collections.shuffle(matches);
-    // int testSetCount = (int) (matches.size() * 0.25);
-    // List<Map<String, Object>> trainMatches = matches.subList(0, matches.size() - testSetCount);
-    // List<Map<String, Object>> testMatches =
-    // matches.subList(matches.size() - testSetCount, matches.size());
-    // // 训练
-    // Phoenix.runTrainMetric(model, trainMatches);
-    // // 展示结果
-    // metric.add(score(model, testMatches, Phoenix.runEstMetric(model, testMatches), threshold));
-    // }
-    // System.out.println("分类算法结果: 概率>=" + threshold);
-    // display(model, threshold, metric);
   }
 
   private static Pair<EstScore, EstScore> score(Model model, List<Map<String, Object>> matches,
@@ -128,11 +121,21 @@ public class PhoenixTester {
       final boolean isAiHit = aiGain > 0;
       final boolean isAiDrew = aiGain == 0;
 
-      // System.out.println(est.mValue + ", " + model.yValue(match) + ", "
-      // + ((OddModel) model).deltaScore(match) + ", " + aiGain);
-      // 高概率
-      // if (est.mProbability >= threshold) {
+      // 精选高概率
       if (Math.abs(est.mProb0 - est.mProb2) >= threshold) {
+        System.out.println(String.format("[%s], [ManbetX=%s, bet365=%s, Easybets=%s], 概率[%.2f, %.2f, %.2f], 初盘=%s, 临场盘=%s, 初赔率=%s, 临赔率=%s, 买入=%s, 结果=%s",
+            match.get(MATCH_ID),
+            match.get("start_7_victoryOdd"),
+            match.get("start_8_victoryOdd"),
+            match.get("start_12_victoryOdd"),
+            est.mProb0, est.mProb1, est.mProb2,
+            match.get(ORIGINAL_SCORE_ODD),
+            match.get(OPENING_SCORE_ODD),
+            match.get(ORIGINAL_SCORE_ODD_OF_VICTORY),
+            match.get(OPENING_SCORE_ODD_OF_VICTORY),
+            est.mProb0 - est.mProb2 > 0 ? "主" : "客",
+            ("(" + match.get(HOST_SCORE) + "-" + match.get(CUSTOM_SCORE) + ")")
+                + (isAiHit ? "红" : (isAiDrew ? "走" : "黑"))));
         highProbTotalCount++;
         highProbProfit += aiGain;
         if (isAiHit) { // 实际阳性
