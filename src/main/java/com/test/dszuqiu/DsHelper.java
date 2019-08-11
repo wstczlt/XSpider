@@ -41,6 +41,7 @@ public class DsHelper {
         .filter(s -> s.endsWith(".txt"))
         .map(s -> s.replace("_odd.txt", "").replace(".txt", ""))
         .distinct()
+        // .filter(s -> valueOfInt(s) < 511531)
         .sorted((o1, o2) -> valueOfInt(o2) - valueOfInt(o1))
         .collect(Collectors.toList());
 
@@ -52,12 +53,12 @@ public class DsHelper {
       if (raceFile.isFile()) {
         String raceRawText = FileUtils.readFileToString(raceFile, "utf-8");
         JSONObject json = JSON.parseObject(raceRawText);
-        String error = RaceParser.isLegalOdd(json);
+        String error = RaceParser.isLegalRace(json);
         if (!TextUtils.isEmpty(error)) {
           setSkip(items);
           Config.LOGGER.log(
               String.format("[%s], matchID=%d, Error=%s", "RaceJob", -1, error));
-          return;
+          continue;
         }
 
         new RaceParser(raceRawText, items).doParse();
@@ -69,31 +70,31 @@ public class DsHelper {
       if (oddFile.isFile()) {
         String oddRawText = FileUtils.readFileToString(oddFile, "utf-8");
         JSONObject json = JSON.parseObject(oddRawText);
-        String error = RaceParser.isLegalRace(json);
+        String error = RaceParser.isLegalOdd(json);
         if (!TextUtils.isEmpty(error)) {
           setSkip(items);
           Config.LOGGER.log(
               String.format("[%s], matchID=%d, Error=%s", "OddJob", -1, error));
-          return;
+          continue;
         }
 
         new OddParser(oddRawText, items).doParse();
       }
 
-      
+
 
       // 写入Database
       if (!isSkip(items)) {
-        // pipeline.process(items);
-        sKeys.addAll(items.keySet());
-        sInt++;
-
-        if (sInt >= 1000) {
-          sKeys.stream().distinct().sorted()
-              .filter(s -> !s.equalsIgnoreCase("matchID"))
-              .forEach(s -> System.out.print(s + ","));
-          return;
-        }
+        pipeline.process(items);
+        // sKeys.addAll(items.keySet());
+        // sInt++;
+        //
+        // if (sInt >= 1000) {
+        // sKeys.stream().distinct().sorted()
+        // .filter(s -> !s.equalsIgnoreCase("matchID"))
+        // .forEach(s -> System.out.print(s + ","));
+        // return;
+        // }
       }
     }
   }

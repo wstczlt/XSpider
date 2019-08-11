@@ -18,9 +18,20 @@ import com.test.entity.Estimation;
 import com.test.entity.Model;
 
 /**
- * 指定时刻让球胜平负.
+ * 初盘判断(基于多个菠菜公司的初盘特点判断.).
  */
-public class Odd extends Model {
+public class OddStart extends Model {
+
+  // 1=Macauslot(澳门), 8=bet365, 22=10bet, 24=12bet, 3=Crown, 12=Easybets, 9=William Hill
+  private static final int[] CIDS =
+      new int[] {8, 12, 22};
+  // new int[] {1, 8, 9, 22, 12};
+
+  private final float mScoreOdd;
+
+  public OddStart(float scoreOdd) {
+    mScoreOdd = scoreOdd;
+  }
 
   @Override
   public String name() {
@@ -35,8 +46,9 @@ public class Odd extends Model {
     final String selectSql =
         "select " + StringUtils.join(keys, ", ") + " from football where 1=1 ";
 
-    final String oddSql = "and cast(start_8_victoryOdd as number)>0 " +
-        "and cast(start_12_victoryOdd as number)>0 ";
+    final String oddSql = buildAndSql() +
+        "and cast(original_scoreOdd as number)=" + mScoreOdd + " " +
+        "and 1=1 ";
     return selectSql
         + SQL_AND
         + andSql
@@ -44,6 +56,14 @@ public class Odd extends Model {
         + SQL_ORDER;
   }
 
+  private String buildAndSql() {
+    StringBuilder andSql = new StringBuilder(" ");
+    for (int cid : CIDS) {
+      andSql.append("and cast(start_").append(cid).append("_victoryOdd as number)>0 ");
+    }
+
+    return andSql.toString();
+  }
 
   @Override
   public List<Float> xValues(Map<String, Object> match) {
@@ -51,13 +71,14 @@ public class Odd extends Model {
   }
 
   private List<String> xKeys() {
-    // 8=bet365, 22=10bet, 24=12bet, 3=Crown, 12=Easybets, 9=William Hill,
-    int[] cIDs = new int[] {8, 22, 24, 3, 12, 9};
     List<String> keys = new ArrayList<>();
-    for (int cID : cIDs) {
-//      keys.add("start_" + cID + "_drewOdd");
+    for (int cID : CIDS) {
+      // keys.add("start_" + cID + "_drewOdd");
       keys.add("start_" + cID + "_victoryOdd");
-//      keys.add("start_" + cID + "_defeatOdd");
+      // keys.add("start_" + cID + "_defeatOdd");
+      keys.add("start_" + cID + "_scoreOdd");
+      // keys.add("start_" + cID + "_bigOdd");
+      // keys.add("start_" + cID + "_bigOddOfVictory");
     }
 
     return keys.stream().distinct().collect(Collectors.toList());
@@ -77,6 +98,9 @@ public class Odd extends Model {
     keys.add(ORIGINAL_SCORE_ODD);
     keys.add(ORIGINAL_SCORE_ODD_OF_VICTORY);
     keys.add(ORIGINAL_SCORE_ODD_OF_DEFEAT);
+    keys.add(OPENING_SCORE_ODD);
+    keys.add(OPENING_SCORE_ODD_OF_VICTORY);
+    keys.add(OPENING_SCORE_ODD_OF_DEFEAT);
 
     return keys;
   }

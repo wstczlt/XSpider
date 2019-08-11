@@ -37,6 +37,10 @@ public class QueryHelper implements Keys {
           "AND original_scoreOdd is not null " +
           "AND cast(original_scoreOddOfVictory as number) >=1.7 " +
           "AND cast(original_scoreOddOfDefeat as number) >=1.7 " +
+
+          // "AND opening_scoreOdd=original_scoreOdd " +
+
+
           "AND cast(original_victoryOdd as number) >=0 " +
           "AND cast(original_drawOdd as number) >=0 " +
           "AND cast(original_defeatOdd as number) >=0 " +

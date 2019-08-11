@@ -12,14 +12,15 @@ import java.util.Map;
 
 import com.test.entity.Estimation;
 import com.test.entity.Model;
-import com.test.learning.model.Odd;
+import com.test.learning.model.OddStart25;
 import com.test.tools.Utils;
 
 public class Phoenix {
 
   public static void main(String[] args) throws Exception {
     System.out.println("模型测试: Odd-chu");
-    PhoenixTester.runTest(new Odd());
+    PhoenixTester.runTest(new OddStart25());
+    // PhoenixTester.runTest(new OddStart(-0.25f));
     // System.out.println("模型测试: BallModel[73]");
     // PhoenixTester.runTest(new BallModel(73));
     //
