@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import com.test.Config;
 import com.test.Keys;
 import com.test.entity.Estimation;
 import com.test.entity.Model;
+import com.test.win007_deprecated.tools.SpiderUtils;
 
 public class Utils {
 
@@ -30,7 +32,7 @@ public class Utils {
     try {
       return Long.parseLong(str != null ? str.toString() : "");
     } catch (Throwable e) {
-      return -1;
+      return 999;
     }
   }
 
@@ -38,7 +40,7 @@ public class Utils {
     try {
       return Float.parseFloat(str != null ? str.toString() : "");
     } catch (Throwable e) {
-      return -1;
+      return 999;
     }
   }
 
@@ -151,19 +153,46 @@ public class Utils {
 
   public static float convertDsOdd(String oddString) {
     if (oddString == null) {
-      return -1;
+      return 999;
     }
     try {
       return Float.parseFloat(oddString);
     } catch (Exception e) {
-      String[] pair = oddString.split(",");
+      String[] pair;
+      if (oddString.contains(",")) {
+        pair = oddString.split(",");
+      } else {
+        pair = oddString.split("/");
+      }
+
       if (pair.length == 2) {
         try {
           return (Float.parseFloat(pair[0]) + Float.parseFloat(pair[1])) / 2;
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+          float ret = SpiderUtils.convertOdd(oddString);
+          if (ret != 999) {
+            return ret;
+          }
+          if (oddString.contains("/") && oddString.contains("球") && oddString.endsWith("球")) {
+            oddString = oddString.substring(0, oddString.length() - 1);
+          }
+          ret = SpiderUtils.convertOdd(oddString);
+          if (ret != 999) {
+            return ret;
+          }
+          if (oddString.contains("/") && oddString.contains("球")) {
+            oddString = oddString.replaceFirst("球", "");
+          }
+          ret = SpiderUtils.convertOdd(oddString);
+          if (ret != 999) {
+            return ret;
+          }
+          System.out.println(oddString);
+          System.out.println(Arrays.toString(pair));
+        }
       }
     }
 
-    return -1;
+    return 999;
   }
 }

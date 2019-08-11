@@ -25,11 +25,6 @@ public class RaceParser implements Keys {
 
   public void doParse() {
     final JSONObject json = JSON.parseObject(mRawText);
-    if (isLegalRace(json) != null) {
-      setSkip(mItems);
-      return;
-    }
-
     basicParser(json);
   }
 

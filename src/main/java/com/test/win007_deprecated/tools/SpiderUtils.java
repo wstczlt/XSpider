@@ -109,12 +109,12 @@ public class SpiderUtils {
 
   public static float convertOdd(String oddString) {
     Float oddNumber = ODD_STRING_TO_NUMBER.get(oddString);
-    return oddNumber != null ? oddNumber : 1f;
+    return oddNumber != null ? oddNumber : 999;
   }
 
   public static float convertBallOdd(String oddString) {
     Float oddNumber = BALL_ODD_STRING_TO_NUMBER.get(oddString);
-    return oddNumber != null ? oddNumber : 1f;
+    return oddNumber != null ? oddNumber : 999;
   }
 
 }
