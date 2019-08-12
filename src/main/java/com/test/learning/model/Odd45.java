@@ -35,7 +35,7 @@ public class Odd45 extends Model {
   public Odd45() {
     mTimeMin = 45;
     mPrefix = "min" + mTimeMin;
-    mPrefixX = "min" + (mTimeMin + 5);
+    mPrefixX = "min" + (mTimeMin + 3);
   }
 
   @Override
@@ -55,22 +55,20 @@ public class Odd45 extends Model {
         ? ""
         : String.format(
             "AND cast(timeMin as int)>=%d " +
-                "AND cast(%s_scoreOdd as number) in (0) " +
+                "AND cast(%s_scoreOdd as number) in (0,0.5,-0.5) " +
                 "AND cast(%s_scoreOddOfVictory as number)>1.7 " +
                 "AND cast(%s_scoreOddOfDefeat as number)>1.7 " +
                 "AND cast(%s_hostScore as int)=cast(%s_hostScore as int)  " +
                 "AND cast(%s_customScore as int)=cast(%s_customScore as int)  " +
-                "AND abs(cast(%s_hostScore as int) - cast(%s_customScore as int)) <=1 ",
-
-            // "AND abs(cast(%s_hostDanger as int) - cast(%s_customDanger as int)) >=10 " +
-            // "AND abs(cast(%s_hostBestShoot as int) - cast(%s_customBestShoot as int)) >=0 ",
+                // "AND abs(cast(%s_hostScore as int) - cast(%s_customScore as int)) <=1 " +
+                // "AND abs(cast(%s_hostDanger as int) - cast(%s_customDanger as int)) >=10 " +
+                // "AND abs(cast(%s_hostBestShoot as int) - cast(%s_customBestShoot as int)) >=4 " +
+                "and 1=1 ",
             mTimeMin,
             mPrefix,
             mPrefix,
             mPrefix,
-            mPrefix, mPrefixX, mPrefix, mPrefixX,
-            mPrefix,
-            mPrefix);
+            mPrefix, mPrefixX, mPrefix, mPrefixX);
 
     return selectSql
         + SQL_AND
@@ -79,23 +77,30 @@ public class Odd45 extends Model {
         + SQL_ORDER;
   }
 
-
   @Override
   public List<Float> xValues(Map<String, Object> match) {
-    return xKeys().stream().map(s -> valueOfFloat(match.get(s))).collect(Collectors.toList());
+    List<Float> values = new ArrayList<>();
+    values.add(valueOfFloat(match.get("min0_victoryOdd")));
+    values.add(valueOfFloat(match.get("min0_drewOdd")));
+    values.add(valueOfFloat(match.get("min0_defeatOdd")));
+    values.add(valueOfFloat(match.get(mPrefix + "_victoryOdd")));
+    values.add(valueOfFloat(match.get(mPrefix + "_drewOdd")));
+    values.add(valueOfFloat(match.get(mPrefix + "_defeatOdd")));
+
+    return values;
   }
 
   private List<String> xKeys() {
     List<String> keys = new ArrayList<>();
-    keys.add(ORIGINAL_SCORE_ODD);
-    keys.add(ORIGINAL_SCORE_ODD_OF_VICTORY);
-    keys.add(ORIGINAL_SCORE_ODD_OF_DEFEAT);
-    keys.add(ORIGINAL_VICTORY_ODD);
-    keys.add(ORIGINAL_DREW_ODD);
-    keys.add(ORIGINAL_DEFEAT_ODD);
-    keys.add(ORIGINAL_BIG_ODD);
-    keys.add(ORIGINAL_BIG_ODD_OF_VICTORY);
-    keys.add(ORIGINAL_BIG_ODD_OF_DEFEAT);
+    // keys.add(ORIGINAL_SCORE_ODD);
+    // keys.add(ORIGINAL_SCORE_ODD_OF_VICTORY);
+    // keys.add(ORIGINAL_SCORE_ODD_OF_DEFEAT);
+    // keys.add(ORIGINAL_VICTORY_ODD);
+    // keys.add(ORIGINAL_DREW_ODD);
+    // keys.add(ORIGINAL_DEFEAT_ODD);
+    // keys.add(ORIGINAL_BIG_ODD);
+    // keys.add(ORIGINAL_BIG_ODD_OF_VICTORY);
+    // keys.add(ORIGINAL_BIG_ODD_OF_DEFEAT);
 
     for (int i = 0; i <= mTimeMin; i++) {
       if (i != 0 && i != mTimeMin) {
@@ -105,26 +110,26 @@ public class Odd45 extends Model {
       if (i > 0) {
         keys.add("min" + i + "_" + "hostScore");
         keys.add("min" + i + "_" + "customScore");
-        keys.add("min" + i + "_" + "hostDanger");
-        keys.add("min" + i + "_" + "customDanger");
-        keys.add("min" + i + "_" + "hostBestShoot");
-        keys.add("min" + i + "_" + "customBestShoot");
+        // // keys.add("min" + i + "_" + "hostDanger");
+        // // keys.add("min" + i + "_" + "customDanger");
+        // keys.add("min" + i + "_" + "hostBestShoot");
+        // keys.add("min" + i + "_" + "customBestShoot");
       }
 
       // 亚盘
       keys.add("min" + i + "_" + "scoreOdd");
-      keys.add("min" + i + "_" + "scoreOddOfVictory");
-      keys.add("min" + i + "_" + "scoreOddOfDefeat");
-
-      // 欧盘
-      keys.add("min" + i + "_" + "victoryOdd");
-      keys.add("min" + i + "_" + "drewOdd");
-      keys.add("min" + i + "_" + "defeatOdd");
+      // // keys.add("min" + i + "_" + "scoreOddOfVictory");
+      // // keys.add("min" + i + "_" + "scoreOddOfDefeat");
+      //
+      // // 欧盘
+      // keys.add("min" + i + "_" + "victoryOdd");
+      // keys.add("min" + i + "_" + "drewOdd");
+      // keys.add("min" + i + "_" + "defeatOdd");
 
       // 大小球
-      keys.add("min" + i + "_" + "bigOdd");
-      keys.add("min" + i + "_" + "bigOddOfVictory");
-      keys.add("min" + i + "_" + "bigOddOfDefeat");
+      // keys.add("min" + i + "_" + "bigOdd");
+      // keys.add("min" + i + "_" + "bigOddOfVictory");
+      // keys.add("min" + i + "_" + "bigOddOfDefeat");
     }
 
     return keys.stream().distinct().collect(Collectors.toList());
@@ -141,11 +146,24 @@ public class Odd45 extends Model {
     keys.add(MATCH_STATUS);
     keys.add(HOST_SCORE);
     keys.add(CUSTOM_SCORE);
+    keys.add("min0_victoryOdd");
+    keys.add("min0_drewOdd");
+    keys.add("min0_defeatOdd");
     if (mTimeMin >= 0) {
       keys.add(mPrefix + "_hostScore");
       keys.add(mPrefix + "_customScore");
       keys.add(mPrefix + "_scoreOdd");
+      keys.add(mPrefix + "_scoreOddOfVictory");
+      keys.add(mPrefix + "_scoreOddOfDefeat");
+      keys.add(mPrefix + "_victoryOdd");
+      keys.add(mPrefix + "_drewOdd");
+      keys.add(mPrefix + "_defeatOdd");
+      keys.add(mPrefix + "_hostDanger");
+      keys.add(mPrefix + "_customDanger");
+      keys.add(mPrefix + "_hostBestShoot");
+      keys.add(mPrefix + "_customBestShoot");
     }
+
 
     return keys;
   }

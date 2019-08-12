@@ -1,16 +1,6 @@
 package com.test.learning;
 
-import static com.test.Keys.CUSTOM_SCORE;
-import static com.test.Keys.HOST_SCORE;
-import static com.test.Keys.MATCH_ID;
-import static com.test.Keys.OPENING_SCORE_ODD;
-import static com.test.Keys.OPENING_SCORE_ODD_OF_VICTORY;
-import static com.test.Keys.OPENING_VICTORY_ODD;
-import static com.test.Keys.ORIGINAL_SCORE_ODD;
-import static com.test.Keys.ORIGINAL_SCORE_ODD_OF_VICTORY;
-import static com.test.Keys.ORIGINAL_VICTORY_ODD;
 import static com.test.db.QueryHelper.SQL_ST;
-import static com.test.tools.Utils.valueOfFloat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +12,7 @@ import com.test.db.QueryHelper;
 import com.test.entity.Estimation;
 import com.test.entity.Model;
 import com.test.tools.Pair;
+import com.test.tools.Utils;
 
 public class PhoenixTester {
 
@@ -29,9 +20,10 @@ public class PhoenixTester {
   private static final float[] THRESHOLDS = new float[] {
       // 0.01f};
       // 0.03f, 0.04f, 0.05f, 0.06f, 0.07f, 0.08f, 0.1f};
-      // 0.08f, 0.1f, 0.12f, 0.14f, 0.16f, 0.18f};
-      0.2f, 0.22f, 0.24f, 0.25f};
-  // 0.25f};
+//       0.05f, 0.08f, 0.1f};
+       0.08f, 0.1f, 0.12f, 0.14f, 0.16f, 0.18f};
+//       0.18f, 0.2f, 0.22f, 0.24f, 0.25f};
+//      0.25f};
   // 0.05f, 0.06f, 0.07f, 0.08f, 0.09f,
   // 0.1f, 0.11f, 0.12f, 0.13f, 0.14f,
   // 0.15f, 0.16f, 0.17f, 0.18f, 0.19f,
@@ -130,22 +122,26 @@ public class PhoenixTester {
 
       // 精选高概率
       if (Math.abs(est.mProb0 - est.mProb2) >= threshold) {
-        System.out.println(String.format(
-            "[%s], [ManbetX=%s, bet365=%s, Easybets=%s], %.2f, 概率[%.2f, %.2f, %.2f], 初盘=%s, 临场盘=%s, 初赔率=%s, 临赔率=%s, 买入=%s, 结果=%s",
-            match.get(MATCH_ID),
-            match.get("start_7_victoryOdd"),
-            match.get("start_8_victoryOdd"),
-            match.get("start_12_victoryOdd"),
-            valueOfFloat(match.get(OPENING_VICTORY_ODD))
-                - valueOfFloat(match.get(ORIGINAL_VICTORY_ODD)),
-            est.mProb0, est.mProb1, est.mProb2,
-            match.get(ORIGINAL_SCORE_ODD),
-            match.get(OPENING_SCORE_ODD),
-            match.get(ORIGINAL_SCORE_ODD_OF_VICTORY),
-            match.get(OPENING_SCORE_ODD_OF_VICTORY),
-            est.mProb0 - est.mProb2 > 0 ? "主" : "客",
-            ("(" + match.get(HOST_SCORE) + "-" + match.get(CUSTOM_SCORE) + ")")
-                + (isAiHit ? "红" : (isAiDrew ? "走" : "黑"))));
+        // System.out.println(String.format(
+        // "[%s], [ManbetX=%s, bet365=%s, Easybets=%s], %.2f, 概率[%.2f, %.2f, %.2f], 初盘=%s, 临场盘=%s,
+        // 初赔率=%s, 临赔率=%s, 买入=%s, 结果=%s",
+        // match.get(MATCH_ID),
+        // match.get("start_7_victoryOdd"),
+        // match.get("start_8_victoryOdd"),
+        // match.get("start_12_victoryOdd"),
+        // valueOfFloat(match.get(OPENING_VICTORY_ODD))
+        // - valueOfFloat(match.get(ORIGINAL_VICTORY_ODD)),
+        // est.mProb0, est.mProb1, est.mProb2,
+        // match.get(ORIGINAL_SCORE_ODD),
+        // match.get(OPENING_SCORE_ODD),
+        // match.get(ORIGINAL_SCORE_ODD_OF_VICTORY),
+        // match.get(OPENING_SCORE_ODD_OF_VICTORY),
+        // est.mProb0 - est.mProb2 > 0 ? "主" : "客",
+        // ("(" + match.get(HOST_SCORE) + "-" + match.get(CUSTOM_SCORE) + ")")
+        // + (isAiHit ? "红" : (isAiDrew ? "走" : "黑"))));
+        System.out.println(String.format("best=%s, value=%.2f, %.2f， 概率[%.2f, %.2f, %.2f]",
+            Utils.valueOfInt(match.get("min45_hostBestShoot")) -  Utils.valueOfInt(match.get("min45_customBestShoot")),
+            est.mValue, aiGain, est.mProb0, est.mProb1, est.mProb2));
         highProbTotalCount++;
         highProbProfit += aiGain;
         if (isAiHit) { // 实际阳性

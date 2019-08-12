@@ -36,6 +36,7 @@ y_data = np.loadtxt(sys.argv[2]).astype(np.float32)
 reg = linear_model.LogisticRegression(solver='sag', multi_class='auto', class_weight='balanced')
 
 x_data=SimpleImputer(missing_values=999.00, strategy='mean').fit_transform(x_data)
+x_data=preprocessing.MinMaxScaler().fit_transform(x_data)
 reg.fit(x_data, y_data)
 
 joblib.dump(reg, sys.argv[3])
