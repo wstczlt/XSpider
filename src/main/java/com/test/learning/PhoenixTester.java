@@ -20,10 +20,10 @@ public class PhoenixTester {
   private static final float[] THRESHOLDS = new float[] {
       // 0.01f};
       // 0.03f, 0.04f, 0.05f, 0.06f, 0.07f, 0.08f, 0.1f};
-//       0.05f, 0.08f, 0.1f};
-       0.08f, 0.1f, 0.12f, 0.14f, 0.16f, 0.18f};
-//       0.18f, 0.2f, 0.22f, 0.24f, 0.25f};
-//      0.25f};
+      // 0.05f, 0.08f, 0.1f};
+      0.08f, 0.1f, 0.12f, 0.14f, 0.16f, 0.18f};
+  // 0.18f, 0.2f, 0.22f, 0.24f, 0.25f};
+  // 0.25f};
   // 0.05f, 0.06f, 0.07f, 0.08f, 0.09f,
   // 0.1f, 0.11f, 0.12f, 0.13f, 0.14f,
   // 0.15f, 0.16f, 0.17f, 0.18f, 0.19f,
@@ -77,9 +77,9 @@ public class PhoenixTester {
     for (int i = 0; i < estimations.size(); i++) {
       final Map<String, Object> match = matches.get(i);
       // 随机结果
-      final Estimation randomEst = new Estimation(model, match,
+      final Estimation randomEst = new Estimation(match,
           new Random().nextInt(2) * 2,
-          1f, 1f, 1f);
+          1f, 1f, 1f, 1f);
       final float randomGain = model.calGain(match, randomEst);
       final boolean isRandomHit = randomGain > 0;
       final boolean isRandomDrew = randomGain == 0;
@@ -140,7 +140,8 @@ public class PhoenixTester {
         // ("(" + match.get(HOST_SCORE) + "-" + match.get(CUSTOM_SCORE) + ")")
         // + (isAiHit ? "红" : (isAiDrew ? "走" : "黑"))));
         System.out.println(String.format("best=%s, value=%.2f, %.2f， 概率[%.2f, %.2f, %.2f]",
-            Utils.valueOfInt(match.get("min45_hostBestShoot")) -  Utils.valueOfInt(match.get("min45_customBestShoot")),
+            Utils.valueOfInt(match.get("min45_hostBestShoot"))
+                - Utils.valueOfInt(match.get("min45_customBestShoot")),
             est.mValue, aiGain, est.mProb0, est.mProb1, est.mProb2));
         highProbTotalCount++;
         highProbProfit += aiGain;

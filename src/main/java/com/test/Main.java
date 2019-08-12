@@ -1,6 +1,6 @@
 package com.test;
 
-import com.test.dszuqiu.DsHelper;
+import com.test.manual.OddRules;
 
 public class Main {
 
@@ -8,12 +8,14 @@ public class Main {
 
 //    DsSpider.runSt(240000, 588848);
 
-     DsHelper.read("/Users/Jesse/Desktop/odd"); // ~511531
+//     DsHelper.read("/Users/Jesse/Desktop/odd"); // ~511531
 
 
     // QueryHelper.queryLeagues();
 
     // Radar.main(null);
+
+    new OddRules(45).make();
   }
 
 }

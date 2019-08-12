@@ -79,11 +79,11 @@ public class Utils {
       float prob1 = valueOfFloat(arr[1]);
       float prob2 = valueOfFloat(arr[2]);
       if (prob0 > prob2) {
-        est = new Estimation(model, matches.get(i),
-            0, prob0, prob1, prob2);
+        est = new Estimation(matches.get(i),
+            0, prob0, prob1, prob2, 1);
       } else {
-        est = new Estimation(model, matches.get(i),
-            2, prob0, prob1, prob2);
+        est = new Estimation(matches.get(i),
+            2, prob0, prob1, prob2,1);
       }
       estimations.add(est);
     }

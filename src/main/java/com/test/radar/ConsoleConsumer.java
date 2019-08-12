@@ -33,7 +33,6 @@ public class ConsoleConsumer implements Consumer<Estimation>, Keys {
     // return;
     // }
     final Map<String, Object> match = est.mMatch;
-    final Model model = est.mModel;
     String hostName = (String) match.get(HOST_NAME);
     String customName = (String) match.get(CUSTOM_NAME);
     String league = (String) match.get(LEAGUE);
