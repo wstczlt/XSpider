@@ -49,6 +49,7 @@ public class OddStart extends Model {
 
     final String oddSql = buildAndSql() +
         "and cast(original_scoreOdd as number) in " + mInSql + " " +
+        // "and cast(opening_scoreOdd as number)=-0.5 " +
         "and 1=1 ";
     return selectSql
         + SQL_AND
@@ -61,6 +62,7 @@ public class OddStart extends Model {
     StringBuilder andSql = new StringBuilder(" ");
     for (int cid : CIDS) {
       andSql.append("and cast(start_").append(cid).append("_victoryOdd as number)>0 ");
+      andSql.append("and cast(start_").append(cid).append("_victoryOdd as number)<99 ");
     }
 
     return andSql.toString();
@@ -68,7 +70,14 @@ public class OddStart extends Model {
 
   @Override
   public List<Float> xValues(Map<String, Object> match) {
-    return xKeys().stream().map(s -> valueOfFloat(match.get(s))).collect(Collectors.toList());
+    List<Float> values = xKeys().stream().map(s -> valueOfFloat(match.get(s)))
+        .collect(Collectors.toList());
+
+    values.add(1F);
+    values.add(
+        valueOfFloat(match.get(OPENING_VICTORY_ODD))
+            - valueOfFloat(match.get(ORIGINAL_VICTORY_ODD)));
+    return values;
   }
 
   private List<String> xKeys() {
@@ -96,6 +105,8 @@ public class OddStart extends Model {
     keys.add(MATCH_STATUS);
     keys.add(HOST_SCORE);
     keys.add(CUSTOM_SCORE);
+    keys.add(ORIGINAL_VICTORY_ODD);
+    keys.add(OPENING_VICTORY_ODD);
     keys.add(ORIGINAL_SCORE_ODD);
     keys.add(ORIGINAL_SCORE_ODD_OF_VICTORY);
     keys.add(ORIGINAL_SCORE_ODD_OF_DEFEAT);
