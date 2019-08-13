@@ -91,40 +91,26 @@ public class OddRules implements Keys {
             .map(estimation -> Utils.calGain(timeMin, estimation.mMatch, estimation))
             .mapToInt(newGain -> newGain > 0 ? 1 : 0)
             .sum();
-        System.out.println(String.format("总预测场次：%d, 胜率: %.2f, 盈利: %.2f, 盈利率:%.2f",
+        System.out.println(String.format("总预测场次：%d, 胜率: %.2f, 盈利: %.2f, 盈利率:%d%%",
             filtered.size(),
-            victory * 1.00f / filtered.size(),
+            filtered.isEmpty() ? 0 : victory * 1.00f / filtered.size(),
             profit,
-            profit * 100 / filtered.size()));
+            filtered.isEmpty() ? 0 : (int) profit * 100 / filtered.size()));
       });
     });
-
   }
-
 
 
   public Estimation estOneMatch(Map<String, Object> match, int timeMin) {
     final String ruleKey = ruleKey(match, timeMin);
-    if (!mRuleKeys.contains(ruleKey)) {
+    if (!mRules.containsKey(ruleKey)) {
       return null;
     }
 
     float estValue = mRules.get(ruleKey);
     float victoryRate = mRuleVictoryRate.get(ruleKey);
     float profitRate = mRuleProfitRate.get(ruleKey);
-    int hostCount = mHostCount.get(ruleKey);
-    int drewCount = mDrewCount.get(ruleKey);
-    int customCount = mCustomCount.get(ruleKey);
 
-    if (victoryRate < DEFAULT_MIN_VICTORY_RATE) {
-      return null;
-    }
-    if (profitRate < DEFAULT_MIN_PROFIT_RATE) {
-      return null;
-    }
-    if (hostCount + drewCount + customCount < DEFAULT_MIN_RULE_COUNT) {
-      return null;
-    }
     float prob0 = estValue == 0 ? victoryRate : (1 - victoryRate);
 
     return new Estimation(match, estValue, prob0, 0, 1 - prob0, profitRate);
@@ -161,6 +147,7 @@ public class OddRules implements Keys {
 
   private void calRuleKeys(String ruleKey) {
     int hostCount = mHostCount.get(ruleKey);
+    int drewCount = mCustomCount.get(ruleKey);
     int customCount = mCustomCount.get(ruleKey);
     float hostSum = mHostSum.get(ruleKey);
     float customSum = mCustomSum.get(ruleKey);
@@ -168,6 +155,18 @@ public class OddRules implements Keys {
     int selectValue = hostSum > customSum ? 0 : 2;
     float profitRate = Math.max(hostSum, customSum) * 1.00f / (hostCount + customCount);
     float victoryRate = Math.max(hostCount, customCount) * 1.00f / (hostCount + customCount);
+    // 检查条件
+    if (victoryRate < DEFAULT_MIN_VICTORY_RATE) {
+      return;
+    }
+    if (profitRate < DEFAULT_MIN_PROFIT_RATE) {
+      return;
+    }
+    if (hostCount + drewCount + customCount < DEFAULT_MIN_RULE_COUNT) {
+      return;
+    }
+
+    // 存储结果
     mRules.put(ruleKey, selectValue);
     mRuleVictoryRate.put(ruleKey, victoryRate);
     mRuleProfitRate.put(ruleKey, profitRate);
@@ -236,7 +235,8 @@ public class OddRules implements Keys {
     int minShootDistance = (minHostShoot - minCustomShoot) / 2;
 
     return StringUtils
-        .join(new float[] {timeMin, openingScoreOdd, minScoreOdd, minScoreDistance}, '@');
+        .join(new float[] {timeMin, openingScoreOdd, minScoreOdd, minHostScore, minCustomScore},
+            '@');
   }
 
   public String buildSql(int timeMin) {
