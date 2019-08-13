@@ -3,7 +3,6 @@ package com.test.learning.model;
 import static com.test.db.QueryHelper.SQL_AND;
 import static com.test.db.QueryHelper.SQL_ORDER;
 import static com.test.tools.Utils.valueOfFloat;
-import static com.test.tools.Utils.valueOfInt;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.test.entity.Estimation;
 import com.test.entity.Model;
+import com.test.tools.Utils;
 
 /**
  * 指定时刻让球胜平负.
@@ -34,7 +34,7 @@ public class Odd45 extends Model {
 
   public Odd45() {
     mTimeMin = 45;
-    mPrefix = "min" + mTimeMin;
+    mPrefix = "min" + mTimeMin + "_";
     mPrefixX = "min" + (mTimeMin + 3);
   }
 
@@ -55,14 +55,14 @@ public class Odd45 extends Model {
         ? ""
         : String.format(
             "AND cast(timeMin as int)>=%d " +
-                "AND cast(%s_scoreOdd as number) in (0,0.5,-0.5) " +
-                "AND cast(%s_scoreOddOfVictory as number)>1.7 " +
-                "AND cast(%s_scoreOddOfDefeat as number)>1.7 " +
-                "AND cast(%s_hostScore as int)=cast(%s_hostScore as int)  " +
-                "AND cast(%s_customScore as int)=cast(%s_customScore as int)  " +
-                // "AND abs(cast(%s_hostScore as int) - cast(%s_customScore as int)) <=1 " +
-                // "AND abs(cast(%s_hostDanger as int) - cast(%s_customDanger as int)) >=10 " +
-                // "AND abs(cast(%s_hostBestShoot as int) - cast(%s_customBestShoot as int)) >=4 " +
+                "AND cast(%sscoreOdd as number) in (0,0.5,-0.5) " +
+                "AND cast(%sscoreOddOfVictory as number)>1.7 " +
+                "AND cast(%sscoreOddOfDefeat as number)>1.7 " +
+                "AND cast(%shostScore as int)=cast(%shostScore as int)  " +
+                "AND cast(%scustomScore as int)=cast(%scustomScore as int)  " +
+                // "AND abs(cast(%shostScore as int) - cast(%scustomScore as int)) <=1 " +
+                // "AND abs(cast(%shostDanger as int) - cast(%scustomDanger as int)) >=10 " +
+                // "AND abs(cast(%shostBestShoot as int) - cast(%scustomBestShoot as int)) >=4 " +
                 "and 1=1 ",
             mTimeMin,
             mPrefix,
@@ -83,9 +83,9 @@ public class Odd45 extends Model {
     values.add(valueOfFloat(match.get("min0_victoryOdd")));
     values.add(valueOfFloat(match.get("min0_drewOdd")));
     values.add(valueOfFloat(match.get("min0_defeatOdd")));
-    values.add(valueOfFloat(match.get(mPrefix + "_victoryOdd")));
-    values.add(valueOfFloat(match.get(mPrefix + "_drewOdd")));
-    values.add(valueOfFloat(match.get(mPrefix + "_defeatOdd")));
+    values.add(valueOfFloat(match.get(mPrefix + "victoryOdd")));
+    values.add(valueOfFloat(match.get(mPrefix + "drewOdd")));
+    values.add(valueOfFloat(match.get(mPrefix + "defeatOdd")));
 
     return values;
   }
@@ -108,28 +108,28 @@ public class Odd45 extends Model {
       }
       // 当前场上情况
       if (i > 0) {
-        keys.add("min" + i + "_" + "hostScore");
-        keys.add("min" + i + "_" + "customScore");
-        // // keys.add("min" + i + "_" + "hostDanger");
-        // // keys.add("min" + i + "_" + "customDanger");
-        // keys.add("min" + i + "_" + "hostBestShoot");
-        // keys.add("min" + i + "_" + "customBestShoot");
+        keys.add(mPrefix + "hostScore");
+        keys.add(mPrefix + "customScore");
+        // // keys.add(mPrefix + "hostDanger");
+        // // keys.add(mPrefix + "customDanger");
+        // keys.add(mPrefix+ "hostBestShoot");
+        // keys.add(mPrefix + "customBestShoot");
       }
 
       // 亚盘
-      keys.add("min" + i + "_" + "scoreOdd");
-      // // keys.add("min" + i + "_" + "scoreOddOfVictory");
-      // // keys.add("min" + i + "_" + "scoreOddOfDefeat");
+      keys.add(mPrefix + "scoreOdd");
+      // // keys.add(mPrefix+ "scoreOddOfVictory");
+      // // keys.add(mPrefix+ "scoreOddOfDefeat");
       //
       // // 欧盘
-      // keys.add("min" + i + "_" + "victoryOdd");
-      // keys.add("min" + i + "_" + "drewOdd");
-      // keys.add("min" + i + "_" + "defeatOdd");
+      // keys.add(mPrefix+ "victoryOdd");
+      // keys.add(mPrefix + "drewOdd");
+      // keys.add(mPrefix+ "defeatOdd");
 
       // 大小球
-      // keys.add("min" + i + "_" + "bigOdd");
-      // keys.add("min" + i + "_" + "bigOddOfVictory");
-      // keys.add("min" + i + "_" + "bigOddOfDefeat");
+      // keys.add(mPrefix + "bigOdd");
+      // keys.add(mPrefix + "bigOddOfVictory");
+      // keys.add(mPrefix + "bigOddOfDefeat");
     }
 
     return keys.stream().distinct().collect(Collectors.toList());
@@ -150,18 +150,18 @@ public class Odd45 extends Model {
     keys.add("min0_drewOdd");
     keys.add("min0_defeatOdd");
     if (mTimeMin >= 0) {
-      keys.add(mPrefix + "_hostScore");
-      keys.add(mPrefix + "_customScore");
-      keys.add(mPrefix + "_scoreOdd");
-      keys.add(mPrefix + "_scoreOddOfVictory");
-      keys.add(mPrefix + "_scoreOddOfDefeat");
-      keys.add(mPrefix + "_victoryOdd");
-      keys.add(mPrefix + "_drewOdd");
-      keys.add(mPrefix + "_defeatOdd");
-      keys.add(mPrefix + "_hostDanger");
-      keys.add(mPrefix + "_customDanger");
-      keys.add(mPrefix + "_hostBestShoot");
-      keys.add(mPrefix + "_customBestShoot");
+      keys.add(mPrefix + "hostScore");
+      keys.add(mPrefix + "customScore");
+      keys.add(mPrefix + "scoreOdd");
+      keys.add(mPrefix + "scoreOddOfVictory");
+      keys.add(mPrefix + "scoreOddOfDefeat");
+      keys.add(mPrefix + "victoryOdd");
+      keys.add(mPrefix + "drewOdd");
+      keys.add(mPrefix + "defeatOdd");
+      keys.add(mPrefix + "hostDanger");
+      keys.add(mPrefix + "customDanger");
+      keys.add(mPrefix + "hostBestShoot");
+      keys.add(mPrefix + "customBestShoot");
     }
 
 
@@ -171,49 +171,12 @@ public class Odd45 extends Model {
 
   @Override
   public Float yValue(Map<String, Object> match) {
-    float delta = deltaScore(match);
+    float delta = Utils.deltaScore(mTimeMin, match);
     return delta > 0 ? 0 : (delta == 0 ? 1f : 2);
-  }
-
-  private float deltaScore(Map<String, Object> match) {
-    int hostScore = valueOfInt(match.get(HOST_SCORE));
-    int customScore = valueOfInt(match.get(CUSTOM_SCORE));
-    if (mTimeMin < 0) {
-      float timeScoreOdd = valueOfFloat(match.get(ORIGINAL_SCORE_ODD));
-      return (hostScore - customScore) + timeScoreOdd;
-    } else {
-      int timeHostScore = valueOfInt(match.get(mPrefix + "_hostScore"));
-      int timeCustomScore = valueOfInt(match.get(mPrefix + "_customScore"));
-      float timeScoreOdd = valueOfFloat(match.get(mPrefix + "_scoreOdd"));
-      return (hostScore - timeHostScore) - (customScore - timeCustomScore) + timeScoreOdd;
-    }
   }
 
   @Override
   public float calGain(Map<String, Object> dbMap, Estimation est) {
-    // 让球算法
-    float victory = valueOfFloat(dbMap.get(mPrefix + "_scoreOddOfVictory")) - 1;
-    float defeat = valueOfFloat(dbMap.get(mPrefix + "_scoreOddOfDefeat")) - 1;
-    float deltaScore = deltaScore(dbMap);
-
-    if (est.mValue == 0) { // 判断主队
-      if (deltaScore >= 0.5) return victory;
-      if (deltaScore >= 0.25) return victory * 0.5f;
-      if (deltaScore == 0) return 0;
-      if (deltaScore >= -0.25) return -0.5f;
-      if (deltaScore <= -0.5) return -1;
-    }
-    if (est.mValue == 1) { // 不买
-      return 0;
-    }
-    if (est.mValue == 2) { // 判断客队
-      if (deltaScore >= 0.5) return -1;
-      if (deltaScore >= 0.25) return -0.5f;
-      if (deltaScore == 0) return 0;
-      if (deltaScore >= -0.25) return defeat * 0.5f;
-      if (deltaScore <= -0.5) return defeat;
-    }
-
-    return 0;
+    return Utils.calGain(mTimeMin, dbMap, est);
   }
 }

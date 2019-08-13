@@ -15,7 +15,7 @@ public class Main {
 
     // Radar.main(null);
 
-    new OddRules(45).make();
+    new OddRules().make();
   }
 
 }

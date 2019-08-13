@@ -83,7 +83,7 @@ public class Utils {
             0, prob0, prob1, prob2, 1);
       } else {
         est = new Estimation(matches.get(i),
-            2, prob0, prob1, prob2,1);
+            2, prob0, prob1, prob2, 1);
       }
       estimations.add(est);
     }
@@ -194,5 +194,48 @@ public class Utils {
     }
 
     return 999;
+  }
+
+  public static float deltaScore(int timeMin, Map<String, Object> match) {
+    String timePrefix = "min" + timeMin + "_";
+    int hostScore = valueOfInt(match.get(Keys.HOST_SCORE));
+    int customScore = valueOfInt(match.get(Keys.CUSTOM_SCORE));
+    if (timeMin < 0) {
+      float timeScoreOdd = valueOfFloat(match.get(Keys.ORIGINAL_SCORE_ODD));
+      return (hostScore - customScore) + timeScoreOdd;
+    } else {
+      int timeHostScore = valueOfInt(match.get(timePrefix + "hostScore"));
+      int timeCustomScore = valueOfInt(match.get(timePrefix + "customScore"));
+      float timeScoreOdd = valueOfFloat(match.get(timePrefix + "scoreOdd"));
+      return (hostScore - timeHostScore) - (customScore - timeCustomScore) + timeScoreOdd;
+    }
+  }
+
+  public static float calGain(int timeMin, Map<String, Object> dbMap, Estimation est) {
+    // 让球算法
+    String timePrefix = "min" + timeMin + "_";
+    float victory = valueOfFloat(dbMap.get(timePrefix + "scoreOddOfVictory")) - 1;
+    float defeat = valueOfFloat(dbMap.get(timePrefix + "scoreOddOfDefeat")) - 1;
+    float deltaScore = deltaScore(timeMin, dbMap);
+
+    if (est.mValue == 0) { // 判断主队
+      if (deltaScore >= 0.5) return victory;
+      if (deltaScore >= 0.25) return victory * 0.5f;
+      if (deltaScore == 0) return 0;
+      if (deltaScore >= -0.25) return -0.5f;
+      if (deltaScore <= -0.5) return -1;
+    }
+    if (est.mValue == 1) { // 不买
+      return 0;
+    }
+    if (est.mValue == 2) { // 判断客队
+      if (deltaScore >= 0.5) return -1;
+      if (deltaScore >= 0.25) return -0.5f;
+      if (deltaScore == 0) return 0;
+      if (deltaScore >= -0.25) return defeat * 0.5f;
+      if (deltaScore <= -0.5) return defeat;
+    }
+
+    return 0;
   }
 }
