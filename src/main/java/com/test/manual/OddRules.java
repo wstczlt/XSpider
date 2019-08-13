@@ -3,6 +3,7 @@ package com.test.manual;
 import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,35 +50,38 @@ public class OddRules implements Keys {
     mHostSum.clear();
     mCustomSum.clear();
 
-    int[] timeMinArray = new int[] {45, 60, 75};
-    Float[] thresholds = new Float[] {0.05f, 0.1f, 0.15f, 0.20f};
+    List<Integer> timeMinArray = new ArrayList<>();
+    for (int i = 45; i <= 80; i = i + 5) {
+      timeMinArray.add(i);
+    }
+    final Float[] thresholds = new Float[] {1.02f, 1.05f, 1.08f, 1.10f};
     Map<Integer, List<Map<String, Object>>> testMap = new HashMap<>();
     for (int timeMin : timeMinArray) {
       List<Map<String, Object>> matches = QueryHelper.doQuery(buildSql(timeMin), DEFAULT_SQL_COUNT);
       Collections.shuffle(matches);
-      List<Map<String, Object>> trains = matches.subList(0, (int) (matches.size() * 0.8));
+      List<Map<String, Object>> trains = matches.subList(0, (int) (matches.size() * 0.9));
       // 训练
       trains.forEach(map -> calMatch(map, timeMin));
 
       // 保存测试集
-      testMap.put(timeMin, matches.subList((int) (matches.size() * 0.8), matches.size()));
+      testMap.put(timeMin, matches.subList((int) (matches.size() * 0.1), matches.size()));
     }
 
     mRuleKeys.forEach(this::calRuleKeys);
     print();
 
-    testMap.keySet().forEach(timeMin -> {
+    testMap.keySet().stream().sorted().forEach(timeMin -> {
       System.out.println("\n\n分钟: " + timeMin);
       List<Estimation> estimations = testMap.get(timeMin).stream()
           .map(map -> estOneMatch(map, timeMin))
           .filter(Objects::nonNull)
           .collect(Collectors.toList());
 
-      Arrays.asList(thresholds).forEach(threshold -> {
+      Arrays.stream(thresholds).sorted().forEach(threshold -> {
         // 测试
         System.out.println("threshold=" + threshold);
         List<Estimation> filtered = estimations.stream()
-            .filter(estimation -> estimation.mProbability >= threshold)
+            .filter(estimation -> estimation.mProfitRate >= threshold)
             .collect(Collectors.toList());
 
         float profit = filtered.stream()
@@ -87,10 +91,11 @@ public class OddRules implements Keys {
             .map(estimation -> Utils.calGain(timeMin, estimation.mMatch, estimation))
             .mapToInt(newGain -> newGain > 0 ? 1 : 0)
             .sum();
-        System.out.println(String.format("总预测场次：%d, 胜率: %.2f, 盈利: %.2f",
+        System.out.println(String.format("总预测场次：%d, 胜率: %.2f, 盈利: %.2f, 盈利率:%.2f",
             filtered.size(),
             victory * 1.00f / filtered.size(),
-            profit));
+            profit,
+            profit * 100 / filtered.size()));
       });
     });
 
@@ -231,7 +236,7 @@ public class OddRules implements Keys {
     int minShootDistance = (minHostShoot - minCustomShoot) / 2;
 
     return StringUtils
-        .join(new float[] {timeMin, minScoreOdd, minScoreDistance}, '@');
+        .join(new float[] {timeMin, openingScoreOdd, minScoreOdd, minScoreDistance}, '@');
   }
 
   public String buildSql(int timeMin) {
