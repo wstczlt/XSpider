@@ -67,8 +67,8 @@ public class QueryHelper implements Keys {
     String newSql = sql + " limit " + limit;
 
     final List<Map<String, Object>> matches = runner.query(newSql, new MapListHandler());
-    System.out.println(sql);
-    System.out.println("查询结果条数: " + matches.size() + "\n\n");
+    // System.out.println(sql);
+    // System.out.println("查询结果条数: " + matches.size() + "\n\n");
     return matches;
   }
 

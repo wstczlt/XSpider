@@ -21,7 +21,7 @@ import com.test.db.QueryHelper;
 import com.test.entity.Estimation;
 import com.test.tools.Utils;
 
-public class OddRules implements Keys {
+public class BallRules implements Keys {
 
   // 数据库查询条数
   private static final int DEFAULT_SQL_COUNT = 1000000;
@@ -47,32 +47,29 @@ public class OddRules implements Keys {
   private final Map<String, Float> mRuleProfitRate = new HashMap<>();
 
   public void make() throws Exception {
-    mHostSum.clear();
-    mCustomSum.clear();
+    mRules.clear();
+    mRuleVictoryRate.clear();
+    mRuleProfitRate.clear();
 
     List<Integer> timeMinArray = new ArrayList<>();
-    for (int i = 45; i <= 80; i = i + 5) {
+    for (int i = 10; i <= 80; i = i + 5) {
       timeMinArray.add(i);
     }
     final Float[] thresholds = new Float[] {1.02f, 1.05f, 1.08f, 1.10f};
-    Map<Integer, List<Map<String, Object>>> testMap = new HashMap<>();
     for (int timeMin : timeMinArray) {
       List<Map<String, Object>> matches = QueryHelper.doQuery(buildSql(timeMin), DEFAULT_SQL_COUNT);
       Collections.shuffle(matches);
       List<Map<String, Object>> trains = matches.subList(0, (int) (matches.size() * 0.9));
       // 训练
       trains.forEach(map -> calMatch(map, timeMin));
+      mRuleKeys.forEach(this::calRuleKeys);
+      mRuleKeys.clear();
 
-      // 保存测试集
-      testMap.put(timeMin, matches.subList((int) (matches.size() * 0.1), matches.size()));
-    }
-
-    mRuleKeys.forEach(this::calRuleKeys);
-    print();
-
-    testMap.keySet().stream().sorted().forEach(timeMin -> {
+      // 测试
+      List<Map<String, Object>> list =
+          matches.subList((int) (matches.size() * 0.1), matches.size());
       System.out.println("\n\n分钟: " + timeMin);
-      List<Estimation> estimations = testMap.get(timeMin).stream()
+      List<Estimation> estimations = list.stream()
           .map(map -> estOneMatch(map, timeMin))
           .filter(Objects::nonNull)
           .collect(Collectors.toList());
@@ -97,7 +94,10 @@ public class OddRules implements Keys {
             profit,
             filtered.isEmpty() ? 0 : (int) profit * 100 / filtered.size()));
       });
-    });
+    }
+
+
+    print();
   }
 
 
@@ -118,10 +118,6 @@ public class OddRules implements Keys {
 
   private void print() {
     mRules.keySet().stream()
-        .filter(s -> mHostCount.get(s) + mDrewCount.get(s)
-            + mCustomCount.get(s) >= DEFAULT_MIN_RULE_COUNT)
-        .filter(s -> mRuleProfitRate.get(s) >= DEFAULT_MIN_PROFIT_RATE)
-        .filter(s -> mRuleVictoryRate.get(s) >= DEFAULT_MIN_VICTORY_RATE)
         .sorted((o1, o2) -> (int) (mRuleProfitRate.get(o2) * 1000 - mRuleProfitRate.get(o1) * 1000))
         // .sorted((o1, o2) -> mHostCount.get(o2) + mDrewCount.get(o2) + mCustomCount.get(o2)
         // - (mHostCount.get(o1) + mDrewCount.get(o1) + mCustomCount.get(o1)))
@@ -156,13 +152,14 @@ public class OddRules implements Keys {
     float profitRate = Math.max(hostSum, customSum) * 1.00f / (hostCount + customCount);
     float victoryRate = Math.max(hostCount, customCount) * 1.00f / (hostCount + customCount);
     // 检查条件
-    if (victoryRate < DEFAULT_MIN_VICTORY_RATE) {
-      return;
-    }
-    if (profitRate < DEFAULT_MIN_PROFIT_RATE) {
-      return;
-    }
-    if (hostCount + drewCount + customCount < DEFAULT_MIN_RULE_COUNT) {
+    if (victoryRate < DEFAULT_MIN_VICTORY_RATE
+        || profitRate < DEFAULT_MIN_PROFIT_RATE
+        || hostCount + drewCount + customCount < DEFAULT_MIN_RULE_COUNT) {
+      mHostSum.remove(ruleKey);
+      mCustomSum.remove(ruleKey);
+      mHostCount.remove(ruleKey);
+      mDrewCount.remove(ruleKey);
+      mDrewCount.remove(ruleKey);
       return;
     }
 
@@ -176,29 +173,33 @@ public class OddRules implements Keys {
   private void calMatch(Map<String, Object> match, int timeMin) {
     final String timePrefix = "min" + timeMin + "_";
     float minScoreOdd = timeMin > 0
-        ? valueOfFloat(match.get(timePrefix + "scoreOdd"))
-        : valueOfFloat(match.get(OPENING_SCORE_ODD));
+        ? valueOfFloat(match.get(timePrefix + "bigOdd"))
+        : valueOfFloat(match.get(OPENING_BIG_ODD));
     float minScoreOddVictory = timeMin > 0
-        ? valueOfFloat(match.get(timePrefix + "scoreOddOfVictory"))
-        : valueOfFloat(match.get(OPENING_SCORE_ODD_OF_VICTORY));
+        ? valueOfFloat(match.get(timePrefix + "bigOddOfVictory"))
+        : valueOfFloat(match.get(OPENING_BIG_ODD_OF_VICTORY));
     float minScoreOddDefeat = timeMin > 0
-        ? valueOfFloat(match.get(timePrefix + "scoreOddOfDefeat"))
-        : valueOfFloat(match.get(OPENING_SCORE_ODD_OF_DEFEAT));
+        ? valueOfFloat(match.get(timePrefix + "bigOddOfDefeat"))
+        : valueOfFloat(match.get(OPENING_BIG_ODD_OF_DEFEAT));
     int hostScore = valueOfInt(match.get(HOST_SCORE));
     int customScore = valueOfInt(match.get(CUSTOM_SCORE));
     int minHostScore = timeMin > 0 ? valueOfInt(match.get(timePrefix + "hostScore")) : 0;
     int minCustomScore = timeMin > 0 ? valueOfInt(match.get(timePrefix + "customScore")) : 0;
-    float deltaScore = (hostScore - minHostScore) - (customScore - minCustomScore) + minScoreOdd;
+    float deltaScore = hostScore + customScore - minScoreOdd;
 
     final String ruleKey = ruleKey(match, timeMin);
     mRuleKeys.add(ruleKey);
 
     float hostSum = deltaScore >= 0.5f
         ? minScoreOddVictory
-        : (deltaScore >= 0.25 ? (0.5f + 0.5f * minScoreOddVictory) : 0f);
+        : (deltaScore >= 0.25
+            ? (0.5f + 0.5f * minScoreOddVictory)
+            : 0);
     float customSum = deltaScore <= -0.5f
         ? minScoreOddDefeat
-        : (deltaScore <= -0.25 ? (0.5f + 0.5f * minScoreOddDefeat) : 0f);
+        : (deltaScore <= -0.25
+            ? (0.5f + 0.5f * minScoreOddDefeat)
+            : 0);
     float totalHostSum = (mHostSum.containsKey(ruleKey) ? mHostSum.get(ruleKey) : 0) + hostSum;
     float totalCustomSum =
         (mCustomSum.containsKey(ruleKey) ? mCustomSum.get(ruleKey) : 0) + customSum;
@@ -222,10 +223,13 @@ public class OddRules implements Keys {
   private String ruleKey(Map<String, Object> match, int timeMin) {
     String timePrefix = "min" + timeMin + "_";
     float originalScoreOdd = valueOfFloat(match.get(ORIGINAL_SCORE_ODD));
-    float openingScoreOdd = valueOfFloat(match.get(OPENING_SCORE_ODD));
+    float openingBallOdd = valueOfFloat(match.get(OPENING_BIG_ODD));
     float minScoreOdd = timeMin > 0
         ? valueOfFloat(match.get(timePrefix + "scoreOdd"))
         : valueOfFloat(match.get(OPENING_SCORE_ODD));
+    float minBallOdd = timeMin > 0
+        ? valueOfFloat(match.get(timePrefix + "bigOdd"))
+        : valueOfFloat(match.get(OPENING_BIG_ODD));
     int minHostScore = timeMin > 0 ? valueOfInt(match.get(timePrefix + "hostScore")) : 0;
     int minCustomScore = timeMin > 0 ? valueOfInt(match.get(timePrefix + "customScore")) : 0;
     int minScoreDistance = minHostScore - minCustomScore;
@@ -235,26 +239,36 @@ public class OddRules implements Keys {
     int minShootDistance = (minHostShoot - minCustomShoot) / 2;
 
     return StringUtils
-        .join(new float[] {timeMin, openingScoreOdd, minScoreOdd, minHostScore, minCustomScore},
+        .join(new float[] {timeMin, openingBallOdd, minBallOdd, minHostScore, minCustomScore},
             '@');
   }
 
   public String buildSql(int timeMin) {
     String timePrefix = "min" + timeMin + "_";
-    String selectSql = "select hostScore, customScore, original_scoreOdd, opening_scoreOdd, "
-        + (timeMin > 0 ? (timePrefix + "scoreOdd, ") : "")
-        + (timeMin > 0
-            ? (timePrefix + "scoreOddOfVictory, ")
-            : (OPENING_SCORE_ODD_OF_VICTORY + ", "))
-        + (timeMin > 0
-            ? (timePrefix + "scoreOddOfDefeat, ")
-            : (OPENING_SCORE_ODD_OF_DEFEAT + ", "))
-        + (timeMin > 0 ? (timePrefix + "hostScore, ") : "")
-        + (timeMin > 0 ? (timePrefix + "customScore, ") : "")
-        + "1 "
-        + "from football where 1=1 "
-        + "and " + (timeMin > 0 ? (timePrefix + "scoreOddOfVictory>=1.7 ") : "1=1 ")
-        + "and " + (timeMin > 0 ? (timePrefix + "scoreOddOfDefeat>=1.7 ") : "1=1 ");
+    String selectSql =
+        "select hostScore, customScore, original_scoreOdd, original_bigOdd, opening_scoreOdd, opening_bigOdd, "
+            + (timeMin > 0 ? (timePrefix + "scoreOdd, ") : "")
+            + (timeMin > 0
+                ? (timePrefix + "scoreOddOfVictory, ")
+                : (OPENING_SCORE_ODD_OF_VICTORY + ", "))
+            + (timeMin > 0
+                ? (timePrefix + "scoreOddOfDefeat, ")
+                : (OPENING_SCORE_ODD_OF_DEFEAT + ", "))
+
+            + (timeMin > 0 ? (timePrefix + "bigOdd, ") : "")
+            + (timeMin > 0
+                ? (timePrefix + "bigOddOfVictory, ")
+                : (OPENING_BIG_ODD_OF_VICTORY + ", "))
+            + (timeMin > 0
+                ? (timePrefix + "bigOddOfDefeat, ")
+                : (OPENING_BIG_ODD_OF_DEFEAT + ", "))
+
+            + (timeMin > 0 ? (timePrefix + "hostScore, ") : "")
+            + (timeMin > 0 ? (timePrefix + "customScore, ") : "")
+            + "1 "
+            + "from football where 1=1 "
+            + "and " + (timeMin > 0 ? (timePrefix + "scoreOddOfVictory>=1.7 ") : "1=1 ")
+            + "and " + (timeMin > 0 ? (timePrefix + "scoreOddOfDefeat>=1.7 ") : "1=1 ");
 
     return selectSql + QueryHelper.SQL_AND + QueryHelper.SQL_ST;
   }

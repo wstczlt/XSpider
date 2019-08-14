@@ -17,13 +17,13 @@ import com.test.db.QueryHelper;
 public class HistoryHelper implements Keys {
 
 
-  public static List<Map<String, Object>> similars(int timeMin, Map<String, Object> match)
+  public static List<Map<String, Object>> similar(Set<String> keys, Map<String, Object> match)
       throws Exception {
-    final Set<String> keys = oddKeys(timeMin);
     StringBuilder andSql = new StringBuilder();
     for (String key : keys) {
       andSql.append(andSql(match, key, false));
     }
+    andSql.append("and matchID<>").append(match.get(MATCH_ID)).append(" ");
 
     String querySql = SQL_BASE + andSql + SQL_AND + SQL_ST + SQL_ORDER;
     return QueryHelper.doQuery(querySql, 10000);
@@ -41,7 +41,7 @@ public class HistoryHelper implements Keys {
   }
 
 
-  private static Set<String> fullKeys(int timeMin) {
+  public static Set<String> fullKeys(int timeMin) {
     Set<String> keys = new HashSet<>();
     keys.add(ORIGINAL_SCORE_ODD);
     keys.add(OPENING_SCORE_ODD);
@@ -72,7 +72,7 @@ public class HistoryHelper implements Keys {
   }
 
 
-  private static Set<String> oddKeys(int timeMin) {
+  public static Set<String> oddKeys(int timeMin) {
     Set<String> keys = new HashSet<>();
     keys.add(OPENING_SCORE_ODD);
     keys.add(OPENING_SCORE_ODD_OF_VICTORY);
@@ -92,7 +92,7 @@ public class HistoryHelper implements Keys {
   }
 
 
-  private static Set<String> ballKeys(int timeMin) {
+  public static Set<String> ballKeys(int timeMin) {
     Set<String> keys = new HashSet<>();
     keys.add(OPENING_BIG_ODD);
     keys.add(OPENING_BIG_ODD_OF_VICTORY);
