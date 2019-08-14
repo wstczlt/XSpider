@@ -2,8 +2,6 @@ package com.test.manual;
 
 public class HistorySuggest {
 
-  public boolean mFullKeys;
-
   public final float mScoreOdd;
   public final int mScoreValue;
   public final int mTotalScoreCount;
@@ -39,5 +37,6 @@ public class HistorySuggest {
     mBallProb2 = ballProb2;
   }
 
-  public static HistorySuggest EMPTY = new HistorySuggest(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  public static HistorySuggest EMPTY =
+      new HistorySuggest(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }

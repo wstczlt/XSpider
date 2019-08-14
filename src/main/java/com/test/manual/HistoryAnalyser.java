@@ -3,91 +3,144 @@ package com.test.manual;
 import static com.test.db.QueryHelper.SQL_AND;
 import static com.test.db.QueryHelper.SQL_BASE;
 import static com.test.db.QueryHelper.SQL_ST;
-import static com.test.manual.HistoryHelper.ballKeys;
-import static com.test.manual.HistoryHelper.fullKeys;
-import static com.test.manual.HistoryHelper.oddKeys;
-import static com.test.manual.HistoryHelper.similar;
+import static com.test.db.QueryHelper.similarQuery;
 import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.ToDoubleFunction;
 
 import com.test.Keys;
 import com.test.db.QueryHelper;
+import com.test.tools.Pair;
 
 public class HistoryAnalyser implements Keys {
 
-  private static final int MIN_SIMILAR_COUNT = 200;
+  private static final int MIN_SIMILAR_COUNT = 100;
+
+  static class SumFunc implements ToDoubleFunction<Pair<HistorySuggest, Map<String, Object>>> {
+
+    final int timeMin;
+
+    public SumFunc(int timeMin) {
+      this.timeMin = timeMin;
+    }
+
+    @Override
+    public double applyAsDouble(Pair<HistorySuggest, Map<String, Object>> pair) {
+      float hostScore = valueOfFloat(pair.second.get(HOST_SCORE));
+      float customScore = valueOfFloat(pair.second.get(CUSTOM_SCORE));
+      float minHostScore = valueOfFloat(pair.second.get("min" + timeMin + "_hostScore"));
+      float minCustomScore = valueOfFloat(pair.second.get("min" + timeMin + "_customScore"));
+      float minScoreOdd = valueOfFloat(pair.second.get("min" + timeMin + "_scoreOdd"));
+      float minScoreOddVictory =
+          valueOfFloat(pair.second.get("min" + timeMin + "_scoreOddOfVictory"));
+      float minScoreOddDefeat =
+          valueOfFloat(pair.second.get("min" + timeMin + "_scoreOddOfDefeat"));
+
+      float deltaOddScore =
+          (hostScore - minHostScore) - (customScore - minCustomScore) + minScoreOdd;
+
+      float hostScoreSum = deltaOddScore >= 0.5f
+          ? minScoreOddVictory
+          : (deltaOddScore >= 0.25
+              ? (0.5f + 0.5f * minScoreOddVictory)
+              : 0);
+      float customScoreSum = deltaOddScore <= -0.5f
+          ? minScoreOddDefeat
+          : (deltaOddScore <= -0.25
+              ? (0.5f + 0.5f * minScoreOddDefeat)
+              : 0);
+
+      return pair.first.mScoreValue == 0 ? hostScoreSum : customScoreSum;
+    }
+  }
 
   public static void main(String[] args) throws Exception {
-    String querySql = SQL_BASE + SQL_AND + SQL_ST + "order by RANDOM() ";
+    String querySql = SQL_BASE + "and league in ('英超', '中超') " + SQL_AND + SQL_ST + "order by RANDOM() ";
     List<Map<String, Object>> matches = QueryHelper.doQuery(querySql, 100);
-    List<HistorySuggest> suggests = new ArrayList<>();
+    List<Pair<HistorySuggest, Map<String, Object>>> min0Suggests = new ArrayList<>();
+    List<Pair<HistorySuggest, Map<String, Object>>> min40Suggests = new ArrayList<>();
+    List<Pair<HistorySuggest, Map<String, Object>>> min60Suggests = new ArrayList<>();
     for (Map<String, Object> match : matches) {
       System.out
-          .println("\n\n\nmatchID=" + match.get(MATCH_ID) + ", 比分: " + match.get(HOST_SCORE) + " - "
+          .println("\n\n\nmatchID=" + match.get(MATCH_ID) + ", " + match.get(HOST_NAME) + " VS "
+              + match.get(CUSTOM_NAME) + ", 比分: " + match.get(HOST_SCORE) + " - "
               + match.get(CUSTOM_SCORE));
-      for (int timeMin = 0; timeMin <= 75; timeMin = timeMin + 15) {
+      int[] timeMins = new int[] {0, 40, 60};
+      for (int timeMin : timeMins) {
         HistorySuggest historySuggest = suggest(timeMin, match);
-        System.out.println("\n时间: " + timeMin + ", 精准: " + historySuggest.mFullKeys
-            + ", 比分: " + match.get("min" + timeMin + "_hostScore")
+        System.out.println("\n时间: " + timeMin + ", 比分: " + match.get("min" + timeMin + "_hostScore")
             + " - " + match.get("min" + timeMin + "_customScore"));
-        if (historySuggest.mScoreProfit < 1.0f
-            || historySuggest.mTotalScoreCount < MIN_SIMILAR_COUNT) {
+        if (historySuggest.mTotalScoreCount < MIN_SIMILAR_COUNT) {
           System.out.println(
               String.format("让分(%d), 时间: %d, 推荐: 无", historySuggest.mTotalScoreCount, timeMin));
         } else {
+          if (historySuggest.mScoreProfit >= 1.05 && timeMin == 0) {
+            min0Suggests.add(new Pair<>(historySuggest, match));
+          }
+          if (historySuggest.mScoreProfit >= 1.05 && timeMin == 40) {
+            min40Suggests.add(new Pair<>(historySuggest, match));
+          }
+          if (historySuggest.mScoreProfit >= 1.05 && timeMin == 60) {
+            min60Suggests.add(new Pair<>(historySuggest, match));
+          }
           System.out
-              .println(String.format("让分(%d), 时间: %d, 盘口: %.2f[%s], 胜率: %.2f(%.2f), 盈利率: %.2f",
+              .println(String.format(
+                  "让分(%d), 时间: %d, 盘口: %.2f[%s], 胜率: %.2f(%.2f, %.2f, %.2f), 盈利率: %.2f",
                   historySuggest.mTotalScoreCount, timeMin, historySuggest.mScoreOdd,
                   historySuggest.mScoreValue == 0 ? "主" : "客",
                   (historySuggest.mScoreValue == 0
                       ? historySuggest.mScoreProb0
-                      : historySuggest.mScoreProb2) + historySuggest.mScoreProb1,
+                      : historySuggest.mScoreProb2)
+                      / (historySuggest.mScoreProb0 + historySuggest.mScoreProb2),
+                  historySuggest.mScoreProb0,
                   historySuggest.mScoreProb1,
+                  historySuggest.mScoreProb2,
                   historySuggest.mScoreProfit));
         }
-
-        if (historySuggest.mBallProfit < 1.0f
-            || historySuggest.mTotalBallCount < MIN_SIMILAR_COUNT) {
-          System.out.println(
-              String.format("大小球(%d), 时间: %d, 推荐: 无", historySuggest.mTotalBallCount, timeMin));
-        } else {
-          System.out
-              .println(String.format("大小球(%d), 时间: %d, 盘口: %.2f[%s], 胜率: %.2f(%.2f), 盈利率: %.2f",
-                  historySuggest.mTotalBallCount, timeMin, historySuggest.mBallOdd,
-                  historySuggest.mBallValue == 0 ? "大" : "小",
-                  (historySuggest.mBallValue == 0
-                      ? historySuggest.mBallProb0
-                      : historySuggest.mBallProb2) + historySuggest.mBallProb1,
-                  historySuggest.mBallProb1,
-                  historySuggest.mBallProfit));
-        }
-
       }
     }
 
+    double min0TotalSum = min0Suggests.stream().mapToDouble(new SumFunc(0)).sum();
+    double min40TotalSum = min40Suggests.stream().mapToDouble(new SumFunc(40)).sum();
+    double min60TotalSum = min60Suggests.stream().mapToDouble(new SumFunc(60)).sum();
+
+    System.out.println(String.format("分钟: 00, 总场次: %d, 总盈利: %.2f, 盈利率: %.2f",
+        min0Suggests.size(), min0TotalSum - min0Suggests.size(),
+        (min0TotalSum - min0Suggests.size()) / min0Suggests.size()));
+
+    System.out.println(String.format("分钟: 40, 总场次: %d, 总盈利: %.2f, 盈利率: %.2f",
+        min40Suggests.size(), min40TotalSum - min40Suggests.size(),
+        (min40TotalSum - min40Suggests.size()) / min40Suggests.size()));
+
+    System.out.println(String.format("分钟: 60, 总场次: %d, 总盈利: %.2f, 盈利率: %.2f",
+        min60Suggests.size(), min60TotalSum - min60Suggests.size(),
+        (min60TotalSum - min60Suggests.size()) / min60Suggests.size()));
   }
 
   public static HistorySuggest suggest(int timeMin, Map<String, Object> match) throws Exception {
-    HistorySuggest suggestOfFull = suggest(timeMin, similar(fullKeys(timeMin), match));
-    suggestOfFull.mFullKeys = true;
-    if (suggestOfFull.mTotalScoreCount >= MIN_SIMILAR_COUNT) {
-      return suggestOfFull;
-    }
+    // HistorySuggest suggestOfFull = suggest(timeMin, similar(fullKeys(timeMin), match));
+    // suggestOfFull.mFullKeys = true;
+    // System.out.println("精准查询: " + suggestOfFull.mTotalScoreCount);
+    // if (suggestOfFull.mTotalScoreCount >= MIN_SIMILAR_COUNT) {
+    // return suggestOfFull;
+    // }
 
-    HistorySuggest suggestOfScore = suggest(timeMin, similar(oddKeys(timeMin), match));
-    HistorySuggest suggestOfBall = suggest(timeMin, similar(ballKeys(timeMin), match));
-    return new HistorySuggest(suggestOfScore.mScoreOdd, suggestOfScore.mScoreValue,
-        suggestOfScore.mTotalScoreCount, suggestOfScore.mScoreProfit,
-        suggestOfScore.mScoreProb0,
-        suggestOfScore.mScoreProb1, suggestOfScore.mScoreProb2,
-        suggestOfBall.mBallOdd, suggestOfBall.mBallValue, suggestOfBall.mTotalBallCount,
-        suggestOfBall.mBallProfit,
-        suggestOfBall.mBallProb0,
-        suggestOfBall.mBallProb1, suggestOfBall.mBallProb2);
+    return suggest(timeMin, similarQuery(timeMin, match));
+    //
+    // HistorySuggest suggestOfScore = suggest(timeMin, similar(oddKeys(timeMin), match));
+    // HistorySuggest suggestOfBall = suggest(timeMin, similar(oddKeys(timeMin), match));
+    // return new HistorySuggest(suggestOfScore.mScoreOdd, suggestOfScore.mScoreValue,
+    // suggestOfScore.mTotalScoreCount, suggestOfScore.mScoreProfit,
+    // suggestOfScore.mScoreProb0,
+    // suggestOfScore.mScoreProb1, suggestOfScore.mScoreProb2,
+    // suggestOfBall.mBallOdd, suggestOfBall.mBallValue, suggestOfBall.mTotalBallCount,
+    // suggestOfBall.mBallProfit,
+    // suggestOfBall.mBallProb0,
+    // suggestOfBall.mBallProb1, suggestOfBall.mBallProb2);
   }
 
   public static HistorySuggest suggest(int timeMin, List<Map<String, Object>> matches) {

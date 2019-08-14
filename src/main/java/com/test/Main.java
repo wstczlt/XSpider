@@ -16,7 +16,7 @@ public class Main {
 
     // Radar.main(null);
 
-//    new ScoreRules().make();
+    new ScoreRules().make();
     new BallRules().make();
   }
 

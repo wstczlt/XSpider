@@ -28,9 +28,9 @@ public class ScoreRules implements Keys {
   // 数据低于多少条则不要
   private static final int DEFAULT_MIN_RULE_COUNT = 500;
   // 最低胜率要求
-  private static final float DEFAULT_MIN_VICTORY_RATE = 0.45f;
+  private static final float DEFAULT_MIN_VICTORY_RATE = 0.55f;
   // 最低盈利率要求
-  private static final float DEFAULT_MIN_PROFIT_RATE = 1.02f;
+  private static final float DEFAULT_MIN_PROFIT_RATE = 1.05f;
 
   private final Set<String> mRuleKeys = new HashSet<>();
   private final Map<String, Float> mHostSum = new HashMap<>();
@@ -52,7 +52,7 @@ public class ScoreRules implements Keys {
     mRuleProfitRate.clear();
 
     List<Integer> timeMinArray = new ArrayList<>();
-    for (int i = 10; i <= 80; i = i + 1) {
+    for (int i = 0; i <= 80; i = i + 1) {
       timeMinArray.add(i);
     }
     final Float[] thresholds = new Float[] {1.02f, 1.05f, 1.08f, 1.10f};
@@ -66,7 +66,7 @@ public class ScoreRules implements Keys {
       mRuleKeys.clear();
       // 保存测试集
       List<Map<String, Object>> list =
-          matches.subList((int) (matches.size() * 0.1), matches.size());
+          matches.subList((int) (matches.size() * 0.2), matches.size());
 
       System.out.println("\n\n分钟: " + timeMin);
       List<Estimation> estimations = list.stream()
@@ -122,6 +122,7 @@ public class ScoreRules implements Keys {
   }
 
   private void print() {
+    System.out.println("\n\n\n\n\n");
     mRules.keySet().stream()
         .sorted((o1, o2) -> (int) (mRuleProfitRate.get(o2) * 1000 - mRuleProfitRate.get(o1) * 1000))
         // .sorted((o1, o2) -> mHostCount.get(o2) + mDrewCount.get(o2) + mCustomCount.get(o2)

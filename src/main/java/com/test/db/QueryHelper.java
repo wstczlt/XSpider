@@ -86,4 +86,41 @@ public class QueryHelper implements Keys {
   }
 
 
+  public static List<Map<String, Object>> similarQuery(int timeMin, Map<String, Object> match)
+      throws Exception {
+    float exactValue = 0.2f;
+    String selectSql =
+        "select original_scoreOdd, original_scoreOddOfVictory, original_scoreOddOfDefeat, " +
+            "opening_scoreOdd, opening_scoreOddOfVictory, opening_scoreOddOfDefeat, " +
+            "hostScore, customScore, "
+            + "min" + timeMin + "_hostScore, " + "min" + timeMin + "_customScore, " +
+            "min" + timeMin + "_scoreOdd, " + "min" + timeMin + "_scoreOddOfVictory, " + "min"
+            + timeMin + "_scoreOddOfDefeat, " +
+            "min" + timeMin + "_bigOdd, " + "min" + timeMin + "_bigOddOfVictory, " + "min"
+            + timeMin + "_bigOddOfDefeat, " +
+            " 1 from football where 1=1 ";
+    String andSql = "and matchID<>" + match.get(MATCH_ID) + " " +
+        "and abs(cast(opening_scoreOdd as number) - " + match.get("opening_scoreOdd") + ")<="
+        + exactValue + " " + "and abs(cast(opening_bigOdd as number) - "
+        + match.get("opening_bigOdd") + ")<=" + exactValue + " ";
+    if (timeMin <= 0) {
+      andSql =
+          andSql + "and abs(cast(original_scoreOdd as number) - " + match.get("original_scoreOdd")
+              + ")<=" + exactValue + " " + "and abs(cast(original_bigOdd as number) - "
+              + match.get("original_bigOdd") + ")<=" + exactValue + " ";
+    } else {
+      andSql = andSql + "and abs(cast(" + "min" + timeMin + "_hostScore" + " as number) - "
+          + match.get("min" + timeMin + "_hostScore") + ")<=" + exactValue + " " + "and abs(cast("
+          + "min" + timeMin + "_customScore" + " as number) - "
+          + match.get("min" + timeMin + "_customScore") + ")<=" + exactValue + " " + "and abs(cast("
+          + "min" + timeMin + "_scoreOdd" + " as number) - "
+          + match.get("min" + timeMin + "_scoreOdd") + ")<=" + exactValue + " " + "and abs(cast("
+          + "min" + timeMin + "_bigOdd" + " as number) - " + match.get("min" + timeMin + "_bigOdd")
+          + ")<=" + exactValue + " ";
+    }
+
+
+    String querySql = selectSql + andSql + SQL_AND + SQL_ST + "order by random() ";
+    return doQuery(querySql, 1000);
+  }
 }
