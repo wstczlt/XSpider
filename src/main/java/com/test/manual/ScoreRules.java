@@ -28,9 +28,9 @@ public class ScoreRules implements Keys {
   // 数据低于多少条则不要
   private static final int DEFAULT_MIN_RULE_COUNT = 500;
   // 最低胜率要求
-  private static final float DEFAULT_MIN_VICTORY_RATE = 0.55f;
+  private static final float DEFAULT_MIN_VICTORY_RATE = 0.45f;
   // 最低盈利率要求
-  private static final float DEFAULT_MIN_PROFIT_RATE = 0.95f;
+  private static final float DEFAULT_MIN_PROFIT_RATE = 1.02f;
 
   private final Set<String> mRuleKeys = new HashSet<>();
   private final Map<String, Float> mHostSum = new HashMap<>();
@@ -52,14 +52,14 @@ public class ScoreRules implements Keys {
     mRuleProfitRate.clear();
 
     List<Integer> timeMinArray = new ArrayList<>();
-    for (int i = 10; i <= 80; i = i + 5) {
+    for (int i = 10; i <= 80; i = i + 1) {
       timeMinArray.add(i);
     }
     final Float[] thresholds = new Float[] {1.02f, 1.05f, 1.08f, 1.10f};
     for (int timeMin : timeMinArray) {
       List<Map<String, Object>> matches = QueryHelper.doQuery(buildSql(timeMin), DEFAULT_SQL_COUNT);
       Collections.shuffle(matches);
-      List<Map<String, Object>> trains = matches.subList(0, (int) (matches.size() * 0.9));
+      List<Map<String, Object>> trains = matches.subList(0, (int) (matches.size() * 0.8));
       // 训练
       trains.forEach(map -> calMatch(map, timeMin));
       mRuleKeys.forEach(this::calRuleKeys);
@@ -88,9 +88,14 @@ public class ScoreRules implements Keys {
             .map(estimation -> Utils.calGain(timeMin, estimation.mMatch, estimation))
             .mapToInt(newGain -> newGain > 0 ? 1 : 0)
             .sum();
-        System.out.println(String.format("总预测场次：%d, 胜率: %.2f, 盈利: %.2f, 盈利率:%d%%",
+        int drew = filtered.stream()
+            .map(estimation -> Utils.calGain(timeMin, estimation.mMatch, estimation))
+            .mapToInt(newGain -> newGain == 0 ? 1 : 0)
+            .sum();
+        System.out.println(String.format("总预测场次：%d, 胜率: %.2f(%.2f), 盈利: %.2f, 盈利率:%d%%",
             filtered.size(),
             filtered.isEmpty() ? 0 : victory * 1.00f / filtered.size(),
+            filtered.isEmpty() ? 0 : drew * 1.00f / filtered.size(),
             profit,
             filtered.isEmpty() ? 0 : (int) profit * 100 / filtered.size()));
       });
