@@ -2,7 +2,6 @@ package com.test.manual;
 
 import static com.test.db.QueryHelper.SQL_AND;
 import static com.test.db.QueryHelper.SQL_BASE;
-import static com.test.db.QueryHelper.SQL_ORDER;
 import static com.test.db.QueryHelper.SQL_ST;
 import static com.test.manual.HistoryHelper.ballKeys;
 import static com.test.manual.HistoryHelper.fullKeys;
@@ -20,41 +19,51 @@ import com.test.db.QueryHelper;
 
 public class HistoryAnalyser implements Keys {
 
-  private static final int MIN_SIMILAR_COUNT = 100;
+  private static final int MIN_SIMILAR_COUNT = 200;
 
   public static void main(String[] args) throws Exception {
-    String querySql = SQL_BASE + SQL_AND + SQL_ST + SQL_ORDER;
+    String querySql = SQL_BASE + SQL_AND + SQL_ST + "order by RANDOM() ";
     List<Map<String, Object>> matches = QueryHelper.doQuery(querySql, 100);
     List<HistorySuggest> suggests = new ArrayList<>();
     for (Map<String, Object> match : matches) {
-      for (int timeMin = 0; timeMin <= 80; timeMin = timeMin + 10) {
+      System.out
+          .println("\n\n\nmatchID=" + match.get(MATCH_ID) + ", 比分: " + match.get(HOST_SCORE) + " - "
+              + match.get(CUSTOM_SCORE));
+      for (int timeMin = 0; timeMin <= 75; timeMin = timeMin + 15) {
         HistorySuggest historySuggest = suggest(timeMin, match);
-        System.out.println("matchID=" + match.get(MATCH_ID) + ", timeMin=" + timeMin);
-        if (historySuggest.mTotalCount <= 0) {
-          System.out.println("没有相似数据.");
-        }
-        if (historySuggest.mScoreProfit < 1f) {
-          System.out.println("没有推荐让分");
+        System.out.println("\n时间: " + timeMin + ", 精准: " + historySuggest.mFullKeys
+            + ", 比分: " + match.get("min" + timeMin + "_hostScore")
+            + " - " + match.get("min" + timeMin + "_customScore"));
+        if (historySuggest.mScoreProfit < 1.0f
+            || historySuggest.mTotalScoreCount < MIN_SIMILAR_COUNT) {
+          System.out.println(
+              String.format("让分(%d), 时间: %d, 推荐: 无", historySuggest.mTotalScoreCount, timeMin));
         } else {
-          System.out.println(String.format("让分(%d), 时间: %d, 盘口: %.2f[%s], 胜率: %.2f, 盈利率: %.2f",
-              historySuggest.mTotalCount, timeMin, historySuggest.mScoreOdd,
-              historySuggest.mScoreValue == 0 ? "主" : "客",
-              (historySuggest.mScoreValue == 0
-                  ? historySuggest.mScoreProb0
-                  : historySuggest.mScoreProb2) + historySuggest.mScoreProb1,
-              historySuggest.mScoreProfit));
+          System.out
+              .println(String.format("让分(%d), 时间: %d, 盘口: %.2f[%s], 胜率: %.2f(%.2f), 盈利率: %.2f",
+                  historySuggest.mTotalScoreCount, timeMin, historySuggest.mScoreOdd,
+                  historySuggest.mScoreValue == 0 ? "主" : "客",
+                  (historySuggest.mScoreValue == 0
+                      ? historySuggest.mScoreProb0
+                      : historySuggest.mScoreProb2) + historySuggest.mScoreProb1,
+                  historySuggest.mScoreProb1,
+                  historySuggest.mScoreProfit));
         }
 
-        if (historySuggest.mBallProfit < 1f) {
-          System.out.println("没有推荐大小球");
+        if (historySuggest.mBallProfit < 1.0f
+            || historySuggest.mTotalBallCount < MIN_SIMILAR_COUNT) {
+          System.out.println(
+              String.format("大小球(%d), 时间: %d, 推荐: 无", historySuggest.mTotalBallCount, timeMin));
         } else {
-          System.out.println(String.format("大小球(%d), 时间: %d, 盘口: %.2f[%s], 胜率: %.2f, 盈利率: %.2f",
-              historySuggest.mTotalCount, timeMin, historySuggest.mBallOdd,
-              historySuggest.mBallValue == 0 ? "大" : "小",
-              (historySuggest.mBallValue == 0
-                  ? historySuggest.mBallProb0
-                  : historySuggest.mBallProb2) + historySuggest.mBallProb1,
-              historySuggest.mBallProfit));
+          System.out
+              .println(String.format("大小球(%d), 时间: %d, 盘口: %.2f[%s], 胜率: %.2f(%.2f), 盈利率: %.2f",
+                  historySuggest.mTotalBallCount, timeMin, historySuggest.mBallOdd,
+                  historySuggest.mBallValue == 0 ? "大" : "小",
+                  (historySuggest.mBallValue == 0
+                      ? historySuggest.mBallProb0
+                      : historySuggest.mBallProb2) + historySuggest.mBallProb1,
+                  historySuggest.mBallProb1,
+                  historySuggest.mBallProfit));
         }
 
       }
@@ -64,17 +73,19 @@ public class HistoryAnalyser implements Keys {
 
   public static HistorySuggest suggest(int timeMin, Map<String, Object> match) throws Exception {
     HistorySuggest suggestOfFull = suggest(timeMin, similar(fullKeys(timeMin), match));
-    if (suggestOfFull.mTotalCount >= MIN_SIMILAR_COUNT) {
+    suggestOfFull.mFullKeys = true;
+    if (suggestOfFull.mTotalScoreCount >= MIN_SIMILAR_COUNT) {
       return suggestOfFull;
     }
 
     HistorySuggest suggestOfScore = suggest(timeMin, similar(oddKeys(timeMin), match));
     HistorySuggest suggestOfBall = suggest(timeMin, similar(ballKeys(timeMin), match));
-    return new HistorySuggest(suggestOfScore.mTotalCount + suggestOfBall.mTotalCount,
-        suggestOfScore.mScoreOdd, suggestOfScore.mScoreValue, suggestOfScore.mScoreProfit,
+    return new HistorySuggest(suggestOfScore.mScoreOdd, suggestOfScore.mScoreValue,
+        suggestOfScore.mTotalScoreCount, suggestOfScore.mScoreProfit,
         suggestOfScore.mScoreProb0,
         suggestOfScore.mScoreProb1, suggestOfScore.mScoreProb2,
-        suggestOfBall.mBallOdd, suggestOfBall.mBallValue, suggestOfBall.mBallProfit,
+        suggestOfBall.mBallOdd, suggestOfBall.mBallValue, suggestOfBall.mTotalBallCount,
+        suggestOfBall.mBallProfit,
         suggestOfBall.mBallProb0,
         suggestOfBall.mBallProb1, suggestOfBall.mBallProb2);
   }
@@ -136,7 +147,7 @@ public class HistoryAnalyser implements Keys {
           : (deltaBallScore >= 0.25f ? (0.5f + 0.5f * minBallOddOfVictory) : 0f);
       float customBallSum = deltaBallScore <= -0.5f
           ? minBallOddOfDefeat
-          : (deltaBallScore >= 0.25f ? (0.5f + 0.5f * minBallOddOfDefeat) : 0f);
+          : (deltaBallScore <= -0.25f ? (0.5f + 0.5f * minBallOddOfDefeat) : 0f);
       totalBallHostSum += hostBallSum;
       totalBallCustomSum += customBallSum;
       totalBallHostCount += (deltaBallScore > 0 ? 1 : 0);
@@ -163,8 +174,8 @@ public class HistoryAnalyser implements Keys {
     final float ballProb1 = 1.00f * totalBallDrewCount / totalCount;
     final float ballProb2 = 1.00f * totalBallCustomCount / totalCount;
 
-    return new HistorySuggest(totalCount, minScoreOdd,
-        scoreValue, scoreProfit, scoreProb0, scoreProb1, scoreProb2,
-        minBallOdd, ballValue, ballProfit, ballProb0, ballProb1, ballProb2);
+    return new HistorySuggest(minScoreOdd,
+        scoreValue, totalCount, scoreProfit, scoreProb0, scoreProb1, scoreProb2,
+        minBallOdd, ballValue, totalCount, ballProfit, ballProb0, ballProb1, ballProb2);
   }
 }

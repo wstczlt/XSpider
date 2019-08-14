@@ -26,7 +26,7 @@ public class HistoryHelper implements Keys {
     andSql.append("and matchID<>").append(match.get(MATCH_ID)).append(" ");
 
     String querySql = SQL_BASE + andSql + SQL_AND + SQL_ST + SQL_ORDER;
-    return QueryHelper.doQuery(querySql, 10000);
+    return QueryHelper.doQuery(querySql, 1000);
   }
 
   private static String andSql(Map<String, Object> match, String key, boolean exactly) {
@@ -37,7 +37,7 @@ public class HistoryHelper implements Keys {
 
     // 模糊匹配时, 误差不大于0.1即可, 例如1.83 ~ 1.87
     float exactValue = exactly ? 0f : 0.1f;
-    return "and abs(cast(" + key + " as number)-" + matchValue + ")<= " + exactValue + " ";
+    return "and abs(cast(" + key + " as number) - " + matchValue + ")<= " + exactValue + " ";
   }
 
 
