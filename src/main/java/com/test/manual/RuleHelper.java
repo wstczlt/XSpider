@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +26,7 @@ public class RuleHelper implements Keys {
   // 数据库查询条数
   private static final int DEFAULT_SQL_COUNT = 1000000;
   // 数据低于多少条则不要
-  private static final int DEFAULT_MIN_RULE_COUNT = 300;
+  private static final int DEFAULT_MIN_RULE_COUNT = 200;
   // 最低胜率要求
   private static final float DEFAULT_MIN_VICTORY_RATE = 0.55f;
   // 最低盈利率要求
@@ -48,7 +49,7 @@ public class RuleHelper implements Keys {
     for (int timeMin : timeMinArray) {
       List<Map<String, Object>> matches = QueryHelper.doQuery(buildSql(timeMin), DEFAULT_SQL_COUNT);
       Collections.shuffle(matches); // 打散
-      int trainCount = (int) (matches.size() * 0.8);
+      int trainCount = (int) (matches.size() * 0.7);
       List<Map<String, Object>> trains = matches.subList(0, trainCount);
       List<Map<String, Object>> test = matches.subList(trainCount, matches.size());
       final Map<String, Rule> rules = new HashMap<>();
@@ -105,11 +106,13 @@ public class RuleHelper implements Keys {
           return select || rules.remove(ruleKey) == null;
         })
         .filter(ruleKey -> {
+          AtomicInteger cnt = new AtomicInteger();
           double profit = test.stream().mapToDouble(match -> {
             final String newRuleKey = ruleKey(match, timeMin);
             if (!newRuleKey.equals(ruleKey)) {
               return 0;
             }
+            cnt.getAndIncrement();
             Rule rule = rules.get(ruleKey);
             Pair<Float, Float> newGain = rule.mType.mGainFunc.apply(new Pair<>(timeMin, match));
             if (newGain.first == 0 && newGain.second == 0) {
@@ -118,6 +121,7 @@ public class RuleHelper implements Keys {
             return rule.value() == 0 ? newGain.first - 1 : newGain.second - 1;
           }).sum();
 
+          System.out.println(ruleKey + ",  -> " + cnt.get() + " => " + profit);
           boolean select = profit > 0;
           return select || rules.remove(ruleKey) == null;
         }).forEach(s -> {});
