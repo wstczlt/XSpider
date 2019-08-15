@@ -3,6 +3,7 @@ package com.test.manual;
 import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.gson.Gson;
 import com.test.Keys;
 import com.test.db.QueryHelper;
 import com.test.tools.Pair;
@@ -54,14 +57,20 @@ public class RuleHelper implements Keys {
       train(timeMin, trains, rules);
       // 删除无用结果
       filter(timeMin, test, rules);
-      // 输出本轮结果
-      rules.values().stream()
-          .sorted((o1, o2) -> (int) (o2.profitRate() * 1000 - o1.profitRate() * 1000))
-          .forEach(rule -> System.out.println(rule.total() + "@" + rule.mRuleKey + "@"
-              + rule.profitRate() + "@" + rule.victoryRate() + "@" + rule.value()));
       // 保存有用的结果
       mRules.putAll(rules);
     }
+
+    // 持久化
+    String rulesJson = new Gson().toJson(mRules);
+    FileUtils.writeStringToFile(new File("rules_" + mRuleType.name().toLowerCase() + ".txt"),
+        rulesJson, "utf-8");
+
+    // 输出结果
+    mRules.values().stream()
+        .sorted((o1, o2) -> (int) (o2.profitRate() * 1000 - o1.profitRate() * 1000))
+        .forEach(rule -> System.out.println(rule.total() + "@" + rule.mRuleKey + "@"
+            + rule.profitRate() + "@" + rule.victoryRate() + "@" + rule.value()));
   }
 
   private void train(int timeMin, List<Map<String, Object>> trains, Map<String, Rule> rules) {
