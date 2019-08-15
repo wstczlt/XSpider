@@ -1,7 +1,7 @@
 package com.test;
 
-import com.test.manual.BallRules;
-import com.test.manual.ScoreRules;
+import com.test.manual.RuleHelper;
+import com.test.manual.RuleType;
 
 public class Main {
 
@@ -16,8 +16,8 @@ public class Main {
 
     // Radar.main(null);
 
-    new ScoreRules().make();
-    new BallRules().make();
+    new RuleHelper(RuleType.SCORE).calRules();
+    new RuleHelper(RuleType.BALL).calRules();
   }
 
 }
