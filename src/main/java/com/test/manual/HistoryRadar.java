@@ -2,6 +2,7 @@ package com.test.manual;
 
 import static com.test.Config.RADAR_THREAD_COUNT;
 import static com.test.db.QueryHelper.SQL_AND;
+import static com.test.db.QueryHelper.SQL_RT;
 import static com.test.db.QueryHelper.SQL_SELECT;
 import static com.test.db.QueryHelper.SQL_ST;
 import static com.test.db.QueryHelper.buildSqlIn;
@@ -60,9 +61,9 @@ public class HistoryRadar implements Keys {
     final List<Integer> matchIDs = factory.getMatchIDs();
     Config.LOGGER.log("Find MatchIDs: " + matchIDs);
     // 运行AI
-    // String querySql = SQL_SELECT + SQL_AND + SQL_RT + buildSqlIn(matchIDs);
+     String querySql = SQL_SELECT + SQL_AND + SQL_RT + buildSqlIn(matchIDs);
     // 回查语句
-    String querySql = SQL_SELECT + SQL_AND + SQL_ST + buildSqlIn(matchIDs);
+//    String querySql = SQL_SELECT + SQL_AND + SQL_ST + buildSqlIn(matchIDs);
     List<Map<String, Object>> matches = doQuery(querySql, 1000);
     System.out.println("比赛总场次: " + matches.size());
 

@@ -19,5 +19,5 @@ public class Config {
   // 实时抓取比赛时, 一圈不低于1分钟
   public static final long MIN_ONE_LOOP = 60 * 1000;
 
-  public static final String PROXY_STRING = "";
+  public static final String PROXY_STRING = "58.218.201.114:6936 58.218.200.214:5791 58.218.201.114:5811 58.218.201.74:5592 58.218.200.214:8169 58.218.201.74:8495";
 }
