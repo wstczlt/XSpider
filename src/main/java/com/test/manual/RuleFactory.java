@@ -21,26 +21,26 @@ import com.test.Keys;
 import com.test.db.QueryHelper;
 import com.test.tools.Pair;
 
-public class RuleHelper implements Keys {
+public class RuleFactory implements Keys {
 
   // 数据库查询条数
   private static final int DEFAULT_SQL_COUNT = 1000000;
   // 数据低于多少条则不要
   private static final int DEFAULT_MIN_RULE_COUNT = 200;
   // 最低胜率要求
-  private static final float DEFAULT_MIN_VICTORY_RATE = 0.55f;
+  private static final float DEFAULT_MIN_VICTORY_RATE = 0.54f;
   // 最低盈利率要求
-  private static final float DEFAULT_MIN_PROFIT_RATE = 1.05f;
+  private static final float DEFAULT_MIN_PROFIT_RATE = 1.02f;
 
   // 规则
   private final Map<String, Rule> mRules = new HashMap<>();
   private final RuleType mRuleType;
 
-  public RuleHelper(RuleType ruleType) {
+  public RuleFactory(RuleType ruleType) {
     mRuleType = ruleType;
   }
 
-  public void calRules() throws Exception {
+  public void build() throws Exception {
     mRules.clear();
     List<Integer> timeMinArray = new ArrayList<>();
     for (int i = -1; i <= 80; i = i + 1) {
@@ -50,14 +50,22 @@ public class RuleHelper implements Keys {
       List<Map<String, Object>> matches = QueryHelper.doQuery(buildSql(timeMin), DEFAULT_SQL_COUNT);
       Collections.shuffle(matches); // 打散
       int trainCount = (int) (matches.size() * 0.7);
+      int testCount = (int) (matches.size() * 0.1);
+      // 训练集
       List<Map<String, Object>> trains = matches.subList(0, trainCount);
-      List<Map<String, Object>> test = matches.subList(trainCount, matches.size());
+      // 三个测试集
+      List<Map<String, Object>> test1 = matches.subList(trainCount, trainCount + testCount);
+      List<Map<String, Object>> test2 = matches.subList(trainCount, trainCount + testCount * 2);
+      List<Map<String, Object>> test3 = matches.subList(trainCount, trainCount + testCount * 3);
       final Map<String, Rule> rules = new HashMap<>();
-
       // 聚类训练
       train(timeMin, trains, rules);
-      // 删除无用结果
-      filter(timeMin, test, rules);
+      // 简单筛选
+      filterByLimit(rules);
+      // 过三关
+      filterByTest(timeMin, test1, rules);
+      filterByTest(timeMin, test2, rules);
+      filterByTest(timeMin, test3, rules);
       // 保存有用的结果
       mRules.putAll(rules);
     }
@@ -94,7 +102,7 @@ public class RuleHelper implements Keys {
     });
   }
 
-  private void filter(int timeMin, List<Map<String, Object>> test, Map<String, Rule> rules) {
+  private void filterByLimit(Map<String, Rule> rules) {
     Set<String> keySet = new HashSet<>(rules.keySet());
     keySet.stream()
         .filter(ruleKey -> {
@@ -104,7 +112,12 @@ public class RuleHelper implements Keys {
               && rule.victoryRate() >= DEFAULT_MIN_VICTORY_RATE;
 
           return select || rules.remove(ruleKey) == null;
-        })
+        }).forEach(s -> {});
+  }
+
+  private void filterByTest(int timeMin, List<Map<String, Object>> test, Map<String, Rule> rules) {
+    Set<String> keySet = new HashSet<>(rules.keySet());
+    keySet.stream()
         .filter(ruleKey -> {
           AtomicInteger cnt = new AtomicInteger();
           double profit = test.stream().mapToDouble(match -> {
@@ -121,8 +134,10 @@ public class RuleHelper implements Keys {
             return rule.value() == 0 ? newGain.first - 1 : newGain.second - 1;
           }).sum();
 
-          System.out.println(ruleKey + ",  -> " + cnt.get() + " => " + profit);
-          boolean select = profit > 0;
+          double profitRate = profit / cnt.get();
+          System.out
+              .println(ruleKey + ",  -> " + cnt.get() + " => " + profit + "  => " + profitRate);
+          boolean select = profitRate >= DEFAULT_MIN_PROFIT_RATE;
           return select || rules.remove(ruleKey) == null;
         }).forEach(s -> {});
   }

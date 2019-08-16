@@ -1,6 +1,6 @@
 package com.test;
 
-import com.test.manual.RuleHelper;
+import com.test.manual.RuleFactory;
 import com.test.manual.RuleType;
 
 public class Main {
@@ -16,8 +16,8 @@ public class Main {
 
     // Radar.main(null);
 
-    new RuleHelper(RuleType.SCORE).calRules();
-    new RuleHelper(RuleType.BALL).calRules();
+    new RuleFactory(RuleType.SCORE).build();
+    new RuleFactory(RuleType.BALL).build();
   }
 
 }
