@@ -119,24 +119,24 @@ public class RuleFactory implements Keys {
     Set<String> keySet = new HashSet<>(rules.keySet());
     keySet.stream()
         .filter(ruleKey -> {
-          AtomicInteger cnt = new AtomicInteger();
+          AtomicInteger applied = new AtomicInteger();
           double profit = test.stream().mapToDouble(match -> {
             final String newRuleKey = ruleKey(match, timeMin);
             if (!newRuleKey.equals(ruleKey)) {
               return 0;
             }
-            cnt.getAndIncrement();
             Rule rule = rules.get(ruleKey);
             Pair<Float, Float> newGain = rule.mType.mGainFunc.apply(new Pair<>(timeMin, match));
             if (newGain.first == 0 && newGain.second == 0) {
               return 0; // 和
             }
+            applied.getAndIncrement();
             return rule.value() == 0 ? newGain.first - 1 : newGain.second - 1;
           }).sum();
 
-          double profitRate = profit / cnt.get();
+          double profitRate = profit / applied.get() + 1;
           System.out
-              .println(ruleKey + ",  -> " + cnt.get() + " => " + profit + "  => " + profitRate);
+              .println(ruleKey + ",  -> " + applied.get() + " => " + profit + "  => " + profitRate);
           boolean select = profitRate >= DEFAULT_MIN_PROFIT_RATE;
           return select || rules.remove(ruleKey) == null;
         }).forEach(s -> {});
