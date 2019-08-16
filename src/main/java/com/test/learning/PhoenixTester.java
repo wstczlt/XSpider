@@ -77,7 +77,7 @@ public class PhoenixTester {
     for (int i = 0; i < estimations.size(); i++) {
       final Map<String, Object> match = matches.get(i);
       // 随机结果
-      final Estimation randomEst = new Estimation(match,
+      final Estimation randomEst = new Estimation(model, match,
           new Random().nextInt(2) * 2,
           1f, 1f, 1f, 1f);
       final float randomGain = model.calGain(match, randomEst);

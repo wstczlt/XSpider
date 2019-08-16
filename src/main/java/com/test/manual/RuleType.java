@@ -3,6 +3,7 @@ package com.test.manual;
 import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
+import java.io.File;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -49,25 +50,25 @@ public enum RuleType implements Keys {
     final int timeMin = pair.first;
     final Map<String, Object> match = pair.second;
     final String timePrefix = "min" + timeMin + "_";
-    float minScoreOdd = timeMin > 0
+    float minBallOdd = timeMin > 0
         ? valueOfFloat(match.get(timePrefix + "bigOdd"))
         : valueOfFloat(match.get(OPENING_BIG_ODD));
-    float minScoreOddVictory = timeMin > 0
+    float minBallOddVictory = timeMin > 0
         ? valueOfFloat(match.get(timePrefix + "bigOddOfVictory"))
         : valueOfFloat(match.get(OPENING_BIG_ODD_OF_VICTORY));
-    float minScoreOddDefeat = timeMin > 0
+    float minBallOddDefeat = timeMin > 0
         ? valueOfFloat(match.get(timePrefix + "bigOddOfDefeat"))
         : valueOfFloat(match.get(OPENING_BIG_ODD_OF_DEFEAT));
     int hostScore = valueOfInt(match.get(HOST_SCORE));
     int customScore = valueOfInt(match.get(CUSTOM_SCORE));
-    float delta = hostScore + customScore - minScoreOdd;
+    float delta = hostScore + customScore - minBallOdd;
 
     float hostProfit = delta >= 0.5f
-        ? minScoreOddVictory
-        : (delta >= 0.25 ? (0.5f + 0.5f * minScoreOddVictory) : 0);
+        ? minBallOddVictory
+        : (delta >= 0.25 ? (0.5f + 0.5f * minBallOddVictory) : 0);
     float customProfit = delta <= -0.5f
-        ? minScoreOddDefeat
-        : (delta <= -0.25 ? (0.5f + 0.5f * minScoreOddDefeat) : 0);
+        ? minBallOddDefeat
+        : (delta <= -0.25 ? (0.5f + 0.5f * minBallOddDefeat) : 0);
 
     return new Pair<>(hostProfit, customProfit);
   });
@@ -77,6 +78,10 @@ public enum RuleType implements Keys {
 
   RuleType(Function<Pair<Integer, Map<String, Object>>, Pair<Float, Float>> gainFunc) {
     mGainFunc = gainFunc;
+  }
+
+  public File file() {
+    return new File("rules_" + name().toLowerCase() + ".txt");
   }
 
 }

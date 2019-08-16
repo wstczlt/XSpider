@@ -1,9 +1,5 @@
 package com.test.manual;
 
-import static com.test.tools.Utils.valueOfFloat;
-import static com.test.tools.Utils.valueOfInt;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +10,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
 import com.test.Keys;
@@ -72,8 +67,7 @@ public class RuleFactory implements Keys {
 
     // 持久化
     String rulesJson = new Gson().toJson(mRules);
-    FileUtils.writeStringToFile(new File("rules_" + mRuleType.name().toLowerCase() + ".txt"),
-        rulesJson, "utf-8");
+    FileUtils.writeStringToFile(mRuleType.file(), rulesJson, "utf-8");
 
     // 输出结果
     mRules.values().stream()
@@ -85,7 +79,7 @@ public class RuleFactory implements Keys {
   private void train(int timeMin, List<Map<String, Object>> trains, Map<String, Rule> rules) {
     // 循环计算每场比赛的盈利
     trains.forEach(match -> {
-      final String ruleKey = ruleKey(match, timeMin);
+      final String ruleKey = Rule.calKey(match, timeMin);
       Rule rule = rules.get(ruleKey);
       Pair<Float, Float> newGain = mRuleType.mGainFunc.apply(new Pair<>(timeMin, match));
 
@@ -121,7 +115,7 @@ public class RuleFactory implements Keys {
         .filter(ruleKey -> {
           AtomicInteger applied = new AtomicInteger();
           double profit = test.stream().mapToDouble(match -> {
-            final String newRuleKey = ruleKey(match, timeMin);
+            final String newRuleKey = Rule.calKey(match, timeMin);
             if (!newRuleKey.equals(ruleKey)) {
               return 0;
             }
@@ -140,26 +134,6 @@ public class RuleFactory implements Keys {
           boolean select = profitRate >= DEFAULT_MIN_PROFIT_RATE;
           return select || rules.remove(ruleKey) == null;
         }).forEach(s -> {});
-  }
-
-
-  private String ruleKey(Map<String, Object> match, int timeMin) {
-    String timePrefix = "min" + timeMin + "_";
-    int timeZone = timeMin <= 0 ? -1 : timeMin;
-    int minHostScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostScore"));
-    int minCustomScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customScore"));
-    float openingScoreOdd = valueOfFloat(match.get(OPENING_SCORE_ODD));
-    float openingBallOdd = valueOfFloat(match.get(OPENING_BIG_ODD));
-    float minScoreOdd = timeMin <= 0
-        ? valueOfFloat(match.get(ORIGINAL_SCORE_ODD))
-        : valueOfFloat(match.get(timePrefix + "scoreOdd"));
-    float minBallOdd = timeMin <= 0
-        ? valueOfFloat(match.get(OPENING_BIG_ODD))
-        : valueOfFloat(match.get(timePrefix + "bigOdd"));
-
-    return StringUtils.join(new float[] {timeZone, minHostScore, minCustomScore,
-        openingScoreOdd, openingBallOdd, minScoreOdd, minBallOdd},
-        '@');
   }
 
 

@@ -9,9 +9,9 @@ import org.apache.http.util.TextUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.test.Config;
+import com.test.dszuqiu.parser.OddParser;
 import com.test.dszuqiu.parser.RaceParser;
 import com.test.http.HttpJob;
-import com.test.pipeline.FilePipeline;
 
 import okhttp3.Request;
 
@@ -20,11 +20,11 @@ public class OddJob extends HttpJob {
   private static final String REQUEST_URL =
       "http://api.dszuqiu.com/v3/race/baijia/summary?token=&race_id=%d";
 
-  private final FilePipeline mFilePipeline;
+  // private final FilePipeline mFilePipeline;
 
   public OddJob(int matchID) {
     super(matchID);
-    mFilePipeline = new FilePipeline("/Users/Jesse/Desktop/odd", "_odd.txt");
+    // mFilePipeline = new FilePipeline("/Users/Jesse/Desktop/odd", "_odd.txt");
   }
 
   @Override
@@ -47,10 +47,10 @@ public class OddJob extends HttpJob {
     }
 
     // 存储
-    mFilePipeline.process(mMatchID + "", text);
+    // mFilePipeline.process(mMatchID + "", text);
 
     // 处理Json
-    // new OddParser(text, items).doParse();
+    new OddParser(text, items).doParse();
 
 
     Config.LOGGER.log(String.format("Found Match ID=%d",
