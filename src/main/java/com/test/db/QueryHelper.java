@@ -33,7 +33,9 @@ public class QueryHelper implements Keys {
       "AND cast(timeMin as int) >0 AND cast(timeMin as int) <= 100 " +
           "AND cast(hostScore as int) >=0 " +
           "AND cast(customScore as int) >=0 " +
-          SQL_LEAGUE +
+          "AND cast(hostBestShoot as int) >=0 " +
+          "AND cast(customBestShoot as int) >=0 " +
+           SQL_LEAGUE +
           "AND original_scoreOdd is not null " +
           "AND cast(original_scoreOddOfVictory as number) >=1.7 " +
           "AND cast(original_scoreOddOfDefeat as number) >=1.7 " +

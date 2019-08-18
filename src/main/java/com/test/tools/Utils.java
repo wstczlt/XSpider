@@ -248,4 +248,21 @@ public class Utils {
     Set<Object> seen = ConcurrentHashMap.newKeySet();
     return t -> seen.add(keyExtractor.apply(t));
   }
+
+  public static int timeMin(String matchStatus) {
+    try {
+      return Integer.parseInt(matchStatus);
+    } catch (Exception e) {
+      switch (matchStatus) {
+        case "全":
+          return 90;
+        case "未":
+          return -1;
+        case "中":
+          return 45;
+        default:
+          return -1;
+      }
+    }
+  }
 }

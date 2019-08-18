@@ -44,7 +44,7 @@ public class RaceParser implements Keys {
     mItems.put(MATCH_ID, matchID);
     mItems.put(MATCH_TIME, matchTime + "");
     mItems.put(MATCH_STATUS, race.getString("time_status"));
-    mItems.put(TIME_MIN, timeMin(race.getString("status")) + "");
+    mItems.put(TIME_MIN, Utils.timeMin(race.getString("status")) + "");
     mItems.put(ZHANYI, race.getString("zhanyi"));
 
 
@@ -324,20 +324,4 @@ public class RaceParser implements Keys {
     return null;
   }
 
-  private static int timeMin(String matchStatus) {
-    try {
-      return Integer.parseInt(matchStatus);
-    } catch (Exception e) {
-      switch (matchStatus) {
-        case "全":
-          return 90;
-        case "未":
-          return -1;
-        case "中":
-          return 45;
-        default:
-          return -1;
-      }
-    }
-  }
 }

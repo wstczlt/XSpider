@@ -1,6 +1,7 @@
 package com.test;
 
-import com.test.manual.HistoryRadar;
+import com.test.manual.RuleFactory;
+import com.test.manual.RuleType;
 
 public class Main {
 
@@ -15,10 +16,10 @@ public class Main {
 
     // Radar.main(null);
 
-    // new RuleFactory(RuleType.SCORE).build();
-    // new RuleFactory(RuleType.BALL).build();
+    new RuleFactory(RuleType.SCORE).build();
+//    new RuleFactory(RuleType.BALL).build();
 
-    new HistoryRadar().run(1);
+    // new HistoryRadar().run(100);
   }
 
 }

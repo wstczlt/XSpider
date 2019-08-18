@@ -1,6 +1,5 @@
 package com.test.manual;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,8 +17,6 @@ import com.test.tools.Pair;
 
 public class RuleFactory implements Keys {
 
-  // 数据库查询条数
-  private static final int DEFAULT_SQL_COUNT = 1000000;
   // 数据低于多少条则不要
   private static final int DEFAULT_MIN_RULE_COUNT = 200;
   // 最低胜率要求
@@ -37,32 +34,40 @@ public class RuleFactory implements Keys {
 
   public void build() throws Exception {
     mRules.clear();
-    List<Integer> timeMinArray = new ArrayList<>();
-    for (int i = -1; i <= 80; i = i + 1) {
-      timeMinArray.add(i);
-    }
-    for (int timeMin : timeMinArray) {
-      List<Map<String, Object>> matches = QueryHelper.doQuery(buildSql(timeMin), DEFAULT_SQL_COUNT);
-      Collections.shuffle(matches); // 打散
-      int trainCount = (int) (matches.size() * 0.7);
-      int testCount = (int) (matches.size() * 0.1);
-      // 训练集
-      List<Map<String, Object>> trains = matches.subList(0, trainCount);
-      // 三个测试集
-      List<Map<String, Object>> test1 = matches.subList(trainCount, trainCount + testCount);
-      List<Map<String, Object>> test2 = matches.subList(trainCount, trainCount + testCount * 2);
-      List<Map<String, Object>> test3 = matches.subList(trainCount, trainCount + testCount * 3);
-      final Map<String, Rule> rules = new HashMap<>();
-      // 聚类训练
-      train(timeMin, trains, rules);
-      // 简单筛选
-      filterByLimit(rules);
-      // 过三关
-      filterByTest(timeMin, test1, rules);
-      filterByTest(timeMin, test2, rules);
-      filterByTest(timeMin, test3, rules);
-      // 保存有用的结果
-      mRules.putAll(rules);
+    int start = 39, end = 40;
+    // 聚类训练, 摊到前后三分钟，增加训练数据量
+    final int delay = 3;
+    final Map<Integer, List<Map<String, Object>>> resultMap = new HashMap<>();
+    for (int timeMin = start; timeMin <= end + delay; timeMin++) {
+      final long timeStart = System.currentTimeMillis();
+      if (timeMin <= end) { // 训练部分
+        List<Map<String, Object>> train = QueryHelper.doQuery(buildSql(timeMin), 100_0000);
+        resultMap.put(timeMin, train);
+        train(timeMin, Math.max(start, timeMin - delay), Math.min(end, timeMin + delay), train);
+      }
+
+      final long trainEnd = System.currentTimeMillis();
+      // 测试部分
+      final int testMin = timeMin - delay;
+      List<Map<String, Object>> test = resultMap.remove(testMin);
+      if (test != null && !test.isEmpty()) {
+        Collections.shuffle(test);
+        // 数量过滤
+        filterByLimit(testMin);
+        // 抽样检测过滤
+        int testCount = test.size() / 5;
+        List<Map<String, Object>> test1 = test.subList(0, testCount);
+        List<Map<String, Object>> test2 = test.subList(testCount, testCount * 2);
+        List<Map<String, Object>> test3 = test.subList(testCount * 2, testCount * 3);
+        // 过三关，检验稳定性
+        filterByTest(testMin, test1);
+        filterByTest(testMin, test2);
+        filterByTest(testMin, test3);
+      }
+
+      final long testEnd = System.currentTimeMillis();
+      System.out.println(String.format("模型构建中: %d', 训练耗时: %.1fs, 校验耗时: %.1fs",
+          timeMin, (trainEnd - timeStart) / 1000.0, (testEnd - trainEnd) / 1000.0));
     }
 
     // 持久化
@@ -76,64 +81,72 @@ public class RuleFactory implements Keys {
             + rule.profitRate() + "@" + rule.victoryRate() + "@" + rule.value()));
   }
 
-  private void train(int timeMin, List<Map<String, Object>> trains, Map<String, Rule> rules) {
+  private void train(int valueMin, int keyMinStart, int keyMinEnd,
+      List<Map<String, Object>> trains) {
     // 循环计算每场比赛的盈利
     trains.forEach(match -> {
-      final String ruleKey = Rule.calKey(match, timeMin);
-      Rule rule = rules.get(ruleKey);
-      Pair<Float, Float> newGain = mRuleType.mGainFunc.apply(new Pair<>(timeMin, match));
+      Pair<Float, Float> newGain = mRuleType.calGain(valueMin, match);
+      for (int keyMin = keyMinStart; keyMin <= keyMinEnd; keyMin++) {
+        final String ruleKey = mRuleType.calKey(keyMin, valueMin, match);
+        final Rule rule = mRules.get(ruleKey);
+        float totalHostSum = (rule != null ? rule.mHostProfit : 0) + newGain.first;
+        float totalCustomSum = (rule != null ? rule.mCustomProfit : 0) + newGain.second;
+        int hostTotal = (rule != null ? rule.mHostTotal : 0) + (newGain.first > 0 ? 1 : 0);
+        int drewTotal = (rule != null ? rule.mDrewTotal : 0)
+            + ((newGain.first == 0 && newGain.second == 0) ? 1 : 0);
+        int customTotal = (rule != null ? rule.mCustomTotal : 0) + (newGain.second > 0 ? 1 : 0);
 
-      float totalHostSum = (rule != null ? rule.mHostProfit : 0) + newGain.first;
-      float totalCustomSum = (rule != null ? rule.mCustomProfit : 0) + newGain.second;
-      int hostTotal = (rule != null ? rule.mHostTotal : 0) + (newGain.first > 0 ? 1 : 0);
-      int drewTotal = (rule != null ? rule.mDrewTotal : 0)
-          + ((newGain.first == 0 && newGain.second == 0) ? 1 : 0);
-      int customTotal = (rule != null ? rule.mCustomTotal : 0) + (newGain.second > 0 ? 1 : 0);
-
-      Rule newRule = new Rule(mRuleType, ruleKey, timeMin, hostTotal, drewTotal, customTotal,
-          totalHostSum, totalCustomSum);
-      rules.put(ruleKey, newRule);
+        Rule newRule = new Rule(mRuleType, ruleKey, keyMin, hostTotal, drewTotal, customTotal,
+            totalHostSum, totalCustomSum);
+        mRules.put(ruleKey, newRule);
+      }
     });
   }
 
-  private void filterByLimit(Map<String, Rule> rules) {
-    Set<String> keySet = new HashSet<>(rules.keySet());
+  private void filterByLimit(int timeMin) {
+    Set<String> keySet = new HashSet<>(mRules.keySet());
     keySet.stream()
-        .filter(ruleKey -> {
-          final Rule rule = rules.get(ruleKey);
+        .filter(ruleKey -> mRules.get(ruleKey).mTimeMin == timeMin)
+        .forEach(ruleKey -> {
+          final Rule rule = mRules.get(ruleKey);
           boolean select = rule.total() >= DEFAULT_MIN_RULE_COUNT
               && rule.profitRate() >= DEFAULT_MIN_PROFIT_RATE
               && rule.victoryRate() >= DEFAULT_MIN_VICTORY_RATE;
 
-          return select || rules.remove(ruleKey) == null;
-        }).forEach(s -> {});
+          if (!select) {
+            mRules.remove(ruleKey);
+          }
+        });
   }
 
-  private void filterByTest(int timeMin, List<Map<String, Object>> test, Map<String, Rule> rules) {
-    Set<String> keySet = new HashSet<>(rules.keySet());
-    keySet.stream()
-        .filter(ruleKey -> {
-          AtomicInteger applied = new AtomicInteger();
-          double profit = test.stream().mapToDouble(match -> {
-            final String newRuleKey = Rule.calKey(match, timeMin);
-            if (!newRuleKey.equals(ruleKey)) {
-              return 0;
-            }
-            Rule rule = rules.get(ruleKey);
-            Pair<Float, Float> newGain = rule.mType.mGainFunc.apply(new Pair<>(timeMin, match));
-            if (newGain.first == 0 && newGain.second == 0) {
-              return 0; // 和
-            }
-            applied.getAndIncrement();
-            return rule.value() == 0 ? newGain.first - 1 : newGain.second - 1;
-          }).sum();
+  private void filterByTest(int timeMin, List<Map<String, Object>> test) {
+    Set<String> keySet = new HashSet<>(mRules.keySet());
+    keySet.forEach(ruleKey -> {
+      final Rule rule = mRules.get(ruleKey);
+      if (rule.mTimeMin != timeMin) {
+        return;
+      }
+      final AtomicInteger applied = new AtomicInteger();
+      double profit = test.stream().mapToDouble(match -> {
+        final String newRuleKey = mRuleType.calKey(timeMin, timeMin, match);
+        if (!newRuleKey.equals(ruleKey)) {
+          return 0;
+        }
+        Pair<Float, Float> newGain = rule.mType.calGain(timeMin, match);
+        if (newGain.first == 0 && newGain.second == 0) {
+          return 0; // 和
+        }
+        applied.getAndIncrement();
+        return rule.value() == 0 ? newGain.first : newGain.second;
+      }).sum();
 
-          double profitRate = profit / applied.get() + 1;
-          System.out
-              .println(ruleKey + ",  -> " + applied.get() + " => " + profit + "  => " + profitRate);
-          boolean select = profitRate >= DEFAULT_MIN_PROFIT_RATE;
-          return select || rules.remove(ruleKey) == null;
-        }).forEach(s -> {});
+      final int total = applied.get();
+      double profitRate = profit / (total + 0.01);
+      if (total < 10 || profitRate < DEFAULT_MIN_PROFIT_RATE) {
+        mRules.remove(ruleKey);
+      }
+      System.out.println(rule.total() + "@" + ruleKey + ", -> " + total + " => " + profitRate);
+    });
   }
 
 
@@ -162,6 +175,8 @@ public class RuleFactory implements Keys {
             + (timeMin > 0 ? (timePrefix + "customScore, ") : "")
             + (timeMin > 0 ? (timePrefix + "hostBestShoot, ") : "")
             + (timeMin > 0 ? (timePrefix + "customBestShoot, ") : "")
+            + (timeMin > 0 ? (timePrefix + "hostDanger, ") : "")
+            + (timeMin > 0 ? (timePrefix + "customDanger, ") : "")
             + "1 "
             + "from football where 1=1 "
             + "and " + (timeMin > 0 ? (timePrefix + "scoreOddOfVictory>=1.7 ") : "1=1 ")

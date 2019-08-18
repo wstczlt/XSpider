@@ -5,16 +5,90 @@ import static com.test.tools.Utils.valueOfInt;
 
 import java.io.File;
 import java.util.Map;
-import java.util.function.Function;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.test.Keys;
 import com.test.tools.Pair;
 
 public enum RuleType implements Keys {
 
-  SCORE(pair -> {
-    final int timeMin = pair.first;
-    final Map<String, Object> match = pair.second;
+  SCORE,
+  BALL;
+
+  public final File file() {
+    return new File("rules_" + name().toLowerCase() + ".txt");
+  }
+
+  public final Pair<Float, Float> calGain(int timeMin, Map<String, Object> match) {
+    switch (this) {
+      default:
+      case SCORE:
+        return calGainScore(timeMin, match);
+      case BALL:
+        return calGainBall(timeMin, match);
+    }
+  }
+
+  public final String calKey(int keyMin, int valueMin, Map<String, Object> match) {
+    switch (this) {
+      default:
+      case SCORE:
+        return calKeyScore(keyMin, valueMin, match);
+      case BALL:
+        return calKeyBall(keyMin, valueMin, match);
+    }
+  }
+
+  private String calKeyScore(int keyMin, int valueMin, Map<String, Object> match) {
+    String timePrefix = "min" + valueMin + "_";
+    int minHostScore = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostScore"));
+    int minCustomScore = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customScore"));
+    int minHostShoot = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostBestShoot"));
+    int minCustomShoot = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customBestShoot"));
+    // TODO 换成控球率
+    int minHostDanger = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostDanger"));
+    int minCustomDanger = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customDanger"));
+
+    float openingScoreOdd = valueOfFloat(match.get(Keys.OPENING_SCORE_ODD));
+    float openingBallOdd = valueOfFloat(match.get(Keys.OPENING_BIG_ODD));
+    float minScoreOdd = valueMin <= 0
+        ? valueOfFloat(match.get(Keys.ORIGINAL_SCORE_ODD))
+        : valueOfFloat(match.get(timePrefix + "scoreOdd"));
+    int scoreDistance = Integer.compare(minHostScore - minCustomScore, 0);
+    int shootDistance = Integer.compare((minHostShoot - minCustomShoot) / 2, 0);
+
+    return StringUtils.join(new float[] {
+        ordinal(), keyMin,
+        openingScoreOdd, minScoreOdd,
+        scoreDistance, shootDistance},
+        '@');
+  }
+
+  private String calKeyBall(int keyMin, int valueMin, Map<String, Object> match) {
+    String timePrefix = "min" + valueMin + "_";
+    int minHostScore = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostScore"));
+    int minCustomScore = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customScore"));
+    int minHostShoot = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostBestShoot"));
+    int minCustomShoot = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customBestShoot"));
+
+    float openingScoreOdd = valueOfFloat(match.get(Keys.OPENING_SCORE_ODD));
+    float openingBallOdd = valueOfFloat(match.get(Keys.OPENING_BIG_ODD));
+    float minBallOdd = valueMin <= 0
+        ? valueOfFloat(match.get(Keys.OPENING_BIG_ODD))
+        : valueOfFloat(match.get(timePrefix + "bigOdd"));
+    int scoreTotal = minHostScore + minCustomScore;
+    // 每10分钟平均射正次数
+    int shootTotal = (minHostShoot + minCustomShoot) * valueMin / 10;
+
+    return StringUtils.join(new float[] {
+        ordinal(), keyMin,
+        openingBallOdd, minBallOdd,
+        scoreTotal, shootTotal},
+        '@');
+  }
+
+  private Pair<Float, Float> calGainScore(int timeMin, Map<String, Object> match) {
     final String timePrefix = "min" + timeMin + "_";
     float minScoreOdd = timeMin > 0
         ? valueOfFloat(match.get(timePrefix + "scoreOdd"))
@@ -42,13 +116,9 @@ public enum RuleType implements Keys {
             ? (0.5f + 0.5f * minScoreOddDefeat)
             : 0);
     return new Pair<>(hostProfit, customProfit);
-  }),
+  }
 
-
-
-  BALL(pair -> {
-    final int timeMin = pair.first;
-    final Map<String, Object> match = pair.second;
+  private Pair<Float, Float> calGainBall(int timeMin, Map<String, Object> match) {
     final String timePrefix = "min" + timeMin + "_";
     float minBallOdd = timeMin > 0
         ? valueOfFloat(match.get(timePrefix + "bigOdd"))
@@ -71,17 +141,6 @@ public enum RuleType implements Keys {
         : (delta <= -0.25 ? (0.5f + 0.5f * minBallOddDefeat) : 0);
 
     return new Pair<>(hostProfit, customProfit);
-  });
-
-
-  public final Function<Pair<Integer, Map<String, Object>>, Pair<Float, Float>> mGainFunc;
-
-  RuleType(Function<Pair<Integer, Map<String, Object>>, Pair<Float, Float>> gainFunc) {
-    mGainFunc = gainFunc;
-  }
-
-  public File file() {
-    return new File("rules_" + name().toLowerCase() + ".txt");
   }
 
 }
