@@ -18,7 +18,7 @@ import com.test.tools.Pair;
 public class RuleFactory implements Keys {
 
   // 数据低于多少条则不要
-  private static final int DEFAULT_MIN_RULE_COUNT = 200;
+  private static final int DEFAULT_MIN_RULE_COUNT = 500;
   // 最低胜率要求
   private static final float DEFAULT_MIN_VICTORY_RATE = 0.54f;
   // 最低盈利率要求
@@ -34,7 +34,7 @@ public class RuleFactory implements Keys {
 
   public void build() throws Exception {
     mRules.clear();
-    int start = 39, end = 40;
+    int start = 60, end = 63;
     // 聚类训练, 摊到前后三分钟，增加训练数据量
     final int delay = 3;
     final Map<Integer, List<Map<String, Object>>> resultMap = new HashMap<>();
@@ -51,18 +51,15 @@ public class RuleFactory implements Keys {
       final int testMin = timeMin - delay;
       List<Map<String, Object>> test = resultMap.remove(testMin);
       if (test != null && !test.isEmpty()) {
-        Collections.shuffle(test);
         // 数量过滤
         filterByLimit(testMin);
-        // 抽样检测过滤
+        int testRound = 3;
         int testCount = test.size() / 5;
-        List<Map<String, Object>> test1 = test.subList(0, testCount);
-        List<Map<String, Object>> test2 = test.subList(testCount, testCount * 2);
-        List<Map<String, Object>> test3 = test.subList(testCount * 2, testCount * 3);
-        // 过三关，检验稳定性
-        filterByTest(testMin, test1);
-        filterByTest(testMin, test2);
-        filterByTest(testMin, test3);
+        // 抽样检测过滤
+        for (int i = 0; i < testRound; i++) {
+          Collections.shuffle(test);
+          filterByTest(testMin, test.subList(0, testCount));
+        }
       }
 
       final long testEnd = System.currentTimeMillis();

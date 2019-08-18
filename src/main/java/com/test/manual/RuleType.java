@@ -56,7 +56,7 @@ public enum RuleType implements Keys {
         ? valueOfFloat(match.get(Keys.ORIGINAL_SCORE_ODD))
         : valueOfFloat(match.get(timePrefix + "scoreOdd"));
     int scoreDistance = Integer.compare(minHostScore - minCustomScore, 0);
-    // 每20分钟射正差
+    // 射正强弱(2个以内差距不算差距)
     int shootDistance = (minHostShoot - minCustomShoot) * 20 / valueMin;
 
     return StringUtils.join(new float[] {
