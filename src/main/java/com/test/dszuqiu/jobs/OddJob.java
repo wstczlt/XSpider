@@ -53,7 +53,6 @@ public class OddJob extends HttpJob {
     new OddParser(text, items).doParse();
 
 
-    Config.LOGGER.log(String.format("Found Match ID=%d",
-        mMatchID));
+    Config.LOGGER.log(String.format("Found Match ID=%d",   mMatchID));
   }
 }

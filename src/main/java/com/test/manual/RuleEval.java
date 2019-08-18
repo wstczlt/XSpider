@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
 
@@ -59,7 +60,8 @@ public class RuleEval implements Keys {
       return Collections.emptyList();
     }
 
-    Estimation scoreEstimation = null, ballEstimation = null;
+    AtomicReference<Estimation> scoreEstimation = new AtomicReference<>();
+    AtomicReference<Estimation> ballEstimation = new AtomicReference<>();
     for (int timeMin = 0; timeMin <= nowMin; timeMin++) {
       final String timePrefix = "min" + timeMin + "_";
       int minHostScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostScore"));
@@ -70,26 +72,26 @@ public class RuleEval implements Keys {
       }
       // 遍历规则
       final String scoreKey = RuleType.SCORE.calKey(timeMin, timeMin, match);
-      scoreEstimation = mRules.stream()
+      mRules.stream()
           .filter(rule -> scoreKey.equals(rule.mRuleKey))
           .findFirst()
           .map(rule -> new Estimation(rule, match, rule.value(), rule.prob0(), rule.prob1(),
               rule.prob2(), rule.profitRate()))
-          .get();
+          .ifPresent(scoreEstimation::set);
 
       final String ballKey = RuleType.BALL.calKey(timeMin, timeMin, match);
-      ballEstimation = mRules.stream()
+      mRules.stream()
           .filter(rule -> ballKey.equals(rule.mRuleKey))
           .findFirst()
           .map(rule -> new Estimation(rule, match, rule.value(), rule.prob0(), rule.prob1(),
               rule.prob2(), rule.profitRate()))
-          .get();
+          .ifPresent(ballEstimation::set);
     }
 
     // 返回让球和大小球推荐
     List<Estimation> list = new ArrayList<>();
-    if (scoreEstimation != null) list.add(scoreEstimation);
-    if (ballEstimation != null) list.add(ballEstimation);
+    if (scoreEstimation.get() != null) list.add(scoreEstimation.get());
+    if (ballEstimation.get() != null) list.add(ballEstimation.get());
 
     return list;
   }
