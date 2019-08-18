@@ -56,7 +56,8 @@ public enum RuleType implements Keys {
         ? valueOfFloat(match.get(Keys.ORIGINAL_SCORE_ODD))
         : valueOfFloat(match.get(timePrefix + "scoreOdd"));
     int scoreDistance = Integer.compare(minHostScore - minCustomScore, 0);
-    int shootDistance = Integer.compare((minHostShoot - minCustomShoot) / 2, 0);
+    // 每20分钟射正差
+    int shootDistance = (minHostShoot - minCustomShoot) * 20 / valueMin;
 
     return StringUtils.join(new float[] {
         ordinal(), keyMin,
@@ -78,8 +79,8 @@ public enum RuleType implements Keys {
         ? valueOfFloat(match.get(Keys.OPENING_BIG_ODD))
         : valueOfFloat(match.get(timePrefix + "bigOdd"));
     int scoreTotal = minHostScore + minCustomScore;
-    // 每10分钟平均射正次数
-    int shootTotal = (minHostShoot + minCustomShoot) * valueMin / 10;
+    // 每20分钟平均射正次数
+    int shootTotal = (minHostShoot + minCustomShoot) * 20 / valueMin;
 
     return StringUtils.join(new float[] {
         ordinal(), keyMin,
