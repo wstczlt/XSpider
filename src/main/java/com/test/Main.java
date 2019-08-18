@@ -17,7 +17,7 @@ public class Main {
     // Radar.main(null);
 
     new RuleFactory(RuleType.SCORE).build();
-//    new RuleFactory(RuleType.BALL).build();
+    new RuleFactory(RuleType.BALL).build();
 
     // new HistoryRadar().run(100);
   }

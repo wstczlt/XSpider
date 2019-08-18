@@ -17,11 +17,6 @@ public class DbHelper {
       mDataSource.setDriverClassName("org.sqlite.JDBC");
       String databaseUrl = Config.DATABASE_URL;
       mDataSource.setUrl(databaseUrl);
-      // 高级设置
-      mDataSource.setInitialSize(10);// 初始化连接
-      mDataSource.setMinIdle(5);// 最小空闲连接
-      mDataSource.setMaxIdle(20);// 最大空闲连接
-      mDataSource.setMaxActive(50);// 最大连接数量
     }
 
     return mDataSource;

@@ -18,7 +18,7 @@ import com.test.tools.Pair;
 public class RuleFactory implements Keys {
 
   // 数据低于多少条则不要
-  private static final int DEFAULT_MIN_RULE_COUNT = 500;
+  private static final int DEFAULT_MIN_RULE_COUNT = 300;
   // 最低胜率要求
   private static final float DEFAULT_MIN_VICTORY_RATE = 0.54f;
   // 最低盈利率要求
@@ -34,37 +34,35 @@ public class RuleFactory implements Keys {
 
   public void build() throws Exception {
     mRules.clear();
-    int start = 60, end = 63;
     // 聚类训练, 摊到前后三分钟，增加训练数据量
     final int delay = 3;
-    final Map<Integer, List<Map<String, Object>>> resultMap = new HashMap<>();
-    for (int timeMin = start; timeMin <= end + delay; timeMin++) {
+    int start = -1, end = 80;
+    // int start = 3, end = 6;
+    for (int timeMin = start; timeMin <= end; timeMin++) {
       final long timeStart = System.currentTimeMillis();
-      if (timeMin <= end) { // 训练部分
-        List<Map<String, Object>> train = QueryHelper.doQuery(buildSql(timeMin), 100_0000);
-        resultMap.put(timeMin, train);
-        train(timeMin, Math.max(start, timeMin - delay), Math.min(end, timeMin + delay), train);
-      }
+      // 查询
+      List<Map<String, Object>> train = QueryHelper.doQuery(buildSql(timeMin), 100_0000);
+      final long queryEnd = System.currentTimeMillis();
 
+      // 训练
+      train(timeMin, timeMin, Math.min(end, timeMin + delay), train);
       final long trainEnd = System.currentTimeMillis();
-      // 测试部分
-      final int testMin = timeMin - delay;
-      List<Map<String, Object>> test = resultMap.remove(testMin);
-      if (test != null && !test.isEmpty()) {
-        // 数量过滤
-        filterByLimit(testMin);
-        int testRound = 3;
-        int testCount = test.size() / 5;
-        // 抽样检测过滤
-        for (int i = 0; i < testRound; i++) {
-          Collections.shuffle(test);
-          filterByTest(testMin, test.subList(0, testCount));
-        }
-      }
 
+      // 条件过滤
+      filterByLimit(timeMin);
+      // 随机抽样检测过滤
+      int testRound = 5, testCount = train.size() / 5;
+      for (int i = 0; i < testRound; i++) {
+        Collections.shuffle(train);
+        filterByTest(timeMin, train.subList(0, testCount));
+      }
       final long testEnd = System.currentTimeMillis();
-      System.out.println(String.format("模型构建中: %d', 训练耗时: %.1fs, 校验耗时: %.1fs",
-          timeMin, (trainEnd - timeStart) / 1000.0, (testEnd - trainEnd) / 1000.0));
+
+      System.out.println(String.format("模型构建中: %d', 查询耗时: %.1fs, 训练耗时: %.1fs, 校验耗时: %.1fs",
+          timeMin,
+          (queryEnd - timeStart) / 1000.0,
+          (trainEnd - queryEnd) / 1000.0,
+          (testEnd - trainEnd) / 1000.0));
     }
 
     // 持久化
@@ -76,6 +74,8 @@ public class RuleFactory implements Keys {
         .sorted((o1, o2) -> (int) (o2.profitRate() * 1000 - o1.profitRate() * 1000))
         .forEach(rule -> System.out.println(rule.total() + "@" + rule.mRuleKey + "@"
             + rule.profitRate() + "@" + rule.victoryRate() + "@" + rule.value()));
+
+    System.gc();
   }
 
   private void train(int valueMin, int keyMinStart, int keyMinEnd,
@@ -104,16 +104,13 @@ public class RuleFactory implements Keys {
     Set<String> keySet = new HashSet<>(mRules.keySet());
     keySet.stream()
         .filter(ruleKey -> mRules.get(ruleKey).mTimeMin == timeMin)
-        .forEach(ruleKey -> {
+        .filter(ruleKey -> {
           final Rule rule = mRules.get(ruleKey);
-          boolean select = rule.total() >= DEFAULT_MIN_RULE_COUNT
-              && rule.profitRate() >= DEFAULT_MIN_PROFIT_RATE
-              && rule.victoryRate() >= DEFAULT_MIN_VICTORY_RATE;
-
-          if (!select) {
-            mRules.remove(ruleKey);
-          }
-        });
+          return rule.total() < DEFAULT_MIN_RULE_COUNT
+              || rule.profitRate() < DEFAULT_MIN_PROFIT_RATE
+              || rule.victoryRate() < DEFAULT_MIN_VICTORY_RATE;
+        })
+        .forEach(mRules::remove);
   }
 
   private void filterByTest(int timeMin, List<Map<String, Object>> test) {
@@ -142,7 +139,7 @@ public class RuleFactory implements Keys {
       if (total < 10 || profitRate < DEFAULT_MIN_PROFIT_RATE) {
         mRules.remove(ruleKey);
       }
-      System.out.println(rule.total() + "@" + ruleKey + ", -> " + total + " => " + profitRate);
+      // System.out.println(rule.total() + "@" + ruleKey + ", -> " + total + " => " + profitRate);
     });
   }
 
@@ -179,6 +176,6 @@ public class RuleFactory implements Keys {
             + "and " + (timeMin > 0 ? (timePrefix + "scoreOddOfVictory>=1.7 ") : "1=1 ")
             + "and " + (timeMin > 0 ? (timePrefix + "scoreOddOfDefeat>=1.7 ") : "1=1 ");
 
-    return selectSql + QueryHelper.SQL_AND + QueryHelper.SQL_ST + " order by random() ";
+    return selectSql + QueryHelper.SQL_AND + QueryHelper.SQL_ST + " ";
   }
 }

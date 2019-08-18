@@ -35,7 +35,7 @@ public class QueryHelper implements Keys {
           "AND cast(customScore as int) >=0 " +
           "AND cast(hostBestShoot as int) >=0 " +
           "AND cast(customBestShoot as int) >=0 " +
-           SQL_LEAGUE +
+          SQL_LEAGUE +
           "AND original_scoreOdd is not null " +
           "AND cast(original_scoreOddOfVictory as number) >=1.7 " +
           "AND cast(original_scoreOddOfDefeat as number) >=1.7 " +
@@ -70,7 +70,7 @@ public class QueryHelper implements Keys {
 
     final List<Map<String, Object>> matches = runner.query(newSql, new MapListHandler());
     // System.out.println(sql);
-    // System.out.println("查询结果条数: " + matches.size() + "\n\n");
+    System.out.println("查询结果条数: " + matches.size() + "\n\n");
     return matches;
   }
 
