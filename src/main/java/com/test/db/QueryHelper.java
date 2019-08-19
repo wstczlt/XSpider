@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 
+import com.test.Config;
 import com.test.Keys;
 
 @SuppressWarnings("WeakerAccess")
@@ -67,8 +68,8 @@ public class QueryHelper implements Keys {
     String newSql = sql + " limit " + limit;
 
     final List<Map<String, Object>> matches = runner.query(newSql, new MapListHandler());
-    System.out.println(sql);
-    System.out.println("查询结果条数: " + matches.size() + "\n\n");
+    Config.LOGGER.log(sql);
+    Config.LOGGER.log("查询结果条数: " + matches.size() + "\n\n");
     return matches;
   }
 
