@@ -2,7 +2,6 @@ package com.test.manual;
 
 import static com.test.Config.RADAR_THREAD_COUNT;
 import static com.test.db.QueryHelper.SQL_AND;
-import static com.test.db.QueryHelper.SQL_MANBETX;
 import static com.test.db.QueryHelper.SQL_RT;
 import static com.test.db.QueryHelper.SQL_SELECT;
 import static com.test.db.QueryHelper.buildSqlIn;
@@ -62,8 +61,7 @@ public class HistoryRadar implements Keys {
     final List<Integer> matchIDs = factory.getMatchIDs();
     Config.LOGGER.log("Find MatchIDs: " + matchIDs);
     // 运行AI
-    String querySql =
-        SQL_SELECT + SQL_MANBETX + SQL_AND + SQL_RT + buildSqlIn(matchIDs);
+    String querySql = SQL_SELECT + SQL_AND + SQL_RT + buildSqlIn(matchIDs);
     // 回查语句
     // String querySql = SQL_SELECT + SQL_AND + SQL_ST + buildSqlIn(matchIDs);
     List<Map<String, Object>> matches = doQuery(querySql, 1000);
@@ -71,7 +69,7 @@ public class HistoryRadar implements Keys {
 
     matches.forEach(match -> RULE_EVAL.eval(valueOfInt(match.get(TIME_MIN)), match)
         .stream()
-        .filter(estimation -> estimation.mProfitRate>= 1.05f)
+        .filter(estimation -> estimation.mProfitRate >= 1.05f)
         .sorted((o1, o2) -> (int) (o2.mProfitRate * 1000 - o1.mProfitRate * 1000))
         .forEach(est -> CONSUMERS.forEach(consumer -> consumer.accept(est))));
   }
