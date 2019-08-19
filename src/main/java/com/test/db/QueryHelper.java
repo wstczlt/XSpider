@@ -30,11 +30,14 @@ public class QueryHelper implements Keys {
           "and league not like '土%' " +
           "";
 
+  public static String SQL_MANBETX = "and cast(ji_7_scoreOddOfVictory as number)>0 ";
+
   public static final String SQL_AND =
       "AND cast(timeMin as int) >0 AND cast(timeMin as int) <= 100 " +
           "AND cast(hostScore as int) >=0 " +
           "AND cast(customScore as int) >=0 " +
-          SQL_LEAGUE +
+          // SQL_LEAGUE +
+          SQL_MANBETX +
           "AND original_scoreOdd is not null " +
           "AND cast(original_scoreOddOfVictory as number) >=1.7 " +
           "AND cast(original_scoreOddOfDefeat as number) >=1.7 " +
