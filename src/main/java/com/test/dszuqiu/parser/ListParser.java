@@ -15,8 +15,7 @@ import com.test.tools.Utils;
 
 public class ListParser {
 
-  private final String mRawText;
-  private static final Predicate<JSONObject> TIME_FILTER = jsonObject -> {
+  public static final Predicate<JSONObject> TIME_FILTER = jsonObject -> {
     String statusString = jsonObject.getString("status");
     int timeMin = Utils.timeMin(statusString);
 
@@ -25,7 +24,7 @@ public class ListParser {
         && timeMin >= 0 && timeMin <= 80;
   };
 
-  private static final Predicate<JSONObject> RACE_FILTER = jsonObject -> {
+  public static final Predicate<JSONObject> RACE_FILTER = jsonObject -> {
     JSONObject league = jsonObject.getJSONObject("league");
     if (league == null) {
       return false;
@@ -37,8 +36,12 @@ public class ListParser {
     return zc + jc + bd > 0; // 有一个不是0就行
   };
 
-  public ListParser(String rawText) {
+  private final String mRawText;
+  private final Predicate<JSONObject> mPredicate;
+
+  public ListParser(String rawText, Predicate<JSONObject> predicate) {
     mRawText = rawText;
+    mPredicate = predicate;
   }
 
   public List<Integer> doParse() {
@@ -56,8 +59,8 @@ public class ListParser {
 
     return races.stream()
         .map(o -> (JSONObject) o)
-//        .filter(RACE_FILTER)
-        .filter(TIME_FILTER)
+        // .filter(RACE_FILTER)
+        .filter(mPredicate)
         .map(value -> valueOfInt(value.getString("id")))
         .collect(Collectors.toList());
   }

@@ -20,13 +20,15 @@ public class DsHistoryJobFactory {
   private static final String REQUEST_URL =
       "http://api.dszuqiu.com/v6/diary?day=%s&page=1&token=&only_need=0&per_page=5000";
 
+  private final int mLastDays;
   private final OkHttpClient mClient;
   private final HttpJobBuilder mBuilder;
 
   private List<List<HttpJob>> mJobs;
   private List<Integer> mMatchIDs;
 
-  public DsHistoryJobFactory(HttpJobBuilder builder) {
+  public DsHistoryJobFactory(int lastDays, HttpJobBuilder builder) {
+    mLastDays = lastDays;
     mBuilder = builder;
     mClient = HttpUtils.buildHttpClient();
   }
@@ -52,7 +54,7 @@ public class DsHistoryJobFactory {
   private List<Integer> realtime() throws Exception {
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
     List<Integer> matchIDs = new ArrayList<>();
-    for (int i = -14; i <= 1; i++) { // 过去到未来
+    for (int i = -mLastDays; i <= 1; i++) { // 过去到未来
       matchIDs.addAll(request(String.format(REQUEST_URL,
           sdf.format(new Date(System.currentTimeMillis() + 86400000 * i)))));
     }
@@ -72,6 +74,6 @@ public class DsHistoryJobFactory {
 
 
     String html = response.body().string();
-    return new ListParser(html).doParse();
+    return new ListParser(html, jsonObject -> true).doParse();
   }
 }

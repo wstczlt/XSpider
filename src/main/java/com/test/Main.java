@@ -1,6 +1,6 @@
 package com.test;
 
-import com.test.manual.HistoryRadar;
+import com.test.manual.HistoryTester;
 
 public class Main {
 
@@ -18,7 +18,9 @@ public class Main {
     // new RuleFactory(RuleType.SCORE).build();
     // new RuleFactory(RuleType.BALL).build();
 
-    new HistoryRadar().run(100);
+    // new HistoryRadar().run(100);
+
+    HistoryTester.doTest();
   }
 
 }

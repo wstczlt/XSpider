@@ -64,6 +64,6 @@ public class DsJobFactory {
 
 
     String html = response.body().string();
-    return new ListParser(html).doParse();
+    return new ListParser(html, ListParser.TIME_FILTER).doParse();
   }
 }
