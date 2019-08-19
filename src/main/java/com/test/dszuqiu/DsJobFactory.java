@@ -35,6 +35,7 @@ public class DsJobFactory {
 
     mJobs = new ArrayList<>();
     mMatchIDs = realtime();
+    // System.out.println(mMatchIDs);
     // mMatchIDs = Collections.singletonList(647274);
     for (int matchID : mMatchIDs) {
       mJobs.add(mBuilder.buildJobs(matchID));
