@@ -20,7 +20,7 @@ public class Main {
     // new RuleFactory(RuleType.SCORE).build();
     // new RuleFactory(RuleType.BALL).build();
 
-    new HistoryRadar().run(1);
+    new HistoryRadar().run(100);
 
     // HistoryTester.testOnLast1Weeks();
     // HistoryTester.testOnLastDay();
