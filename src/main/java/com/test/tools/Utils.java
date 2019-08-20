@@ -258,6 +258,7 @@ public class Utils {
           return 90;
         case "未":
           return -1;
+        case "半":
         case "中":
           return 45;
         default:
