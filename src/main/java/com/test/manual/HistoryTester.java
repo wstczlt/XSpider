@@ -2,6 +2,7 @@ package com.test.manual;
 
 import static com.test.Config.SPIDER_THREAD_COUNT;
 import static com.test.db.QueryHelper.SQL_AND;
+import static com.test.db.QueryHelper.SQL_MANBETX;
 import static com.test.db.QueryHelper.SQL_SELECT;
 import static com.test.db.QueryHelper.SQL_ST;
 import static com.test.db.QueryHelper.buildSqlIn;
