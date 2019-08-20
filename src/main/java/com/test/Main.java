@@ -20,7 +20,9 @@ public class Main {
 
     // new HistoryRadar().run(100);
 
-    HistoryTester.doTest();
+    HistoryTester.testOnLastHistory();
+
+//    HistoryTester.testOnRandomHistory();
   }
 
 }

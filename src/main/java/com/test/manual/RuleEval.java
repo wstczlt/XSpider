@@ -1,11 +1,9 @@
 package com.test.manual;
 
-import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -38,27 +36,8 @@ public class RuleEval implements Keys {
 
   public List<Estimation> eval(int nowMin, Map<String, Object> match) {
     final String nowTimePrefix = "min" + nowMin + "_";
-    final int hostScore = valueOfInt(match.get(HOST_SCORE));
-    final int customScore = valueOfInt(match.get(CUSTOM_SCORE));
-    float nowScoreOddVictory = nowMin > 0
-        ? valueOfFloat(match.get(nowTimePrefix + "scoreOddOfVictory"))
-        : valueOfFloat(match.get(OPENING_SCORE_ODD_OF_VICTORY));
-    float nowScoreOddDefeat = nowMin > 0
-        ? valueOfFloat(match.get(nowTimePrefix + "scoreOddOfDefeat"))
-        : valueOfFloat(match.get(OPENING_SCORE_ODD_OF_DEFEAT));
-    float nowBallOddVictory = nowMin > 0
-        ? valueOfFloat(match.get(nowTimePrefix + "bigOddOfVictory"))
-        : valueOfFloat(match.get(OPENING_BIG_ODD_OF_VICTORY));
-    float nowBallOddDefeat = nowMin > 0
-        ? valueOfFloat(match.get(nowTimePrefix + "bigOddOfDefeat"))
-        : valueOfFloat(match.get(OPENING_BIG_ODD_OF_DEFEAT));
-
-    // 赔率太低不要
-    final float minProfit = 1.7f;
-    if (nowScoreOddVictory < minProfit || nowScoreOddDefeat < minProfit
-        || nowBallOddVictory < minProfit || nowBallOddDefeat < minProfit) {
-      return Collections.emptyList();
-    }
+    final int nowHostScore = valueOfInt(match.get(nowTimePrefix + "hostScore"));
+    final int nowCustomScore = valueOfInt(match.get(nowTimePrefix + "customScore"));
 
     AtomicReference<Estimation> scoreEstimation = new AtomicReference<>();
     AtomicReference<Estimation> ballEstimation = new AtomicReference<>();
@@ -67,7 +46,7 @@ public class RuleEval implements Keys {
       int minHostScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostScore"));
       int minCustomScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customScore"));
       // 比分发生了则忽略
-      if (minHostScore != hostScore || minCustomScore != customScore) {
+      if (minHostScore != nowHostScore || minCustomScore != nowCustomScore) {
         continue;
       }
       // 遍历规则
