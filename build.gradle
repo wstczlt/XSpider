@@ -1,6 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'application'
-mainClassName = 'com.test.Main'
+
+def appMainClass = 'com.test.Main'
+mainClassName = appMainClass
 
 repositories {
     google()
@@ -11,6 +13,13 @@ repositories {
 run {
     if (project.hasProperty("appArgs")) {
         args Eval.me(appArgs)
+    }
+}
+
+distZip {
+    into(project.name) {
+        from '.'
+        include 'conf/*'
     }
 }
 

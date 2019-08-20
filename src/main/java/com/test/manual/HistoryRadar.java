@@ -6,6 +6,7 @@ import static com.test.db.QueryHelper.SQL_RT;
 import static com.test.db.QueryHelper.SQL_SELECT;
 import static com.test.db.QueryHelper.buildSqlIn;
 import static com.test.db.QueryHelper.doQuery;
+import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
 import java.text.SimpleDateFormat;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import com.test.Config;
 import com.test.Keys;
@@ -24,6 +26,27 @@ import com.test.http.HttpEngine;
 import com.test.pipeline.DbPipeline;
 
 public class HistoryRadar implements Keys {
+
+  public static final Predicate<Estimation> DISPLAY_FILTER = estimation -> {
+    final Rule rule = (Rule) estimation.mModel;
+    final Map<String, Object> match = estimation.mMatch;
+    final float minScoreOdd = valueOfFloat(match.get("min" + rule.mTimeMin + "_scoreOdd"));
+    boolean isScoreUp = rule.mType == RuleType.SCORE &&
+        ((minScoreOdd >= 0 && rule.value() == 2)
+            || (minScoreOdd <= 0 && rule.value() == 0));
+
+    boolean isScoreLow = rule.mType == RuleType.SCORE &&
+        ((minScoreOdd >= 0 && rule.value() == 0)
+            || (minScoreOdd <= 0 && rule.value() == 2));
+
+    boolean isBallBig = rule.mType == RuleType.BALL && rule.value() == 0;
+    boolean isBallSmall = rule.mType == RuleType.BALL && rule.value() == 2;
+
+    return (Config.SHOW_SCORE_UP && isScoreUp)
+        || (Config.SHOW_SCORE_LOW && isScoreLow)
+        || (Config.SHOW_BALL_BIG && isBallBig)
+        || (Config.SHOW_BALL_SMALL && isBallSmall);
+  };
 
   private static final RuleEval RULE_EVAL = new RuleEval();
   private static final List<Consumer<Estimation>> CONSUMERS = Arrays.asList(new HistoryConsumer());
@@ -53,7 +76,6 @@ public class HistoryRadar implements Keys {
 
     // 运行爬虫
     final DbPipeline pipeline = new DbPipeline();
-    // DsHistoryJobFactory factory = new DsHistoryJobFactory(new DsJobBuilder());
     DsJobFactory factory = new DsJobFactory(new DsJobBuilder());
     HttpEngine dragon = new HttpEngine(factory.build(), pipeline, RADAR_THREAD_COUNT);
     dragon.start();
@@ -69,7 +91,8 @@ public class HistoryRadar implements Keys {
 
     matches.forEach(match -> RULE_EVAL.eval(valueOfInt(match.get(TIME_MIN)), match)
         .stream()
-        .filter(estimation -> estimation.mProfitRate >= 1.05f)
+        .filter(DISPLAY_FILTER)
+        .filter(estimation -> estimation.mProfitRate >= Config.PROFIT_RATE_LIMIT)
         .sorted((o1, o2) -> (int) (o2.mProfitRate * 1000 - o1.mProfitRate * 1000))
         .forEach(est -> CONSUMERS.forEach(consumer -> consumer.accept(est))));
   }

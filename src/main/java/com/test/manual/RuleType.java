@@ -17,7 +17,7 @@ public enum RuleType implements Keys {
   BALL;
 
   public final File file() {
-    return new File("rules_" + name().toLowerCase() + ".txt");
+    return new File("conf/rules_" + name().toLowerCase() + ".txt");
   }
 
   public final Pair<Float, Float> calGain(int timeMin, Map<String, Object> match) {

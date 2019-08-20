@@ -8,9 +8,12 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.http.util.TextUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.test.Config;
 import com.test.tools.Utils;
 
 public class ListParser {
@@ -47,6 +50,11 @@ public class ListParser {
   public List<Integer> doParse() {
     final JSONObject json = JSON.parseObject(mRawText);
     if (json == null) {
+      return Collections.emptyList();
+    }
+    String error = json.getString("error");
+    if (!TextUtils.isEmpty(error)) {
+      Config.LOGGER.log("调用异常: " + error);
       return Collections.emptyList();
     }
     JSONArray races = json.getJSONArray("races");
