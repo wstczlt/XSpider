@@ -46,7 +46,7 @@ public class Radar implements Keys {
       try {
         long start = System.currentTimeMillis();
         loopMain();
-        sleep = Config.MIN_ONE_LOOP - (System.currentTimeMillis() - start);
+        sleep = Config.RADAR_MIN_ONE_LOOP - (System.currentTimeMillis() - start);
       } catch (Throwable e) {
         e.printStackTrace();
       } finally {

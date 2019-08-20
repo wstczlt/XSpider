@@ -6,7 +6,6 @@ import static com.test.tools.Utils.setSkip;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -20,9 +19,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class HttpEngine {
-
-  // 每场比赛抓取之后暂停线程一段时间
-  private static final int DEFAULT_MIN_RUN_MILLS = 1000;
 
   private final List<List<HttpJob>> mJobs;
   private final HttpPipeline mProcessor;
@@ -64,7 +60,6 @@ public class HttpEngine {
 
     @Override
     public void run() {
-      final long timeStart = System.currentTimeMillis();
       final Map<String, String> items = new HashMap<>();
       for (HttpJob job : mJobs) {
         executeJob(items, job);
@@ -76,18 +71,9 @@ public class HttpEngine {
         mProcessor.process(items);
       }
 
-      long timeUsed = System.currentTimeMillis() - timeStart;
-      // 做个小随机，把请求打散
-      long sleep = new Random().nextInt(DEFAULT_MIN_RUN_MILLS) - timeUsed;
-
-      // mLogger.log(String.format("Thread=%s, timeUsed=%d, needSleep=%d",
-      // Thread.currentThread().getName(), timeUsed, sleep));
-
-      if (sleep > 0) { // 每轮都暂停一下, 避免刷爆接口
-        try {
-          Thread.sleep(sleep);
-        } catch (Exception ignore) {}
-      }
+      try {
+        Thread.sleep(Config.DEFAULT_SLEEP_AFTER_REQUEST);
+      } catch (Exception ignore) {}
     }
 
     void executeJob(Map<String, String> items, HttpJob job) {

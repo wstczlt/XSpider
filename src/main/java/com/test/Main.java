@@ -20,9 +20,14 @@ public class Main {
 
     // new HistoryRadar().run(100);
 
-    HistoryTester.testOnLastHistory();
+     HistoryTester.testOnLast1Weeks();
+//    HistoryTester.testOnLastDay();
 
-//    HistoryTester.testOnRandomHistory();
+//    HistoryTester.testOnNewHistory(7);
+
+    // HistoryTester.testOnRandomHistory();
+
+    // HistoryTester.testOnNewHistory(1);
   }
 
 }
