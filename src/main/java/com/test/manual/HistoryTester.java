@@ -148,14 +148,14 @@ public class HistoryTester {
   }
 
   public static void testOnRandomHistory() throws Exception {
-    List<Map<String, Object>> matches = doQuery(QUERY_RANDOM_SQL, 4000);
+    List<Map<String, Object>> matches = doQuery(QUERY_RANDOM_SQL, 2000);
 
     doTest(matches);
   }
 
   public static void doTest(List<Map<String, Object>> matches) throws Exception {
     System.out.println("测试数量: " + matches.size());
-    final boolean delay = true;
+    final boolean delay = false;
     final RuleEval ruleEval = new RuleEval();
     final List<Integer> testMinArray = new ArrayList<>();
     for (int i = -1; i <= 80; i++) {
