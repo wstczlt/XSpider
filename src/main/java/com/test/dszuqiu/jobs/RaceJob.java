@@ -5,6 +5,7 @@ import static com.test.tools.Utils.setSkip;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.http.util.TextUtils;
 
@@ -65,9 +66,12 @@ public class RaceJob extends HttpJob {
     items.put(CUSTOM_NAME, customName);
     items.put(LEAGUE, leagueName);
 
+    SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    sft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+
     Config.LOGGER.log(String.format("Found Match ID=%d, %s, [%s], %s VS %s",
         mMatchID,
-        new SimpleDateFormat("yyyy-MM-dd").format(new Date(matchTime)),
+        sft.format(new Date(matchTime)),
         leagueName,
         hostName,
         customName));

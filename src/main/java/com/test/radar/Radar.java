@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.function.Consumer;
 
 import com.test.Config;
@@ -56,8 +57,9 @@ public class Radar implements Keys {
   }
 
   private void loopMain() throws Exception {
-    System.out.println(
-        "\n\n\n\n\n\n当前时间: " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
+    final SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    sft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+    System.out.println("\n\n\n\n\n\n当前时间: " + sft.format(new Date()));
 
     // 运行爬虫
     final DbPipeline pipeline = new DbPipeline();

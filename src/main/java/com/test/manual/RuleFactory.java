@@ -20,9 +20,9 @@ public class RuleFactory implements Keys {
   // 数据低于多少条则不要
   private static final int DEFAULT_MIN_RULE_COUNT = 300;
   // 最低胜率要求
-  private static final float DEFAULT_MIN_VICTORY_RATE = 0.54f;
+  private static final float DEFAULT_MIN_VICTORY_RATE = 0.5f;
   // 最低盈利率要求
-  private static final float DEFAULT_MIN_PROFIT_RATE = 1.02f;
+  private static final float DEFAULT_MIN_PROFIT_RATE = 1.05f;
 
   // 规则
   private final Map<String, Rule> mRules = new HashMap<>();
@@ -51,18 +51,23 @@ public class RuleFactory implements Keys {
       // 条件过滤
       filterByLimit(timeMin);
       // 随机抽样检测过滤
-      int testRound = 5, testCount = train.size() / 5;
+      int testRound = 5, testCount = Math.min(train.size() / 5, 3_0000);
       for (int i = 0; i < testRound; i++) {
         Collections.shuffle(train);
         filterByTest(timeMin, train.subList(0, testCount));
       }
       final long testEnd = System.currentTimeMillis();
 
-      System.out.println(String.format("模型构建中: %d', 查询耗时: %.1fs, 训练耗时: %.1fs, 校验耗时: %.1fs",
+      System.out.println(String.format("\n模型构建中: %d', 查询耗时: %.1fs, 训练耗时: %.1fs, 校验耗时: %.1fs",
           timeMin,
           (queryEnd - timeStart) / 1000.0,
           (trainEnd - queryEnd) / 1000.0,
           (testEnd - trainEnd) / 1000.0));
+
+      int finalTimeMin = timeMin;
+      mRules.values().stream().filter(rule -> rule.mTimeMin == finalTimeMin)
+          .forEach(rule -> System.out.println(rule.total() + "@" + rule.mRuleKey + "@"
+              + rule.profitRate() + "@" + rule.victoryRate() + "@" + rule.value()));
     }
 
     // 持久化
@@ -115,32 +120,32 @@ public class RuleFactory implements Keys {
 
   private void filterByTest(int timeMin, List<Map<String, Object>> test) {
     Set<String> keySet = new HashSet<>(mRules.keySet());
-    keySet.forEach(ruleKey -> {
-      final Rule rule = mRules.get(ruleKey);
-      if (rule.mTimeMin != timeMin) {
-        return;
-      }
-      final AtomicInteger applied = new AtomicInteger();
-      double profit = test.stream().mapToDouble(match -> {
-        final String newRuleKey = mRuleType.calKey(timeMin, timeMin, match);
-        if (!newRuleKey.equals(ruleKey)) {
-          return 0;
-        }
-        Pair<Float, Float> newGain = rule.mType.calGain(timeMin, match);
-        if (newGain.first == 0 && newGain.second == 0) {
-          return 0; // 和
-        }
-        applied.getAndIncrement();
-        return rule.value() == 0 ? newGain.first : newGain.second;
-      }).sum();
 
-      final int total = applied.get();
-      double profitRate = profit / (total + 0.01);
-      if (total < 10 || profitRate < DEFAULT_MIN_PROFIT_RATE) {
-        mRules.remove(ruleKey);
-      }
-      // System.out.println(rule.total() + "@" + ruleKey + ", -> " + total + " => " + profitRate);
-    });
+    keySet.stream().filter(ruleKey -> mRules.get(ruleKey).mTimeMin == timeMin)
+        .forEach(ruleKey -> {
+          final Rule rule = mRules.get(ruleKey);
+          final AtomicInteger applied = new AtomicInteger();
+          double profit = test.stream().mapToDouble(match -> {
+            final String newRuleKey = mRuleType.calKey(timeMin, timeMin, match);
+            if (!newRuleKey.equals(ruleKey)) {
+              return 0;
+            }
+            Pair<Float, Float> newGain = rule.mType.calGain(timeMin, match);
+            if (newGain.first == 0 && newGain.second == 0) {
+              return 0; // 和
+            }
+            applied.getAndIncrement();
+            return rule.value() == 0 ? newGain.first : newGain.second;
+          }).sum();
+
+          final int total = applied.get();
+          double profitRate = profit / (total + 0.01);
+          if (total < 10 || profitRate < DEFAULT_MIN_PROFIT_RATE) {
+            mRules.remove(ruleKey);
+          }
+          // System.out.println(rule.total() + "@" + ruleKey + ", -> " + total + " => " +
+          // profitRate);
+        });
   }
 
 

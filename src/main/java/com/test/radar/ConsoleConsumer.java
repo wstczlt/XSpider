@@ -6,11 +6,11 @@ import static com.test.tools.Utils.valueOfLong;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.function.Consumer;
 
 import com.test.Keys;
 import com.test.entity.Estimation;
-import com.test.entity.Model;
 
 public class ConsoleConsumer implements Consumer<Estimation>, Keys {
 
@@ -44,8 +44,9 @@ public class ConsoleConsumer implements Consumer<Estimation>, Keys {
     int customScore = valueOfInt(match.get(CUSTOM_SCORE));
     int min45HostScore = valueOfInt(match.get("min45_hostScore"));
     int min45CustomScore = valueOfInt(match.get("min45_customScore"));
-    String matchTimeStr =
-        new SimpleDateFormat("yyyy-MM-dd HH:mm").format(matchTime - 8 * 3600 * 1000);
+    final SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    sft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+    String matchTimeStr = sft.format(matchTime);
     String matchStatusStr =
         matchStatus == 0 ? "未开始" : (matchStatus == 1 ? "进行中" : (matchStatus == 3 ? "已结束" : "未知"));
 

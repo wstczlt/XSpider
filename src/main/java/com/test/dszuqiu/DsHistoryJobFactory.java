@@ -1,11 +1,15 @@
 package com.test.dszuqiu;
 
+import static com.test.tools.Utils.valueOfInt;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
+import com.test.Config;
 import com.test.dszuqiu.parser.ListParser;
 import com.test.http.HttpJob;
 import com.test.http.HttpJobBuilder;
@@ -53,16 +57,18 @@ public class DsHistoryJobFactory {
 
   private List<Integer> realtime() throws Exception {
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+    sdf.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
     List<Integer> matchIDs = new ArrayList<>();
-    for (int i = -mLastDays; i <= 1; i++) { // 过去到未来
+    for (int i = -mLastDays; i <= 0; i++) { // 过去到未来
       matchIDs.addAll(request(String.format(REQUEST_URL,
-          sdf.format(new Date(System.currentTimeMillis() + 86400000 * i)))));
+          sdf.format(new Date(System.currentTimeMillis() + 86400_000 * i)))));
     }
 
     return matchIDs;
   }
 
   private List<Integer> request(String requestUrl) throws Exception {
+    Config.LOGGER.log(requestUrl);
     Request request = new Request.Builder().url(requestUrl)
         .header("User-Agent", "Android 6.0.1/CLT-AL00/9")
         .build();
@@ -74,6 +80,6 @@ public class DsHistoryJobFactory {
 
 
     String html = response.body().string();
-    return new ListParser(html, jsonObject -> true).doParse();
+    return new ListParser(html, race -> valueOfInt(race.getString("time_status")) == 3).doParse();
   }
 }
