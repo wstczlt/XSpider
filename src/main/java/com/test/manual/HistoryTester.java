@@ -155,15 +155,9 @@ public class HistoryTester {
 
   public static void doTest(List<Map<String, Object>> matches) throws Exception {
     System.out.println("测试数量: " + matches.size());
-    final boolean delay = false;
+    final boolean delay = true;
     final RuleEval ruleEval = new RuleEval();
-    final List<Integer> testMinArray = new ArrayList<>();
-    for (int i = -1; i <= 80; i++) {
-      testMinArray.add(i);
-    }
-
-    final List<Float> thresholds =
-        Arrays.asList(1.02f, 1.03f, 1.04f, 1.05f, 1.06f, 1.07f, 1.08f, 1.1f);
+    final List<Float> thresholds = Arrays.asList(1.05f, 1.06f, 1.08f, 1.1f);
 
     // final List<Float> thresholds =
     // Arrays.asList(0.55f, 0.58f, 0.60f, 0.62f, 0.65f, 0.70f, 0.75f, 0.8f);
@@ -250,7 +244,8 @@ public class HistoryTester {
         final int nowCustomScore = valueOfInt(match.get(nowTimePrefix + "customScore"));
         return nowHostScore == valueHostScore && nowCustomScore == valueCustomScore;
       }).forEach(rule -> {
-        final Pair<Float, Float> newGain = rule.mType.calGain(rule.mTimeMin, match);
+        final Pair<Float, Float> newGain =
+            rule.mType.calGain(rule.mTimeMin + (delay ? 5 : 0), match);
         final float minScoreOdd = valueOfFloat(match.get("min" + rule.mTimeMin + "_scoreOdd"));
         final boolean isUp = rule.mType == RuleType.SCORE &&
             ((minScoreOdd >= 0 && rule.value() == 2) || (minScoreOdd <= 0 && rule.value() == 0));
@@ -271,8 +266,7 @@ public class HistoryTester {
             bigCount.get(t).incrementAndGet();
           }
 
-          if (rule.value() == 0 && newGain.first > 0
-              || rule.value() == 2 && newGain.second > 0) {
+          if (rule.value() == 0 && newGain.first > 0 || rule.value() == 2 && newGain.second > 0) {
             float thisGain = rule.value() == 0 ? newGain.first : newGain.second;
 
             sumGain.put(t, sumGain.get(t) + thisGain);
@@ -280,15 +274,13 @@ public class HistoryTester {
               sumScoreGain.put(t, sumScoreGain.get(t) + thisGain);
             }
             if (isUp) {
-              sumUpGain.put(t,
-                  sumUpGain.get(t) + thisGain * (delay ? 1.05f : 1f));
+              sumUpGain.put(t, sumUpGain.get(t) + thisGain);
             }
             if (rule.mType == RuleType.BALL) {
               sumBallGain.put(t, sumBallGain.get(t) + thisGain);
             }
             if (rule.mType == RuleType.BALL && rule.value() == 0) {
-              sumBigGain.put(t,
-                  sumBigGain.get(t) + thisGain * (delay ? 1.1f : 1f));
+              sumBigGain.put(t, sumBigGain.get(t) + thisGain);
             }
           }
 
@@ -341,7 +333,7 @@ public class HistoryTester {
     }
 
     thresholds.forEach(threshold -> {
-      System.out.println("\n\n\n");
+      System.out.println("\n\n");
 
       float sumGainValue = sumGain.get(threshold);
       int estimationCountValue = allCount.get(threshold).get();
@@ -349,35 +341,35 @@ public class HistoryTester {
       int victoryCountValue = victoryCount.get(threshold).get();
       int defeatCountValue = defeatCount.get(threshold).get();
 
-      System.out.println(
-          String.format("Total, threshold=%.2f, " +
-              "sumGain=%.2f, total=%d," +
-              " drewCount=%d, victoryCount=%d, defeatCount=%d," +
-              " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
-              threshold, sumGainValue, estimationCountValue,
-              drewCountValue, victoryCountValue, defeatCountValue,
-              victoryCountValue * 1f / (victoryCountValue + defeatCountValue),
-              sumGainValue * 1f / (victoryCountValue + defeatCountValue),
-              sumGainValue - (victoryCountValue + defeatCountValue)));
+      // System.out.println(
+      // String.format("Total, threshold=%.2f, " +
+      // "sumGain=%.2f, total=%d," +
+      // " drewCount=%d, victoryCount=%d, defeatCount=%d," +
+      // " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
+      // threshold, sumGainValue, estimationCountValue,
+      // drewCountValue, victoryCountValue, defeatCountValue,
+      // victoryCountValue * 1f / (victoryCountValue + defeatCountValue),
+      // sumGainValue * 1f / (victoryCountValue + defeatCountValue),
+      // sumGainValue - (victoryCountValue + defeatCountValue)));
 
 
 
-      float sumScoreGainValue = sumScoreGain.get(threshold);
-      int scoreCountValue = scoreCount.get(threshold).get();
-      int drewScoreCountValue = drewScoreCount.get(threshold).get();
-      int victoryScoreCountValue = victoryScoreCount.get(threshold).get();
-      int defeatScoreCountValue = defeatScoreCount.get(threshold).get();
-
-      System.out.println(
-          String.format("Score, threshold=%.2f, " +
-              "sumGain=%.2f, total=%d," +
-              " drewCount=%d, victoryCount=%d, defeatCount=%d," +
-              " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
-              threshold, sumScoreGainValue, scoreCountValue,
-              drewScoreCountValue, victoryScoreCountValue, defeatScoreCountValue,
-              victoryScoreCountValue * 1f / (victoryScoreCountValue + defeatScoreCountValue),
-              sumScoreGainValue * 1f / (victoryScoreCountValue + defeatScoreCountValue),
-              sumScoreGainValue - (victoryScoreCountValue + defeatScoreCountValue)));
+      // float sumScoreGainValue = sumScoreGain.get(threshold);
+      // int scoreCountValue = scoreCount.get(threshold).get();
+      // int drewScoreCountValue = drewScoreCount.get(threshold).get();
+      // int victoryScoreCountValue = victoryScoreCount.get(threshold).get();
+      // int defeatScoreCountValue = defeatScoreCount.get(threshold).get();
+      //
+      // System.out.println(
+      // String.format("Score, threshold=%.2f, " +
+      // "sumGain=%.2f, total=%d," +
+      // " drewCount=%d, victoryCount=%d, defeatCount=%d," +
+      // " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
+      // threshold, sumScoreGainValue, scoreCountValue,
+      // drewScoreCountValue, victoryScoreCountValue, defeatScoreCountValue,
+      // victoryScoreCountValue * 1f / (victoryScoreCountValue + defeatScoreCountValue),
+      // sumScoreGainValue * 1f / (victoryScoreCountValue + defeatScoreCountValue),
+      // sumScoreGainValue - (victoryScoreCountValue + defeatScoreCountValue)));
 
 
 
@@ -399,23 +391,23 @@ public class HistoryTester {
               sumUpGainValue - (victoryUpCountValue + defeatUpCountValue)));
 
 
-
-      float sumBallGainValue = sumBallGain.get(threshold);
-      int ballCountValue = ballCount.get(threshold).get();
-      int drewBallCountValue = drewBallCount.get(threshold).get();
-      int victoryBallCountValue = victoryBallCount.get(threshold).get();
-      int defeatBallCountValue = defeatBallCount.get(threshold).get();
-
-      System.out.println(
-          String.format("Ball, threshold=%.2f, " +
-              "sumGain=%.2f, total=%d," +
-              " drewCount=%d, victoryCount=%d, defeatCount=%d," +
-              " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
-              threshold, sumBallGainValue, ballCountValue,
-              drewBallCountValue, victoryBallCountValue, defeatBallCountValue,
-              victoryBallCountValue * 1f / (victoryBallCountValue + defeatBallCountValue),
-              sumBallGainValue * 1f / (victoryBallCountValue + defeatBallCountValue),
-              sumBallGainValue - (victoryBallCountValue + defeatBallCountValue)));
+      //
+      // float sumBallGainValue = sumBallGain.get(threshold);
+      // int ballCountValue = ballCount.get(threshold).get();
+      // int drewBallCountValue = drewBallCount.get(threshold).get();
+      // int victoryBallCountValue = victoryBallCount.get(threshold).get();
+      // int defeatBallCountValue = defeatBallCount.get(threshold).get();
+      //
+      // System.out.println(
+      // String.format("Ball, threshold=%.2f, " +
+      // "sumGain=%.2f, total=%d," +
+      // " drewCount=%d, victoryCount=%d, defeatCount=%d," +
+      // " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
+      // threshold, sumBallGainValue, ballCountValue,
+      // drewBallCountValue, victoryBallCountValue, defeatBallCountValue,
+      // victoryBallCountValue * 1f / (victoryBallCountValue + defeatBallCountValue),
+      // sumBallGainValue * 1f / (victoryBallCountValue + defeatBallCountValue),
+      // sumBallGainValue - (victoryBallCountValue + defeatBallCountValue)));
 
 
 
