@@ -1,6 +1,5 @@
 package com.test;
 
-import com.test.manual.HistoryRadar;
 import com.test.manual.HistoryTester;
 
 public class Main {
@@ -20,8 +19,8 @@ public class Main {
     //
     // new RuleFactory(RuleType.SCORE).build();
     // new RuleFactory(RuleType.BALL).build();
-
-
+    //
+    //
     System.out.println("\n昨日数据: ");
     HistoryTester.testOnLastDay();
 
@@ -50,7 +49,7 @@ public class Main {
     // HistoryTester.testDisplay();
     // HistoryTester.testHistoryDisplay(1);
 
-//    new HistoryRadar().run(1000);
+    // new HistoryRadar().run(1000);
   }
 
 }

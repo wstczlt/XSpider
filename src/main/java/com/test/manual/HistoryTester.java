@@ -68,7 +68,7 @@ public class HistoryTester {
         final int nowHostScore = valueOfInt(match.get(nowTimePrefix + "hostScore"));
         final int nowCustomScore = valueOfInt(match.get(nowTimePrefix + "customScore"));
         final String key = nowHostScore + "-" + nowCustomScore;
-        ruleEval.eval(testMin, match).stream()
+        ruleEval.evalEst(testMin, match).stream()
             .filter(HistoryRadar.DISPLAY_FILTER)
             .filter(estimation -> estimation.mProfitRate >= Config.PROFIT_RATE_LIMIT)
             .sorted((o1, o2) -> (int) (o2.mProfitRate * 1000 - o1.mProfitRate * 1000))
@@ -98,7 +98,7 @@ public class HistoryTester {
         final int nowHostScore = valueOfInt(match.get(nowTimePrefix + "hostScore"));
         final int nowCustomScore = valueOfInt(match.get(nowTimePrefix + "customScore"));
         final String key = nowHostScore + "-" + nowCustomScore;
-        ruleEval.eval(testMin, match).stream()
+        ruleEval.evalEst(testMin, match).stream()
             .filter(HistoryRadar.DISPLAY_FILTER)
             .filter(estimation -> estimation.mProfitRate >= Config.PROFIT_RATE_LIMIT)
             .sorted((o1, o2) -> (int) (o2.mProfitRate * 1000 - o1.mProfitRate * 1000))
@@ -155,6 +155,7 @@ public class HistoryTester {
 
   public static void doTest(List<Map<String, Object>> matches) throws Exception {
     System.out.println("测试数量: " + matches.size());
+    final boolean delay = true;
     final RuleEval ruleEval = new RuleEval();
     final List<Integer> testMinArray = new ArrayList<>();
     for (int i = -1; i <= 80; i++) {
@@ -232,121 +233,111 @@ public class HistoryTester {
       defeatBigCount.put(threshold, new AtomicInteger());
     });
 
-    final boolean delay = true;
     for (int i = 0; i < matches.size(); i++) {
       final Map<String, Object> match = matches.get(i);
-      final Map<String, Rule> rules = new HashMap<>();
-      testMinArray.forEach(testMin -> {
-        final String valueTimePrefix = "min" + testMin + "_";
+      ruleEval.evalRules(80, match).stream().filter(rule -> {
+        if (!delay) {
+          return true;
+        }
+        // 考虑实际的购买情况，操作是有延迟的，并且有时候需要等水
+        final String valueTimePrefix = "min" + rule.mTimeMin + "_";
         final int valueHostScore = valueOfInt(match.get(valueTimePrefix + "hostScore"));
         final int valueCustomScore = valueOfInt(match.get(valueTimePrefix + "customScore"));
-        final String key = valueHostScore + "-" + valueCustomScore;
 
-        if (delay) { // 考虑实际的购买情况，操作是有延迟的，并且有时候需要等水
-          int nowMin = testMin + 5; // 限定五分钟内不进球(方便操作购买，但是会影响大球胜率)
-          final String nowTimePrefix = "min" + nowMin + "_";
-          final int nowHostScore = valueOfInt(match.get(nowTimePrefix + "hostScore"));
-          final int nowCustomScore = valueOfInt(match.get(nowTimePrefix + "customScore"));
-          if (nowHostScore != valueHostScore || nowCustomScore != valueCustomScore) {
-            return;
+        int nowMin = rule.mTimeMin + 5; // 限定五分钟内不进球(方便操作购买，但是会影响大球胜率)
+        final String nowTimePrefix = "min" + nowMin + "_";
+        final int nowHostScore = valueOfInt(match.get(nowTimePrefix + "hostScore"));
+        final int nowCustomScore = valueOfInt(match.get(nowTimePrefix + "customScore"));
+        return nowHostScore == valueHostScore && nowCustomScore == valueCustomScore;
+      }).forEach(rule -> {
+        final Pair<Float, Float> newGain = rule.mType.calGain(rule.mTimeMin, match);
+        final float minScoreOdd = valueOfFloat(match.get("min" + rule.mTimeMin + "_scoreOdd"));
+        final boolean isUp = rule.mType == RuleType.SCORE &&
+            ((minScoreOdd >= 0 && rule.value() == 2) || (minScoreOdd <= 0 && rule.value() == 0));
+        thresholds.stream().filter(t -> rule.profitRate() >= t).forEach(t -> {
+          allCount.get(t).incrementAndGet();
+          if (rule.mType == RuleType.SCORE) {
+            scoreCount.get(t).incrementAndGet();
           }
-        }
+          if (isUp) {
+            upCount.get(t).incrementAndGet();
+          }
 
-        ruleEval.eval(testMin, match)
-            .forEach(e -> rules.put(key + ((Rule) e.mModel).mType, (Rule) e.mModel));
-      });
+          if (rule.mType == RuleType.BALL) {
+            ballCount.get(t).incrementAndGet();
+          }
 
-      thresholds.forEach(threshold -> rules.values().stream()
-          .filter(rule -> rule.profitRate() >= threshold)
-          .forEach(rule -> {
-            final Pair<Float, Float> newGain = rule.mType.calGain(rule.mTimeMin, match);
-            final float minScoreOdd = valueOfFloat(match.get("min" + rule.mTimeMin + "_scoreOdd"));
-            final boolean isUp = rule.mType == RuleType.SCORE &&
-                ((minScoreOdd >= 0 && rule.value() == 2)
-                    || (minScoreOdd <= 0 && rule.value() == 0));
+          if (rule.mType == RuleType.BALL && rule.value() == 0) {
+            bigCount.get(t).incrementAndGet();
+          }
 
-            allCount.get(threshold).incrementAndGet();
+          if (rule.value() == 0 && newGain.first > 0
+              || rule.value() == 2 && newGain.second > 0) {
+            float thisGain = rule.value() == 0 ? newGain.first : newGain.second;
+
+            sumGain.put(t, sumGain.get(t) + thisGain);
             if (rule.mType == RuleType.SCORE) {
-              scoreCount.get(threshold).incrementAndGet();
+              sumScoreGain.put(t, sumScoreGain.get(t) + thisGain);
             }
             if (isUp) {
-              upCount.get(threshold).incrementAndGet();
+              sumUpGain.put(t,
+                  sumUpGain.get(t) + thisGain * (delay ? 1.05f : 1f));
             }
-
             if (rule.mType == RuleType.BALL) {
-              ballCount.get(threshold).incrementAndGet();
+              sumBallGain.put(t, sumBallGain.get(t) + thisGain);
             }
-
             if (rule.mType == RuleType.BALL && rule.value() == 0) {
-              bigCount.get(threshold).incrementAndGet();
+              sumBigGain.put(t,
+                  sumBigGain.get(t) + thisGain * (delay ? 1.1f : 1f));
             }
+          }
 
-            if (rule.value() == 0 && newGain.first > 0
-                || rule.value() == 2 && newGain.second > 0) {
-              float thisGain = rule.value() == 0 ? newGain.first : newGain.second;
-
-              sumGain.put(threshold, sumGain.get(threshold) + thisGain);
-              if (rule.mType == RuleType.SCORE) {
-                sumScoreGain.put(threshold, sumScoreGain.get(threshold) + thisGain);
-              }
-              if (isUp) {
-                sumUpGain.put(threshold,
-                    sumUpGain.get(threshold) + thisGain * (delay ? 1.05f : 1f));
-              }
-              if (rule.mType == RuleType.BALL) {
-                sumBallGain.put(threshold, sumBallGain.get(threshold) + thisGain);
-              }
-              if (rule.mType == RuleType.BALL && rule.value() == 0) {
-                sumBigGain.put(threshold,
-                    sumBigGain.get(threshold) + thisGain * (delay ? 1.1f : 1f));
-              }
+          if (newGain.first == 0 && newGain.second == 0) {
+            drewCount.get(t).incrementAndGet();
+            if (rule.mType == RuleType.SCORE) {
+              drewScoreCount.get(t).incrementAndGet();
             }
-
-            if (newGain.first == 0 && newGain.second == 0) {
-              drewCount.get(threshold).incrementAndGet();
-              if (rule.mType == RuleType.SCORE) {
-                drewScoreCount.get(threshold).incrementAndGet();
-              }
-              if (isUp) {
-                drewUpCount.get(threshold).incrementAndGet();
-              }
-              if (rule.mType == RuleType.BALL) {
-                drewBallCount.get(threshold).incrementAndGet();
-              }
-              if (rule.mType == RuleType.BALL && rule.value() == 0) {
-                drewBigCount.get(threshold).incrementAndGet();
-              }
-            } else if ((rule.value() == 0 && newGain.first > 0)
-                || (rule.value() == 2 && newGain.second > 0)) {
-              victoryCount.get(threshold).incrementAndGet();
-              if (rule.mType == RuleType.SCORE) {
-                victoryScoreCount.get(threshold).incrementAndGet();
-              }
-              if (isUp) {
-                victoryUpCount.get(threshold).incrementAndGet();
-              }
-              if (rule.mType == RuleType.BALL) {
-                victoryBallCount.get(threshold).incrementAndGet();
-              }
-              if (rule.mType == RuleType.BALL && rule.value() == 0) {
-                victoryBigCount.get(threshold).incrementAndGet();
-              }
-            } else {
-              defeatCount.get(threshold).incrementAndGet();
-              if (rule.mType == RuleType.SCORE) {
-                defeatScoreCount.get(threshold).incrementAndGet();
-              }
-              if (isUp) {
-                defeatUpCount.get(threshold).incrementAndGet();
-              }
-              if (rule.mType == RuleType.BALL) {
-                defeatBallCount.get(threshold).incrementAndGet();
-              }
-              if (rule.mType == RuleType.BALL && rule.value() == 0) {
-                defeatBigCount.get(threshold).incrementAndGet();
-              }
+            if (isUp) {
+              drewUpCount.get(t).incrementAndGet();
             }
-          }));
+            if (rule.mType == RuleType.BALL) {
+              drewBallCount.get(t).incrementAndGet();
+            }
+            if (rule.mType == RuleType.BALL && rule.value() == 0) {
+              drewBigCount.get(t).incrementAndGet();
+            }
+          } else if ((rule.value() == 0 && newGain.first > 0)
+              || (rule.value() == 2 && newGain.second > 0)) {
+            victoryCount.get(t).incrementAndGet();
+            if (rule.mType == RuleType.SCORE) {
+              victoryScoreCount.get(t).incrementAndGet();
+            }
+            if (isUp) {
+              victoryUpCount.get(t).incrementAndGet();
+            }
+            if (rule.mType == RuleType.BALL) {
+              victoryBallCount.get(t).incrementAndGet();
+            }
+            if (rule.mType == RuleType.BALL && rule.value() == 0) {
+              victoryBigCount.get(t).incrementAndGet();
+            }
+          } else {
+            defeatCount.get(t).incrementAndGet();
+            if (rule.mType == RuleType.SCORE) {
+              defeatScoreCount.get(t).incrementAndGet();
+            }
+            if (isUp) {
+              defeatUpCount.get(t).incrementAndGet();
+            }
+            if (rule.mType == RuleType.BALL) {
+              defeatBallCount.get(t).incrementAndGet();
+            }
+            if (rule.mType == RuleType.BALL && rule.value() == 0) {
+              defeatBigCount.get(t).incrementAndGet();
+            }
+          }
+        });
+      });
     }
 
     thresholds.forEach(threshold -> {

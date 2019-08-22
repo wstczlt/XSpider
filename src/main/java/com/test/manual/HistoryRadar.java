@@ -89,7 +89,7 @@ public class HistoryRadar implements Keys {
     List<Map<String, Object>> matches = doQuery(querySql, 1000);
     System.out.println("比赛总场次: " + matches.size());
 
-    matches.forEach(match -> RULE_EVAL.eval(valueOfInt(match.get(TIME_MIN)), match)
+    matches.forEach(match -> RULE_EVAL.evalEst(valueOfInt(match.get(TIME_MIN)), match)
         .stream()
         .filter(DISPLAY_FILTER)
         .filter(estimation -> estimation.mProfitRate >= Config.PROFIT_RATE_LIMIT)

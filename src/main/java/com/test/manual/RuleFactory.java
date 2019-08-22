@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.FileUtils;
 
@@ -35,7 +34,7 @@ public class RuleFactory implements Keys {
   public void build() throws Exception {
     mRules.clear();
     // 聚类训练, 摊到前后三分钟，增加训练数据量
-    final int delay = 3;
+    final int delay = 5;
     int start = -1, end = 80;
     // int start = 3, end = 6;
     for (int timeMin = start; timeMin <= end; timeMin++) {
@@ -47,15 +46,15 @@ public class RuleFactory implements Keys {
       // 训练
       train(timeMin, timeMin, Math.min(end, timeMin + delay), train);
       final long trainEnd = System.currentTimeMillis();
+      final int testRound = 3, testCount = Math.min(train.size() / 5, 5_0000);
 
       // 条件过滤
       filterByLimit(timeMin);
+      // 随机打散
+      Collections.shuffle(train);
       // 随机抽样检测过滤
-      int testRound = 5, testCount = Math.min(train.size() / 5, 3_0000);
-      for (int i = 0; i < testRound; i++) {
-        Collections.shuffle(train);
-        filterByTest(timeMin, train.subList(0, testCount));
-      }
+      filterByTest(timeMin, train);
+
       final long testEnd = System.currentTimeMillis();
 
       System.out.println(String.format("\n模型构建中: %d', 查询耗时: %.1fs, 训练耗时: %.1fs, 校验耗时: %.1fs",
@@ -119,33 +118,42 @@ public class RuleFactory implements Keys {
   }
 
   private void filterByTest(int timeMin, List<Map<String, Object>> test) {
-    Set<String> keySet = new HashSet<>(mRules.keySet());
+    final int batchCount = 100;
+    Map<String, Integer> roundMap = new HashMap<>();
+    Map<String, Integer> countMap = new HashMap<>();
+    Map<String, Float> sumMap = new HashMap<>();
+    test.forEach(match -> {
+      final String ruleKey = mRuleType.calKey(timeMin, timeMin, match);
+      if (!mRules.containsKey(ruleKey)) {
+        return;
+      }
+      final Rule rule = mRules.get(ruleKey);
+      Pair<Float, Float> newGain = rule.mType.calGain(timeMin, match);
+      if (newGain.first == 0 && newGain.second == 0) {
+        return; // 和, 不计算
+      }
+      final float thisGain = rule.value() == 0 ? newGain.first : newGain.second;
+      final int newCnt = countMap.getOrDefault(ruleKey, 0) + 1;
+      final float newSum = sumMap.getOrDefault(ruleKey, 0f) + thisGain;
+      if (newCnt >= batchCount) { // 清算
+        countMap.remove(ruleKey);
+        sumMap.remove(ruleKey);
+        roundMap.put(ruleKey, roundMap.getOrDefault(ruleKey, 0) + 1);
 
-    keySet.stream().filter(ruleKey -> mRules.get(ruleKey).mTimeMin == timeMin)
-        .forEach(ruleKey -> {
-          final Rule rule = mRules.get(ruleKey);
-          final AtomicInteger applied = new AtomicInteger();
-          double profit = test.stream().mapToDouble(match -> {
-            final String newRuleKey = mRuleType.calKey(timeMin, timeMin, match);
-            if (!newRuleKey.equals(ruleKey)) {
-              return 0;
-            }
-            Pair<Float, Float> newGain = rule.mType.calGain(timeMin, match);
-            if (newGain.first == 0 && newGain.second == 0) {
-              return 0; // 和
-            }
-            applied.getAndIncrement();
-            return rule.value() == 0 ? newGain.first : newGain.second;
-          }).sum();
+        double profitRate = newSum / newCnt;
+        if (profitRate < 1) mRules.remove(ruleKey);
 
-          final int total = applied.get();
-          double profitRate = profit / (total + 0.01);
-          if (total < 10 || profitRate < DEFAULT_MIN_PROFIT_RATE) {
-            mRules.remove(ruleKey);
-          }
-          // System.out.println(rule.total() + "@" + ruleKey + ", -> " + total + " => " +
-          // profitRate);
-        });
+        System.out.println(ruleKey + " => " + profitRate);
+      } else {
+        countMap.put(ruleKey, newCnt);
+        sumMap.put(ruleKey, newSum);
+        roundMap.put(ruleKey, roundMap.getOrDefault(ruleKey, 0));
+      }
+    });
+    roundMap.keySet().forEach(ruleKey -> {
+      final int total = roundMap.get(ruleKey);
+      if (total < 2) mRules.remove(ruleKey);
+    });
   }
 
 
@@ -178,9 +186,21 @@ public class RuleFactory implements Keys {
             + (timeMin > 0 ? (timePrefix + "customDanger, ") : "")
             + "1 "
             + "from football where 1=1 "
-            + "and " + (timeMin > 0 ? (timePrefix + "scoreOddOfVictory>=1.7 ") : "1=1 ")
-            + "and " + (timeMin > 0 ? (timePrefix + "scoreOddOfDefeat>=1.7 ") : "1=1 ");
 
-    return selectSql + QueryHelper.SQL_AND + QueryHelper.SQL_ST + " ";
+            + "and "
+            + (timeMin > 0 ? "cast(" + (timePrefix + "hostBestShoot as int)>=0 ") : "1=1 ")
+            + "and "
+            + (timeMin > 0 ? "cast(" + (timePrefix + "customBestShoot as int)>=0 ") : "1=1 ")
+
+            + "and "
+            + (timeMin > 0 ? "cast(" + (timePrefix + "scoreOddOfVictory as number)>=1.7 ") : "1=1 ")
+            + "and "
+            + (timeMin > 0 ? "cast(" + (timePrefix + "scoreOddOfDefeat as number)>=1.7 ") : "1=1 ")
+            + "and "
+            + (timeMin > 0 ? "cast(" + (timePrefix + "bigOddOfVictory as number)>=1.7 ") : "1=1 ")
+            + "and "
+            + (timeMin > 0 ? "cast(" + (timePrefix + "bigOddOfDefeat as number)>=1.7 ") : "1=1 ");
+
+    return selectSql + QueryHelper.SQL_AND + QueryHelper.SQL_ST + QueryHelper.SQL_ORDER;
   }
 }

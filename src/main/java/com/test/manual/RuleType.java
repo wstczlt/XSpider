@@ -46,24 +46,22 @@ public enum RuleType implements Keys {
     int minCustomScore = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customScore"));
     int minHostShoot = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostBestShoot"));
     int minCustomShoot = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customBestShoot"));
-    // TODO 换成控球率
-    int minHostDanger = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostDanger"));
-    int minCustomDanger = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customDanger"));
 
     float openingScoreOdd = valueOfFloat(match.get(Keys.OPENING_SCORE_ODD));
     float openingBallOdd = valueOfFloat(match.get(Keys.OPENING_BIG_ODD));
     float minScoreOdd = valueMin <= 0
         ? valueOfFloat(match.get(Keys.ORIGINAL_SCORE_ODD))
         : valueOfFloat(match.get(timePrefix + "scoreOdd"));
-    float minBallOdd = valueMin <= 0
-        ? valueOfFloat(match.get(Keys.OPENING_BIG_ODD))
-        : valueOfFloat(match.get(timePrefix + "bigOdd"));
+    // 比分差
+    int scoreDistance = minHostScore - minCustomScore;
+    // 射正强弱(2每20分钟射正差距)
+    int shootDistance = (minHostShoot - minCustomShoot) * 20 / (valueMin + 10);
 
     return StringUtils.join(new float[] {
         ordinal(), keyMin,
-        openingScoreOdd, minScoreOdd,
-        openingBallOdd, minBallOdd,
-        minHostScore, minCustomScore},
+        openingScoreOdd, openingBallOdd,
+        minScoreOdd,
+        scoreDistance, shootDistance},
         '@');
   }
 
@@ -73,24 +71,21 @@ public enum RuleType implements Keys {
     int minCustomScore = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customScore"));
     int minHostShoot = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostBestShoot"));
     int minCustomShoot = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customBestShoot"));
-    // TODO 换成控球率
-    int minHostDanger = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostDanger"));
-    int minCustomDanger = valueMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customDanger"));
 
     float openingScoreOdd = valueOfFloat(match.get(Keys.OPENING_SCORE_ODD));
     float openingBallOdd = valueOfFloat(match.get(Keys.OPENING_BIG_ODD));
-    float minScoreOdd = valueMin <= 0
-        ? valueOfFloat(match.get(Keys.ORIGINAL_SCORE_ODD))
-        : valueOfFloat(match.get(timePrefix + "scoreOdd"));
     float minBallOdd = valueMin <= 0
         ? valueOfFloat(match.get(Keys.OPENING_BIG_ODD))
         : valueOfFloat(match.get(timePrefix + "bigOdd"));
+    int scoreTotal = minHostScore + minCustomScore;
+    // 每20分钟平均射正次数
+    int shootTotal = (minHostShoot + minCustomShoot) * 20 / (valueMin + 10);
 
     return StringUtils.join(new float[] {
         ordinal(), keyMin,
-        openingScoreOdd, minScoreOdd,
+        openingScoreOdd,
         openingBallOdd, minBallOdd,
-        minHostScore, minCustomScore},
+        scoreTotal, shootTotal},
         '@');
   }
 
