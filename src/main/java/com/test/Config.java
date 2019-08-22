@@ -24,8 +24,14 @@ public class Config {
   // 每场比赛抓取之后暂停线程一段时间，防止被封IP
   public static int DEFAULT_SLEEP_AFTER_REQUEST;
 
-  // 推荐比赛的盈利率下限
-  public static float PROFIT_RATE_LIMIT;
+  // 让球上盘盈利率限制
+  public static float SCORE_UP_PROFIT_THRESHOLD;
+  // 让球下盘盈利率限制
+  public static float SCORE_LOW_PROFIT_THRESHOLD;
+  // 大球盈利率限制
+  public static float BALL_UP_PROFIT_THRESHOLD;
+  // 小球盈利率限制
+  public static float BALL_LOW_PROFIT_THRESHOLD;
   // 是否展示让球上盘推荐
   public static boolean SHOW_SCORE_UP;
   // 是否展示让球下盘推荐
@@ -60,7 +66,11 @@ public class Config {
     RADAR_MIN_ONE_LOOP = parseInt(p.getProperty("RADAR_MIN_ONE_LOOP", "6000"));
     DEFAULT_SLEEP_AFTER_REQUEST =
         parseInt(p.getProperty("DEFAULT_SLEEP_AFTER_REQUEST", "1000"));
-    PROFIT_RATE_LIMIT = parseFloat(p.getProperty("PROFIT_RATE_LIMIT", "1.05"));
+    SCORE_UP_PROFIT_THRESHOLD = parseFloat(p.getProperty("SCORE_UP_PROFIT_THRESHOLD", "1.05"));
+    SCORE_LOW_PROFIT_THRESHOLD = parseFloat(p.getProperty("SCORE_LOW_PROFIT_THRESHOLD", "1.05"));
+    BALL_UP_PROFIT_THRESHOLD = parseFloat(p.getProperty("BALL_UP_PROFIT_THRESHOLD", "1.05"));
+    BALL_LOW_PROFIT_THRESHOLD = parseFloat(p.getProperty("BALL_LOW_PROFIT_THRESHOLD", "1.05"));
+
     SHOW_SCORE_UP = parseInt(p.getProperty("SHOW_SCORE_UP", "1")) == 1;
     SHOW_SCORE_LOW = parseInt(p.getProperty("SHOW_SCORE_LOW", "1")) == 1;
     SHOW_BALL_BIG = parseInt(p.getProperty("SHOW_BALL_BIG", "1")) == 1;

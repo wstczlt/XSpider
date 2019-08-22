@@ -48,6 +48,27 @@ public class HistoryRadar implements Keys {
         || (Config.SHOW_BALL_SMALL && isBallSmall);
   };
 
+  public static final Predicate<Estimation> THRESHOLD_FILTER = estimation -> {
+    final Rule rule = (Rule) estimation.mModel;
+    final Map<String, Object> match = estimation.mMatch;
+    final float minScoreOdd = valueOfFloat(match.get("min" + rule.mTimeMin + "_scoreOdd"));
+    boolean isScoreUp = rule.mType == RuleType.SCORE &&
+        ((minScoreOdd >= 0 && rule.value() == 2)
+            || (minScoreOdd <= 0 && rule.value() == 0));
+
+    boolean isScoreLow = rule.mType == RuleType.SCORE &&
+        ((minScoreOdd >= 0 && rule.value() == 0)
+            || (minScoreOdd <= 0 && rule.value() == 2));
+
+    boolean isBallBig = rule.mType == RuleType.BALL && rule.value() == 0;
+    boolean isBallSmall = rule.mType == RuleType.BALL && rule.value() == 2;
+
+    return (rule.profitRate() >= Config.SCORE_UP_PROFIT_THRESHOLD && isScoreUp)
+        || (rule.profitRate() >= Config.SCORE_LOW_PROFIT_THRESHOLD && isScoreLow)
+        || (rule.profitRate() >= Config.BALL_UP_PROFIT_THRESHOLD && isBallBig)
+        || (rule.profitRate() >= Config.BALL_LOW_PROFIT_THRESHOLD && isBallSmall);
+  };
+
   private static final RuleEval RULE_EVAL = new RuleEval();
   private static final List<Consumer<Estimation>> CONSUMERS = Arrays.asList(new HistoryConsumer());
 
@@ -92,7 +113,7 @@ public class HistoryRadar implements Keys {
     matches.forEach(match -> RULE_EVAL.evalEst(valueOfInt(match.get(TIME_MIN)), match)
         .stream()
         .filter(DISPLAY_FILTER)
-        .filter(estimation -> estimation.mProfitRate >= Config.PROFIT_RATE_LIMIT)
+        .filter(THRESHOLD_FILTER)
         .sorted((o1, o2) -> (int) (o2.mProfitRate * 1000 - o1.mProfitRate * 1000))
         .forEach(est -> CONSUMERS.forEach(consumer -> consumer.accept(est))));
   }

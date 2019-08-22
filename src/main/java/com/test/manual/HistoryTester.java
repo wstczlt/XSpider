@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.test.Config;
 import com.test.dszuqiu.DsHistoryJobFactory;
 import com.test.dszuqiu.DsJobBuilder;
 import com.test.entity.Estimation;
@@ -70,7 +69,7 @@ public class HistoryTester {
         final String key = nowHostScore + "-" + nowCustomScore;
         ruleEval.evalEst(testMin, match).stream()
             .filter(HistoryRadar.DISPLAY_FILTER)
-            .filter(estimation -> estimation.mProfitRate >= Config.PROFIT_RATE_LIMIT)
+            .filter(HistoryRadar.THRESHOLD_FILTER)
             .sorted((o1, o2) -> (int) (o2.mProfitRate * 1000 - o1.mProfitRate * 1000))
             .forEach(e -> rules.put(key + ((Rule) e.mModel).mType, (Rule) e.mModel));
       });
@@ -100,7 +99,7 @@ public class HistoryTester {
         final String key = nowHostScore + "-" + nowCustomScore;
         ruleEval.evalEst(testMin, match).stream()
             .filter(HistoryRadar.DISPLAY_FILTER)
-            .filter(estimation -> estimation.mProfitRate >= Config.PROFIT_RATE_LIMIT)
+            .filter(HistoryRadar.THRESHOLD_FILTER)
             .sorted((o1, o2) -> (int) (o2.mProfitRate * 1000 - o1.mProfitRate * 1000))
             .forEach(e -> rules.put(key + ((Rule) e.mModel).mType, (Rule) e.mModel));
       });
