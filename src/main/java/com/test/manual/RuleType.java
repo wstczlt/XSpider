@@ -95,11 +95,11 @@ public enum RuleType implements Keys {
         ? valueOfFloat(match.get(timePrefix + "scoreOdd"))
         : valueOfFloat(match.get(OPENING_SCORE_ODD));
     float minScoreOddVictory = timeMin > 0
-        ? valueOfFloat(match.get(timePrefix + "scoreOddOfVictory")) + 0.03f
-        : valueOfFloat(match.get(OPENING_SCORE_ODD_OF_VICTORY)) + 0.03f;
+        ? valueOfFloat(match.get(timePrefix + "scoreOddOfVictory"))
+        : valueOfFloat(match.get(OPENING_SCORE_ODD_OF_VICTORY));
     float minScoreOddDefeat = timeMin > 0
-        ? valueOfFloat(match.get(timePrefix + "scoreOddOfDefeat")) + 0.03f
-        : valueOfFloat(match.get(OPENING_SCORE_ODD_OF_DEFEAT)) + 0.03f;
+        ? valueOfFloat(match.get(timePrefix + "scoreOddOfDefeat"))
+        : valueOfFloat(match.get(OPENING_SCORE_ODD_OF_DEFEAT));
     int hostScore = valueOfInt(match.get(HOST_SCORE));
     int customScore = valueOfInt(match.get(CUSTOM_SCORE));
     int minHostScore = timeMin > 0 ? valueOfInt(match.get(timePrefix + "hostScore")) : 0;
@@ -125,11 +125,11 @@ public enum RuleType implements Keys {
         ? valueOfFloat(match.get(timePrefix + "bigOdd"))
         : valueOfFloat(match.get(OPENING_BIG_ODD));
     float minBallOddVictory = timeMin > 0
-        ? valueOfFloat(match.get(timePrefix + "bigOddOfVictory")) + 0.03f
-        : valueOfFloat(match.get(OPENING_BIG_ODD_OF_VICTORY)) + 0.03f;
+        ? valueOfFloat(match.get(timePrefix + "bigOddOfVictory"))
+        : valueOfFloat(match.get(OPENING_BIG_ODD_OF_VICTORY));
     float minBallOddDefeat = timeMin > 0
-        ? valueOfFloat(match.get(timePrefix + "bigOddOfDefeat")) + 0.03f
-        : valueOfFloat(match.get(OPENING_BIG_ODD_OF_DEFEAT)) + 0.03f;
+        ? valueOfFloat(match.get(timePrefix + "bigOddOfDefeat"))
+        : valueOfFloat(match.get(OPENING_BIG_ODD_OF_DEFEAT));
     int hostScore = valueOfInt(match.get(HOST_SCORE));
     int customScore = valueOfInt(match.get(CUSTOM_SCORE));
     float delta = hostScore + customScore - minBallOdd;
