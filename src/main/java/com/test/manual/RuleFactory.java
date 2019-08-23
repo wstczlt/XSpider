@@ -34,7 +34,7 @@ public class RuleFactory implements Keys {
   public void build() throws Exception {
     mRules.clear();
     // 聚类训练, 摊到前后三分钟，增加训练数据量
-    final int delay = 5;
+    final int delay = 3;
     int start = -1, end = 80;
     // int start = 3, end = 6;
     for (int timeMin = start; timeMin <= end; timeMin++) {
@@ -46,7 +46,6 @@ public class RuleFactory implements Keys {
       // 训练
       train(timeMin, timeMin, Math.min(end, timeMin + delay), train);
       final long trainEnd = System.currentTimeMillis();
-      final int testRound = 3, testCount = Math.min(train.size() / 5, 5_0000);
 
       // 条件过滤
       filterByLimit(timeMin);
@@ -118,7 +117,7 @@ public class RuleFactory implements Keys {
   }
 
   private void filterByTest(int timeMin, List<Map<String, Object>> test) {
-    final int batchCount = 100;
+    final int batchCount = 50;
     Map<String, Integer> roundMap = new HashMap<>();
     Map<String, Integer> countMap = new HashMap<>();
     Map<String, Float> sumMap = new HashMap<>();
@@ -152,7 +151,7 @@ public class RuleFactory implements Keys {
     });
     roundMap.keySet().forEach(ruleKey -> {
       final int total = roundMap.get(ruleKey);
-      if (total < 2) mRules.remove(ruleKey);
+      if (total < 3) mRules.remove(ruleKey);
     });
   }
 
