@@ -9,7 +9,6 @@ import static com.test.db.QueryHelper.doQuery;
 import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +39,8 @@ public class HistoryTester {
   public static final String QUERY_RANDOM_SQL =
       SQL_SELECT + SQL_AND + SQL_ST + "order by random() ";
 
+  private static final RuleEval ruleEval = new RuleEval();
+
   public static void main(String[] args) throws Exception {
     testDisplay();
   }
@@ -52,60 +53,24 @@ public class HistoryTester {
     dragon.start();
 
     String querySql = SQL_SELECT + SQL_AND + SQL_ST + buildSqlIn(factory.getMatchIDs());
-    final RuleEval ruleEval = new RuleEval();
-    final List<Integer> testMinArray = new ArrayList<>();
-    for (int i = -1; i <= 80; i++) {
-      testMinArray.add(i);
-    }
     List<Map<String, Object>> matches = doQuery(querySql, 10000);
     for (int i = 0; i < matches.size(); i++) {
       final Map<String, Object> match = matches.get(i);
-      final Map<String, Rule> rules = new HashMap<>();
-
-      testMinArray.forEach(testMin -> {
-        final String nowTimePrefix = "min" + testMin + "_";
-        final int nowHostScore = valueOfInt(match.get(nowTimePrefix + "hostScore"));
-        final int nowCustomScore = valueOfInt(match.get(nowTimePrefix + "customScore"));
-        final String key = nowHostScore + "-" + nowCustomScore;
-        ruleEval.evalEst(testMin, match).stream()
-            .filter(HistoryRadar.DISPLAY_FILTER)
-            .filter(HistoryRadar.THRESHOLD_FILTER)
-            .sorted((o1, o2) -> (int) (o2.mProfitRate * 1000 - o1.mProfitRate * 1000))
-            .forEach(e -> rules.put(key + ((Rule) e.mModel).mType, (Rule) e.mModel));
-      });
-
-      rules.values().forEach(rule -> new HistoryConsumer().accept(new Estimation(rule, match,
-          rule.value(), rule.prob0(), rule.prob1(), rule.prob2(), rule.profitRate())));
+      NewRulEval.evalRules(80, match)
+          .forEach(rule -> new HistoryConsumer().accept(new Estimation(rule, match, rule.value(),
+              rule.prob0(), rule.prob1(), rule.prob2(), rule.profitRate())));
     }
   }
 
   public static void testDisplay() throws Exception {
     final List<Integer> matchIDs = Arrays.asList(655031, 655039, 654958);
-    final RuleEval ruleEval = new RuleEval();
-    final List<Integer> testMinArray = new ArrayList<>();
-    for (int i = -1; i <= 80; i++) {
-      testMinArray.add(i);
-    }
     String querySql = SQL_SELECT + SQL_AND + SQL_ST + buildSqlIn(matchIDs);
     List<Map<String, Object>> matches = doQuery(querySql, 100);
     for (int i = 0; i < matches.size(); i++) {
       final Map<String, Object> match = matches.get(i);
-      final Map<String, Rule> rules = new HashMap<>();
-
-      testMinArray.forEach(testMin -> {
-        final String nowTimePrefix = "min" + testMin + "_";
-        final int nowHostScore = valueOfInt(match.get(nowTimePrefix + "hostScore"));
-        final int nowCustomScore = valueOfInt(match.get(nowTimePrefix + "customScore"));
-        final String key = nowHostScore + "-" + nowCustomScore;
-        ruleEval.evalEst(testMin, match).stream()
-            .filter(HistoryRadar.DISPLAY_FILTER)
-            .filter(HistoryRadar.THRESHOLD_FILTER)
-            .sorted((o1, o2) -> (int) (o2.mProfitRate * 1000 - o1.mProfitRate * 1000))
-            .forEach(e -> rules.put(key + ((Rule) e.mModel).mType, (Rule) e.mModel));
-      });
-
-      rules.values().forEach(rule -> new HistoryConsumer().accept(new Estimation(rule, match,
-          rule.value(), rule.prob0(), rule.prob1(), rule.prob2(), rule.profitRate())));
+      NewRulEval.evalRules(80, match)
+          .forEach(rule -> new HistoryConsumer().accept(new Estimation(rule, match, rule.value(),
+              rule.prob0(), rule.prob1(), rule.prob2(), rule.profitRate())));
     }
   }
 
@@ -152,11 +117,11 @@ public class HistoryTester {
     doTest(matches);
   }
 
+
   public static void doTest(List<Map<String, Object>> matches) throws Exception {
     System.out.println("测试数量: " + matches.size());
     final boolean delay = false;
-    final RuleEval ruleEval = new RuleEval();
-    final List<Float> thresholds = Arrays.asList(1.05f, 1.06f, 1.08f, 1.1f);
+    final List<Float> thresholds = Arrays.asList(1.05f);
 
     // final List<Float> thresholds =
     // Arrays.asList(0.55f, 0.58f, 0.60f, 0.62f, 0.65f, 0.70f, 0.75f, 0.8f);
@@ -228,7 +193,7 @@ public class HistoryTester {
 
     for (int i = 0; i < matches.size(); i++) {
       final Map<String, Object> match = matches.get(i);
-      ruleEval.evalRules(80, match).stream().filter(rule -> {
+      NewRulEval.evalRules(80, match).stream().filter(rule -> {
         if (!delay) {
           return true;
         }
@@ -371,61 +336,61 @@ public class HistoryTester {
               sumScoreGainValue - (victoryScoreCountValue + defeatScoreCountValue)));
 
 
-
-      float sumUpGainValue = sumUpGain.get(threshold);
-      int upCountValue = upCount.get(threshold).get();
-      int drewUpCountValue = drewUpCount.get(threshold).get();
-      int victoryUpCountValue = victoryUpCount.get(threshold).get();
-      int defeatUpCountValue = defeatUpCount.get(threshold).get();
-
-      System.out.println(
-          String.format("Score-Up, threshold=%.2f, " +
-              "sumGain=%.2f, total=%d," +
-              " drewCount=%d, victoryCount=%d, defeatCount=%d," +
-              " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
-              threshold, sumUpGainValue, upCountValue,
-              drewUpCountValue, victoryUpCountValue, defeatUpCountValue,
-              victoryUpCountValue * 1f / (victoryUpCountValue + defeatUpCountValue),
-              sumUpGainValue * 1f / (victoryUpCountValue + defeatUpCountValue),
-              sumUpGainValue - (victoryUpCountValue + defeatUpCountValue)));
-
-
-
-      float sumBallGainValue = sumBallGain.get(threshold);
-      int ballCountValue = ballCount.get(threshold).get();
-      int drewBallCountValue = drewBallCount.get(threshold).get();
-      int victoryBallCountValue = victoryBallCount.get(threshold).get();
-      int defeatBallCountValue = defeatBallCount.get(threshold).get();
-
-      System.out.println(
-          String.format("Ball, threshold=%.2f, " +
-              "sumGain=%.2f, total=%d," +
-              " drewCount=%d, victoryCount=%d, defeatCount=%d," +
-              " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
-              threshold, sumBallGainValue, ballCountValue,
-              drewBallCountValue, victoryBallCountValue, defeatBallCountValue,
-              victoryBallCountValue * 1f / (victoryBallCountValue + defeatBallCountValue),
-              sumBallGainValue * 1f / (victoryBallCountValue + defeatBallCountValue),
-              sumBallGainValue - (victoryBallCountValue + defeatBallCountValue)));
-
-
-
-      float sumBigGainValue = sumBigGain.get(threshold);
-      int bigCountValue = bigCount.get(threshold).get();
-      int drewBigCountValue = drewBigCount.get(threshold).get();
-      int victoryBigCountValue = victoryBigCount.get(threshold).get();
-      int defeatBigCountValue = defeatBigCount.get(threshold).get();
-
-      System.out.println(
-          String.format("Big-Ball, threshold=%.2f, " +
-              "sumGain=%.2f, total=%d," +
-              " drewCount=%d, victoryCount=%d, defeatCount=%d," +
-              " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
-              threshold, sumBigGainValue, bigCountValue,
-              drewBigCountValue, victoryBigCountValue, defeatBigCountValue,
-              victoryBigCountValue * 1f / (victoryBigCountValue + defeatBigCountValue),
-              sumBigGainValue * 1f / (victoryBigCountValue + defeatBigCountValue),
-              sumBigGainValue - (victoryBigCountValue + defeatBigCountValue)));
+      //
+      // float sumUpGainValue = sumUpGain.get(threshold);
+      // int upCountValue = upCount.get(threshold).get();
+      // int drewUpCountValue = drewUpCount.get(threshold).get();
+      // int victoryUpCountValue = victoryUpCount.get(threshold).get();
+      // int defeatUpCountValue = defeatUpCount.get(threshold).get();
+      //
+      // System.out.println(
+      // String.format("Score-Up, threshold=%.2f, " +
+      // "sumGain=%.2f, total=%d," +
+      // " drewCount=%d, victoryCount=%d, defeatCount=%d," +
+      // " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
+      // threshold, sumUpGainValue, upCountValue,
+      // drewUpCountValue, victoryUpCountValue, defeatUpCountValue,
+      // victoryUpCountValue * 1f / (victoryUpCountValue + defeatUpCountValue),
+      // sumUpGainValue * 1f / (victoryUpCountValue + defeatUpCountValue),
+      // sumUpGainValue - (victoryUpCountValue + defeatUpCountValue)));
+      //
+      //
+      //
+      // float sumBallGainValue = sumBallGain.get(threshold);
+      // int ballCountValue = ballCount.get(threshold).get();
+      // int drewBallCountValue = drewBallCount.get(threshold).get();
+      // int victoryBallCountValue = victoryBallCount.get(threshold).get();
+      // int defeatBallCountValue = defeatBallCount.get(threshold).get();
+      //
+      // System.out.println(
+      // String.format("Ball, threshold=%.2f, " +
+      // "sumGain=%.2f, total=%d," +
+      // " drewCount=%d, victoryCount=%d, defeatCount=%d," +
+      // " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
+      // threshold, sumBallGainValue, ballCountValue,
+      // drewBallCountValue, victoryBallCountValue, defeatBallCountValue,
+      // victoryBallCountValue * 1f / (victoryBallCountValue + defeatBallCountValue),
+      // sumBallGainValue * 1f / (victoryBallCountValue + defeatBallCountValue),
+      // sumBallGainValue - (victoryBallCountValue + defeatBallCountValue)));
+      //
+      //
+      //
+      // float sumBigGainValue = sumBigGain.get(threshold);
+      // int bigCountValue = bigCount.get(threshold).get();
+      // int drewBigCountValue = drewBigCount.get(threshold).get();
+      // int victoryBigCountValue = victoryBigCount.get(threshold).get();
+      // int defeatBigCountValue = defeatBigCount.get(threshold).get();
+      //
+      // System.out.println(
+      // String.format("Big-Ball, threshold=%.2f, " +
+      // "sumGain=%.2f, total=%d," +
+      // " drewCount=%d, victoryCount=%d, defeatCount=%d," +
+      // " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
+      // threshold, sumBigGainValue, bigCountValue,
+      // drewBigCountValue, victoryBigCountValue, defeatBigCountValue,
+      // victoryBigCountValue * 1f / (victoryBigCountValue + defeatBigCountValue),
+      // sumBigGainValue * 1f / (victoryBigCountValue + defeatBigCountValue),
+      // sumBigGainValue - (victoryBigCountValue + defeatBigCountValue)));
 
     });
   }
