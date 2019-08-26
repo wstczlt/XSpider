@@ -259,6 +259,9 @@ public class RaceParser implements Keys {
       mItems.put("min" + i + "_customDanger", item.getString("guest_danger"));
       mItems.put("min" + i + "_hostBestShoot", item.getString("host_shotongoal"));
       mItems.put("min" + i + "_customBestShoot", item.getString("guest_shotongoal"));
+      mItems.put("min" + i + "_hostShoot", item.getString("host_shotoffgoal"));
+      mItems.put("min" + i + "_customShoot", item.getString("guest_shotoffgoal"));
+
       mItems.put("min" + i + "_hostCorner", item.getString("host_corner"));
       mItems.put("min" + i + "_customCorner", item.getString("guest_corner"));
       mItems.put("min" + i + "_hostScore", item.getString("host_goal"));
