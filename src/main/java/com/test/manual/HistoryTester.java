@@ -2,6 +2,7 @@ package com.test.manual;
 
 import static com.test.Config.SPIDER_THREAD_COUNT;
 import static com.test.db.QueryHelper.SQL_AND;
+import static com.test.db.QueryHelper.SQL_ORDER;
 import static com.test.db.QueryHelper.SQL_SELECT;
 import static com.test.db.QueryHelper.SQL_ST;
 import static com.test.db.QueryHelper.buildSqlIn;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.test.dszuqiu.DsHistoryJobFactory;
@@ -62,6 +64,7 @@ public class HistoryTester {
     }
   }
 
+
   public static void testDisplay() throws Exception {
     final List<Integer> matchIDs = Arrays.asList(655031, 655039, 654958);
     String querySql = SQL_SELECT + SQL_AND + SQL_ST + buildSqlIn(matchIDs);
@@ -72,6 +75,23 @@ public class HistoryTester {
           .forEach(rule -> new HistoryConsumer().accept(new Estimation(rule, match, rule.value(),
               rule.prob0(), rule.prob1(), rule.prob2(), rule.profitRate())));
     }
+  }
+
+  public static void testOnRandomHistoryWeek() throws Exception {
+    int random = new Random().nextInt(100) + 30; // 半年前
+    long timeStart = System.currentTimeMillis() - (random + 1) * 7 * 86400 * 1000L;
+    long timeEnd = System.currentTimeMillis() - random * 7 * 86400 * 1000L;
+    String querySql = SQL_SELECT + SQL_AND + SQL_ST
+        + "and cast(matchTime as bigint)>=" + timeStart + " "
+        + "and cast(matchTime as bigint)<=" + timeEnd + " "
+        + SQL_ORDER;
+
+    // System.out.println(random + "， " + random * 7 * 86400 * 1000L);
+    // System.out.println(System.currentTimeMillis() + "-" + random * 7 * 86400 * 1000L);
+    // System.out.println(querySql);
+
+    List<Map<String, Object>> matches = doQuery(querySql, 4000);
+    doTest(matches);
   }
 
   public static void testOnNewHistory(int days) throws Exception {

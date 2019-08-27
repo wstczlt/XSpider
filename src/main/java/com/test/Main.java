@@ -21,23 +21,23 @@ public class Main {
     // new RuleFactory(RuleType.BALL).build();
     //
 
-    HistoryTester.testDisplay();
-
-    System.out.println("\n昨日数据: ");
-    HistoryTester.testOnLastDay();
-
-    System.out.println("\n近3日数据: ");
-    HistoryTester.testOnLast3Day();
-
-    System.out.println("\n上周数据: ");
-    HistoryTester.testOnLast1Weeks();
-
-    System.out.println("\n上两周数据: ");
-    HistoryTester.testOnLast2Weeks();
+//    HistoryTester.testDisplay();
+//
+//    System.out.println("\n昨日数据: ");
+//    HistoryTester.testOnLastDay();
+//
+//    System.out.println("\n近3日数据: ");
+//    HistoryTester.testOnLast3Day();
+//
+//    System.out.println("\n上周数据: ");
+//    HistoryTester.testOnLast1Weeks();
+//
+//    System.out.println("\n上两周数据: ");
+//    HistoryTester.testOnLast2Weeks();
 
     for (int i = 0; i < 5; i++) {
       System.out.println("\n随机数据(" + i + "): ");
-      HistoryTester.testOnRandomHistory();
+      HistoryTester.testOnRandomHistoryWeek();
     }
 
     // HistoryTester.testOnNewHistory(3);
