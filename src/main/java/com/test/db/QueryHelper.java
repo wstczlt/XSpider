@@ -37,7 +37,7 @@ public class QueryHelper implements Keys {
           "AND cast(hostScore as int) >=0 " +
           "AND cast(customScore as int) >=0 " +
 
-//          SQL_LEAGUE +
+          SQL_LEAGUE +
 //          SQL_MANBETX +
           "AND cast(original_scoreOddOfVictory as number) >=1.7 " +
           "AND cast(original_scoreOddOfDefeat as number) >=1.7 " +

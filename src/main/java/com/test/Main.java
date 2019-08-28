@@ -1,6 +1,6 @@
 package com.test;
 
-import com.test.manual.HistoryTester;
+import com.test.manual.HistoryRadar;
 
 public class Main {
 
@@ -21,32 +21,33 @@ public class Main {
     // new RuleFactory(RuleType.BALL).build();
     //
 
+    // HistoryTester.testDisplay();
+    //
+    // System.out.println("\n昨日数据: ");
+    // HistoryTester.testOnLastDay();
+    //
+    // System.out.println("\n近3日数据: ");
+    // HistoryTester.testOnLast3Day();
+    //
+    // System.out.println("\n上周数据: ");
+    // HistoryTester.testOnLast1Weeks();
+    //
+    // System.out.println("\n上两周数据: ");
+    // HistoryTester.testOnLast2Weeks();
+    //
+//     for (int i = 0; i < 10; i++) {
+//     System.out.println("\n随机数据(" + i + "): ");
+//     HistoryTester.testOnRandomHistoryWeek();
+//     }
 //    HistoryTester.testDisplay();
-//
-//    System.out.println("\n昨日数据: ");
-//    HistoryTester.testOnLastDay();
-//
-//    System.out.println("\n近3日数据: ");
-//    HistoryTester.testOnLast3Day();
-//
-//    System.out.println("\n上周数据: ");
-//    HistoryTester.testOnLast1Weeks();
-//
-//    System.out.println("\n上两周数据: ");
-//    HistoryTester.testOnLast2Weeks();
-
-    for (int i = 0; i < 5; i++) {
-      System.out.println("\n随机数据(" + i + "): ");
-      HistoryTester.testOnRandomHistoryWeek();
-    }
 
     // HistoryTester.testOnNewHistory(3);
     // HistoryTester.testOnNewHistory(14);
 
-//     HistoryTester.testDisplay();
+    // HistoryTester.testDisplay();
     // HistoryTester.testHistoryDisplay(1);
 
-    // new HistoryRadar().run(1000);
+     new HistoryRadar().run(1000);
   }
 
 }

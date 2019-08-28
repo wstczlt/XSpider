@@ -10,11 +10,13 @@ import static com.test.db.QueryHelper.doQuery;
 import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.test.dszuqiu.DsHistoryJobFactory;
@@ -66,9 +68,20 @@ public class HistoryTester {
 
 
   public static void testDisplay() throws Exception {
-    final List<Integer> matchIDs = Arrays.asList(655031, 655039, 654958);
-    String querySql = SQL_SELECT + SQL_AND + SQL_ST + buildSqlIn(matchIDs);
-    List<Map<String, Object>> matches = doQuery(querySql, 100);
+    int random = new Random().nextInt(100) + 30; // 半年前
+    random = 41;
+    long timeStart = System.currentTimeMillis() - (random + 1) * 7 * 86400 * 1000L;
+    long timeEnd = System.currentTimeMillis() - random * 7 * 86400 * 1000L;
+    String querySql = SQL_SELECT + SQL_AND + SQL_ST
+        + "and cast(matchTime as bigint)>=" + timeStart + " "
+        + "and cast(matchTime as bigint)<=" + timeEnd + " "
+        + SQL_ORDER;
+
+    SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd");
+    sft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+    System.out.println(
+        "random=" + random + "， start=" + sft.format(timeStart) + ", end=" + sft.format(timeEnd));
+    List<Map<String, Object>> matches = doQuery(querySql, 4000);
     for (int i = 0; i < matches.size(); i++) {
       final Map<String, Object> match = matches.get(i);
       NewRulEval.evalRules(80, match)
@@ -86,7 +99,10 @@ public class HistoryTester {
         + "and cast(matchTime as bigint)<=" + timeEnd + " "
         + SQL_ORDER;
 
-    // System.out.println(random + "， " + random * 7 * 86400 * 1000L);
+    SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd");
+    sft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+    System.out.println(
+        "random=" + random + "， start=" + sft.format(timeStart) + ", end=" + sft.format(timeEnd));
     // System.out.println(System.currentTimeMillis() + "-" + random * 7 * 86400 * 1000L);
     // System.out.println(querySql);
 
