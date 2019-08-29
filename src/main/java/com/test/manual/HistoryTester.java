@@ -92,7 +92,7 @@ public class HistoryTester {
 
   public static void testOnRandomHistoryWeek() throws Exception {
     int random = new Random().nextInt(100) + 20; // 半年前
-//    random = 41;
+    // random = 41;
     long timeStart = System.currentTimeMillis() - (random + 1) * 7 * 86400 * 1000L;
     long timeEnd = System.currentTimeMillis() - random * 7 * 86400 * 1000L;
     String querySql = SQL_SELECT + SQL_AND + SQL_ST

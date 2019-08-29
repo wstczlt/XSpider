@@ -234,9 +234,9 @@ public class RaceParser implements Keys {
       JSONObject item = searchItem(rangfen, i, "tie_sp");
       if (item == null) item = last;
       last = item;
-      mItems.put("min" + i + "_drewOdd", item.getString("tie_sp") + "");
-      mItems.put("min" + i + "_victoryOdd", item.getString("host_sp"));
-      mItems.put("min" + i + "_defeatOdd", item.getString("guest_sp"));
+      // mItems.put("min" + i + "_drewOdd", item.getString("tie_sp") + "");
+      // mItems.put("min" + i + "_victoryOdd", item.getString("host_sp"));
+      // mItems.put("min" + i + "_defeatOdd", item.getString("guest_sp"));
       mItems.put("min" + i + "_hostScore", item.getString("host_goal"));
       mItems.put("min" + i + "_customScore", item.getString("guest_goal"));
     }
@@ -262,8 +262,8 @@ public class RaceParser implements Keys {
       mItems.put("min" + i + "_hostShoot", item.getString("host_shotoffgoal"));
       mItems.put("min" + i + "_customShoot", item.getString("guest_shotoffgoal"));
 
-      mItems.put("min" + i + "_hostCorner", item.getString("host_corner"));
-      mItems.put("min" + i + "_customCorner", item.getString("guest_corner"));
+      // mItems.put("min" + i + "_hostCorner", item.getString("host_corner"));
+      // mItems.put("min" + i + "_customCorner", item.getString("guest_corner"));
       mItems.put("min" + i + "_hostScore", item.getString("host_goal"));
       mItems.put("min" + i + "_customScore", item.getString("guest_goal"));
     }

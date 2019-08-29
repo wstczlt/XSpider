@@ -87,8 +87,8 @@ public class DbPipeline implements HttpPipeline {
     try {
       final int matchID = Utils.valueOfInt(items.get(MATCH_ID)); // matchID必须要
       QueryRunner runner = new QueryRunner(mDbHelper.open());
-      Map<String, Object> resultMap =
-          runner.query("select matchID from football where matchID=" + matchID, new MapHandler());
+      Map<String, Object> resultMap = null;
+      // runner.query("select matchID from football where matchID=" + matchID, new MapHandler());
 
       String updateSql;
       if (resultMap != null && resultMap.size() > 0) {// 做update
@@ -97,13 +97,16 @@ public class DbPipeline implements HttpPipeline {
         updateSql = buildInsertSQL(matchID, items);
       }
 
+      long start = System.currentTimeMillis();
       runner.update(updateSql);
-//      System.out.println(updateSql);
+      long time = System.currentTimeMillis() - start;
+      // System.out.println(updateSql);
       final float victoryOdd = Utils.valueOfFloat(items.get(ORIGINAL_VICTORY_ODD));
       int cnt = mValueCount.getAndIncrement();
       Config.LOGGER.log(
-          String.format("DATABASE: matchID=%d, %s VS %s, valueCount=%d, victoryOdd=%.2f",
-              matchID, items.get(HOST_NAME), items.get(CUSTOM_NAME), cnt, victoryOdd));
+          String.format(
+              "DATABASE: matchID=%d, %s VS %s, valueCount=%d, victoryOdd=%.2f, duration=%d",
+              matchID, items.get(HOST_NAME), items.get(CUSTOM_NAME), cnt, victoryOdd, time));
     } catch (Throwable e) {
       e.printStackTrace();
     }
@@ -162,5 +165,45 @@ public class DbPipeline implements HttpPipeline {
     sb.deleteCharAt(sb.length() - 1); // 删掉最后一个逗号;
     sb.append(" WHERE matchID=").append(matchID);
     return sb.toString();
+  }
+
+
+  public static void test() throws Exception {
+
+    // DataSource ds = new DbHelper().open();
+    // QueryRunner runner = new QueryRunner(ds);
+    // for (int i = 0; i <= 90; i++) {
+    // try {
+    // runner.update("alter table football add column min" + i + "_hostShoot text");
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    //
+    // try {
+    // runner.update("alter table football add column min" + i + "_customShoot text");
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    //
+    // }
+
+    // try {
+    // Map<String, Object> map = runner.query("select * from football limit 1", new MapHandler());
+    // Set<String> columnSet = new HashSet<>(map.keySet());
+    // StringBuilder sb = new StringBuilder("create table football_new as select ");
+    // for (String name : columnSet) {
+    // if (name.contains("_hostCorner") || name.contains("_customCorner")
+    // || name.contains("_drewOdd") || name.contains("_victoryOdd")
+    // || name.contains("_defeatOdd")) {
+    // continue;
+    // }
+    // sb.append(name).append(", ");
+    // }
+    // sb.delete(sb.lastIndexOf(", "), sb.length());
+    // sb.append(" from football ");
+    // runner.update(sb.toString());
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
   }
 }

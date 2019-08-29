@@ -45,6 +45,8 @@ public class NewRulEval implements Keys {
     final String timePrefix = "min" + timeMin + "_";
     int hostScore = valueOfInt(match.get(timePrefix + "hostScore"));
     int customScore = valueOfInt(match.get(timePrefix + "customScore"));
+    int hostShoot = valueOfInt(match.get(timePrefix + "hostShoot"));
+    int customShoot = valueOfInt(match.get(timePrefix + "customShoot"));
     int hostBestShoot = valueOfInt(match.get(timePrefix + "hostBestShoot"));
     int customBestShoot = valueOfInt(match.get(timePrefix + "customBestShoot"));
     // int hostBestShoot = shootAfterLastGoal(true, timeMin, match);
@@ -58,7 +60,8 @@ public class NewRulEval implements Keys {
     float minScoreOddOfVictory = valueOfFloat(match.get(timePrefix + "scoreOddOfVictory"));
     float minScoreOddOfDefeat = valueOfFloat(match.get(timePrefix + "scoreOddOfDefeat"));
     int scoreDelta = hostScore - customScore;
-    int shootDelta = hostBestShoot - customBestShoot;
+    int shootDelta = hostShoot - customShoot;
+    int bestShootDelta = hostBestShoot - customBestShoot;
     boolean isHost = hostBestShoot - customBestShoot > 0;
 
 
@@ -66,6 +69,7 @@ public class NewRulEval implements Keys {
     boolean isTimeOk = timeMin >= 30 && timeMin <= 70;
     // 射正差距要足够大
     boolean isShootOk = isHost ? shootDelta >= 2 : shootDelta <= -2;
+    boolean isBestShootOk = isHost ? bestShootDelta >= 2 : bestShootDelta <= -2;
     // isShootOk = true;
     boolean isDangerOk =
         (isHost ? hostDanger : customDanger) * 1f / (hostDanger + customDanger) >= 0.5;
@@ -95,9 +99,15 @@ public class NewRulEval implements Keys {
     // + ", isScoreOk=" + isScoreOk
     // + ", isOddOk=" + isOddOk + ", isRateOk=" + isRateOk);
 
-    boolean select =
-        isTimeOk && isShootOk && isDangerOk && isScoreOk && isOddOk && isRateOk && originalOk
-            && isOpeningOk;
+    boolean select = isTimeOk
+        && isShootOk
+        && isBestShootOk
+        && isDangerOk
+        && isScoreOk
+        && isOddOk
+        && isRateOk
+        && originalOk
+        && isOpeningOk;
     return select
         ? new Rule(RuleType.SCORE, "", timeMin,
             isHost ? 1 : 0, 0, isHost ? 0 : 1,

@@ -25,7 +25,7 @@ import com.test.pipeline.DbPipeline;
 
 public class DsHelper {
 
-  private static final String FILENAME = "dszuqiu";
+  private static final String FILENAME = "/Users/Jesse/Desktop/dszuqiu";
 
   public static void main(String[] args) throws Exception {
     read(FILENAME);
