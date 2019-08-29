@@ -334,23 +334,23 @@ public class HistoryTester {
 
     thresholds.forEach(threshold -> {
       System.out.println("\n\n");
-
-      float sumGainValue = sumGain.get(threshold);
-      int estimationCountValue = allCount.get(threshold).get();
-      int drewCountValue = drewCount.get(threshold).get();
-      int victoryCountValue = victoryCount.get(threshold).get();
-      int defeatCountValue = defeatCount.get(threshold).get();
-
-      System.out.println(
-          String.format("Total, threshold=%.2f, " +
-              "sumGain=%.2f, total=%d," +
-              " drewCount=%d, victoryCount=%d, defeatCount=%d," +
-              " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
-              threshold, sumGainValue, estimationCountValue,
-              drewCountValue, victoryCountValue, defeatCountValue,
-              victoryCountValue * 1f / (victoryCountValue + defeatCountValue),
-              sumGainValue * 1f / (victoryCountValue + defeatCountValue),
-              sumGainValue - (victoryCountValue + defeatCountValue)));
+//
+//      float sumGainValue = sumGain.get(threshold);
+//      int estimationCountValue = allCount.get(threshold).get();
+//      int drewCountValue = drewCount.get(threshold).get();
+//      int victoryCountValue = victoryCount.get(threshold).get();
+//      int defeatCountValue = defeatCount.get(threshold).get();
+//
+//      System.out.println(
+//          String.format("Total, threshold=%.2f, " +
+//              "sumGain=%.2f, total=%d," +
+//              " drewCount=%d, victoryCount=%d, defeatCount=%d," +
+//              " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
+//              threshold, sumGainValue, estimationCountValue,
+//              drewCountValue, victoryCountValue, defeatCountValue,
+//              victoryCountValue * 1f / (victoryCountValue + defeatCountValue),
+//              sumGainValue * 1f / (victoryCountValue + defeatCountValue),
+//              sumGainValue - (victoryCountValue + defeatCountValue)));
 
 
 

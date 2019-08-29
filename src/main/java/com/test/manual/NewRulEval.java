@@ -47,6 +47,8 @@ public class NewRulEval implements Keys {
     int customScore = valueOfInt(match.get(timePrefix + "customScore"));
     int hostBestShoot = valueOfInt(match.get(timePrefix + "hostBestShoot"));
     int customBestShoot = valueOfInt(match.get(timePrefix + "customBestShoot"));
+    // int hostBestShoot = shootAfterLastGoal(true, timeMin, match);
+    // int customBestShoot = shootAfterLastGoal(false, timeMin, match);
     int hostDanger = valueOfInt(match.get(timePrefix + "hostDanger"));
     int customDanger = valueOfInt(match.get(timePrefix + "customDanger"));
 
@@ -56,31 +58,34 @@ public class NewRulEval implements Keys {
     float minScoreOddOfVictory = valueOfFloat(match.get(timePrefix + "scoreOddOfVictory"));
     float minScoreOddOfDefeat = valueOfFloat(match.get(timePrefix + "scoreOddOfDefeat"));
     int scoreDelta = hostScore - customScore;
-    int shootDelta = Math.abs(hostBestShoot - customBestShoot);
+    int shootDelta = hostBestShoot - customBestShoot;
     boolean isHost = hostBestShoot - customBestShoot > 0;
 
 
     // 时间区间
-    boolean isTimeOk = timeMin >= 40 && timeMin <= 75;
+    boolean isTimeOk = timeMin >= 30 && timeMin <= 75;
     // 射正差距要足够大
-    boolean isShootOk = shootDelta >= 3 && shootAfterLastGoal(isHost, timeMin, match) >= 3;
+    boolean isShootOk = isHost ? shootDelta >= 3 : shootDelta <= -3;
+    // isShootOk = true;
     boolean isDangerOk =
-        (isHost ? hostDanger : customDanger) * 1f / (hostDanger + customDanger) >= 0.6;
+        (isHost ? hostDanger : customDanger) * 1f / (hostDanger + customDanger) >= 0.5;
     // 强势方落后或者平, 且不能落后太多
     boolean isScoreOk = isHost
         ? scoreDelta <= 0 && scoreDelta >= -4 // 主队强势
         : scoreDelta >= 0 && scoreDelta <= 4; // 客队强势
     // 强势方让球不能太深
     float maxScoreOdd = timeMin <= 45 ? 0.5f : (timeMin <= 70 ? 0.25f : 0f);
-    // maxScoreOdd = 0f;
+    maxScoreOdd = 0f;
     boolean isOddOk = isHost
         ? minScoreOdd >= -maxScoreOdd && minScoreOdd <= 0
         : minScoreOdd <= maxScoreOdd && minScoreOdd >= 0;
     // 赔率不能太低
-    boolean isRateOk = isHost ? minScoreOddOfVictory >= 1.9f : minScoreOddOfDefeat >= 1.9f;
+    boolean isRateOk = isHost ? minScoreOddOfVictory >= 1.7f : minScoreOddOfDefeat >= 1.7f;
+    // isRateOk = true;
     // 盘口变动不能太大
     boolean originalOk =
         Math.abs(openingScoreOdd) <= 0.25 && Math.abs(originalScoreOdd - openingScoreOdd) <= 0.25;
+    boolean isOpeningOk = isHost ? openingScoreOdd <= 0 : openingScoreOdd >= 0;
 
     // System.out.println("timeMin=" + timeMin + ", hostBestShoot=" + hostBestShoot
     // + ", customBestShoot=" + customBestShoot);
@@ -91,13 +96,14 @@ public class NewRulEval implements Keys {
     // + ", isOddOk=" + isOddOk + ", isRateOk=" + isRateOk);
 
     boolean select =
-        isTimeOk && isShootOk && isDangerOk && isScoreOk && isOddOk && isRateOk && originalOk;
+        isTimeOk && isShootOk && isDangerOk && isScoreOk && isOddOk && isRateOk && originalOk
+            && isOpeningOk;
     return select
         ? new Rule(RuleType.SCORE, "", timeMin,
             isHost ? 1 : 0, 0, isHost ? 0 : 1,
             isHost ? 2 : 0, isHost ? 0 : 2)
         : null;
-
+    //
     // return select
     // ? new Rule(RuleType.SCORE, "", timeMin,
     // isHost ? 0 : 1, 0, isHost ? 1 : 0,
