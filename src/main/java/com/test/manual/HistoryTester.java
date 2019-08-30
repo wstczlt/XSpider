@@ -69,7 +69,7 @@ public class HistoryTester {
 
 
   public static void testDisplay() throws Exception {
-    int random = new Random().nextInt(20) + 3; // 半年前
+    int random = new Random().nextInt(30) + 3; // 半年前
     random = 67;
     long timeStart = System.currentTimeMillis() - (random + 1) * 28 * 86400 * 1000L;
     long timeEnd = System.currentTimeMillis() - random * 28 * 86400 * 1000L;
@@ -106,7 +106,7 @@ public class HistoryTester {
   }
 
   public static void testOnRandomHistoryWeek() throws Exception {
-    int random = new Random().nextInt(20) + 3; // 半年前
+    int random = new Random().nextInt(30) + 3; // 半年前
     // random = 41;
     long timeStart = System.currentTimeMillis() - (random + 1) * 28 * 86400 * 1000L;
     long timeEnd = System.currentTimeMillis() - random * 28 * 86400 * 1000L;

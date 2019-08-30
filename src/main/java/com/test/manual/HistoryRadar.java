@@ -72,7 +72,7 @@ public class HistoryRadar implements Keys {
 
   private static final NewRulEval RULE_EVAL = new NewRulEval();
   private static final List<Consumer<Estimation>> CONSUMERS =
-      Arrays.asList(new HistoryConsumer(), new BotConsumer());
+      Arrays.asList(new HistoryConsumer());
 
   public static void main(String[] args) throws Exception {
     new HistoryRadar().run(1);

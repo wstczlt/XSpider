@@ -1,5 +1,6 @@
 package com.test;
 
+import com.test.manual.HistoryRadar;
 import com.test.manual.HistoryTester;
 
 public class Main {
@@ -35,10 +36,10 @@ public class Main {
     // System.out.println("\n上两周数据: ");
     // HistoryTester.testOnLast2Weeks();
 //
-    for (int i = 0; i < 10; i++) {
-      System.out.println("\n随机数据(" + i + "): ");
-      HistoryTester.testOnRandomHistoryWeek();
-    }
+//    for (int i = 0; i < 10; i++) {
+//      System.out.println("\n随机数据(" + i + "): ");
+//      HistoryTester.testOnRandomHistoryWeek();
+//    }
 
 //     HistoryTester.testHistoryDisplay(3);
 
@@ -50,7 +51,7 @@ public class Main {
 //     HistoryTester.testDisplay();
     // HistoryTester.testHistoryDisplay(1);
 
-    // new HistoryRadar().run(1000);
+     new HistoryRadar().run(1000);
     // DsHelper.main(null);
 
     // HistoryTester.testBotDisplay();
