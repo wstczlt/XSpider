@@ -156,6 +156,11 @@ public class NewRulEval implements Keys {
       int minCustomScore = valueOfInt(match.get(minPrefix + "customScore"));
       int minHostBestShoot = valueOfInt(match.get(minPrefix + "hostBestShoot"));
       int minCustomBestShoot = valueOfInt(match.get(minPrefix + "customBestShoot"));
+
+      // if (minHostScore + minCustomScore == hostScore + customScore -1) {
+      // return isHost ? hostBestShoot - minHostBestShoot : customBestShoot - minCustomBestShoot;
+      // }
+
       if (isHost && minHostScore == hostScore - 1) {
         return hostBestShoot - minHostBestShoot;
       } else if (!isHost && minCustomScore == customScore - 1) {
