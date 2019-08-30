@@ -69,8 +69,8 @@ public class NewRulEval implements Keys {
     boolean isTimeOk = timeMin >= 30 && timeMin <= 70;
     // 射正差距要足够大
     boolean isShootOk = isHost ? shootDelta >= 2 : shootDelta <= -2;
+     isShootOk = true;
     boolean isBestShootOk = isHost ? bestShootDelta >= 2 : bestShootDelta <= -2;
-    // isShootOk = true;
     boolean isDangerOk =
         (isHost ? hostDanger : customDanger) * 1f / (hostDanger + customDanger) >= 0.5;
     // 强势方落后或者平, 且不能落后太多
@@ -89,6 +89,7 @@ public class NewRulEval implements Keys {
     // 盘口变动不能太大
     boolean originalOk =
         Math.abs(openingScoreOdd) <= 0.25 && Math.abs(originalScoreOdd - openingScoreOdd) <= 0.25;
+    originalOk = true;
     boolean isOpeningOk = isHost ? openingScoreOdd <= 0 : openingScoreOdd >= 0;
 
     // System.out.println("timeMin=" + timeMin + ", hostBestShoot=" + hostBestShoot
