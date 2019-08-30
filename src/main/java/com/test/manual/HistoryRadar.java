@@ -19,6 +19,7 @@ import java.util.function.Predicate;
 
 import com.test.Config;
 import com.test.Keys;
+import com.test.bot.BotConsumer;
 import com.test.dszuqiu.DsJobBuilder;
 import com.test.dszuqiu.DsJobFactory;
 import com.test.entity.Estimation;
@@ -70,7 +71,8 @@ public class HistoryRadar implements Keys {
   };
 
   private static final NewRulEval RULE_EVAL = new NewRulEval();
-  private static final List<Consumer<Estimation>> CONSUMERS = Arrays.asList(new HistoryConsumer());
+  private static final List<Consumer<Estimation>> CONSUMERS =
+      Arrays.asList(new HistoryConsumer(), new BotConsumer());
 
   public static void main(String[] args) throws Exception {
     new HistoryRadar().run(1);

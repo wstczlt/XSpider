@@ -1,6 +1,6 @@
 package com.test;
 
-import com.test.manual.HistoryTester;
+import com.test.manual.HistoryRadar;
 
 public class Main {
 
@@ -50,10 +50,10 @@ public class Main {
     // HistoryTester.testDisplay();
     // HistoryTester.testHistoryDisplay(1);
 
-    // new HistoryRadar().run(1000);
+    new HistoryRadar().run(1000);
     // DsHelper.main(null);
 
-    HistoryTester.testBotDisplay();
+    // HistoryTester.testBotDisplay();
   }
 
 }
