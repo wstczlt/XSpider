@@ -104,7 +104,7 @@ public class NewRulEval implements Keys {
     boolean originalOk =
         Math.abs(openingScoreOdd) <= 0.25 && Math.abs(originalScoreOdd - openingScoreOdd) <= 0.25;
     originalOk = true;
-    boolean isOpeningOk = isHost ? openingScoreOdd <= 0 : openingScoreOdd >= 0;
+    boolean isOpeningOk = isHost ? openingScoreOdd <= 0.25 : openingScoreOdd >= -0.25;
 
     // System.out.println("timeMin=" + timeMin + ", hostBestShoot=" + hostBestShoot
     // + ", customBestShoot=" + customBestShoot);

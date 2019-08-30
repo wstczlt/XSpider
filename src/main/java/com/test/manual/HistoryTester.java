@@ -69,7 +69,7 @@ public class HistoryTester {
 
   public static void testDisplay() throws Exception {
     int random = new Random().nextInt(50) + 20; // 半年前
-    random = 100;
+    random = 38;
     long timeStart = System.currentTimeMillis() - (random + 1) * 7 * 86400 * 1000L;
     long timeEnd = System.currentTimeMillis() - random * 7 * 86400 * 1000L;
     String querySql = SQL_SELECT + SQL_AND + SQL_ST
