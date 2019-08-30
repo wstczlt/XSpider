@@ -69,10 +69,10 @@ public class HistoryTester {
 
 
   public static void testDisplay() throws Exception {
-    int random = new Random().nextInt(50) + 20; // 半年前
+    int random = new Random().nextInt(20) + 3; // 半年前
     random = 67;
-    long timeStart = System.currentTimeMillis() - (random + 1) * 7 * 86400 * 1000L;
-    long timeEnd = System.currentTimeMillis() - random * 7 * 86400 * 1000L;
+    long timeStart = System.currentTimeMillis() - (random + 1) * 28 * 86400 * 1000L;
+    long timeEnd = System.currentTimeMillis() - random * 28 * 86400 * 1000L;
     String querySql = SQL_SELECT + SQL_AND + SQL_ST
         + "and cast(matchTime as bigint)>=" + timeStart + " "
         + "and cast(matchTime as bigint)<=" + timeEnd + " "
@@ -106,10 +106,10 @@ public class HistoryTester {
   }
 
   public static void testOnRandomHistoryWeek() throws Exception {
-    int random = new Random().nextInt(100) + 20; // 半年前
+    int random = new Random().nextInt(20) + 3; // 半年前
     // random = 41;
-    long timeStart = System.currentTimeMillis() - (random + 1) * 7 * 86400 * 1000L;
-    long timeEnd = System.currentTimeMillis() - random * 7 * 86400 * 1000L;
+    long timeStart = System.currentTimeMillis() - (random + 1) * 28 * 86400 * 1000L;
+    long timeEnd = System.currentTimeMillis() - random * 28 * 86400 * 1000L;
     String querySql = SQL_SELECT + SQL_AND + SQL_ST
         + "and cast(matchTime as bigint)>=" + timeStart + " "
         + "and cast(matchTime as bigint)<=" + timeEnd + " "
@@ -119,7 +119,7 @@ public class HistoryTester {
     sft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
     System.out.println(
         "random=" + random + "， start=" + sft.format(timeStart) + ", end=" + sft.format(timeEnd));
-    // System.out.println(System.currentTimeMillis() + "-" + random * 7 * 86400 * 1000L);
+    // System.out.println(System.currentTimeMillis() + "-" + random * 28 * 86400 * 1000L);
     // System.out.println(querySql);
 
     List<Map<String, Object>> matches = doQuery(querySql, 4000);

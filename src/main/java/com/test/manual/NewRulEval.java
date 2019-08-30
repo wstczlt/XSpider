@@ -89,9 +89,7 @@ public class NewRulEval implements Keys {
         (isHost ? hostDanger : customDanger) * 1f / (hostDanger + customDanger) >= 0.55;
     // isDangerOk = true;
     // 强势方落后或者平, 且不能落后太多
-    boolean isScoreOk = isHost
-        ? scoreDelta <= 0 && scoreDelta >= -4 // 主队强势
-        : scoreDelta >= 0 && scoreDelta <= 4; // 客队强势
+    boolean isScoreOk = isHost ? scoreDelta <= 0 : scoreDelta >= 0;
     // 强势方让球不能太深
     float maxScoreOdd = timeMin <= 45 ? 0.5f : (timeMin <= 70 ? 0.25f : 0f);
     maxScoreOdd = 0f;
@@ -151,7 +149,7 @@ public class NewRulEval implements Keys {
 
     if (!ok) return false;
 
-    for (int timeMin = 40; timeMin <= nowMin; timeMin++) {
+    for (int timeMin = 50; timeMin <= nowMin; timeMin++) {
       final String minPrefix = "min" + timeMin + "_";
       int minHostShoot = valueOfInt(match.get(minPrefix + "hostShoot"));
       int minCustomShoot = valueOfInt(match.get(minPrefix + "customShoot"));
