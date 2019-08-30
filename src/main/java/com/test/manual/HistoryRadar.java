@@ -69,7 +69,7 @@ public class HistoryRadar implements Keys {
         || (rule.profitRate() >= Config.BALL_LOW_PROFIT_THRESHOLD && isBallSmall);
   };
 
-  private static final RuleEval RULE_EVAL = new RuleEval();
+  private static final NewRulEval RULE_EVAL = new NewRulEval();
   private static final List<Consumer<Estimation>> CONSUMERS = Arrays.asList(new HistoryConsumer());
 
   public static void main(String[] args) throws Exception {

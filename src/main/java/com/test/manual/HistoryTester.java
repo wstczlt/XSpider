@@ -43,7 +43,7 @@ public class HistoryTester {
   public static final String QUERY_RANDOM_SQL =
       SQL_SELECT + SQL_AND + SQL_ST + "order by random() ";
 
-  private static final RuleEval ruleEval = new RuleEval();
+  private static final NewRulEval ruleEval = new NewRulEval();
 
   public static void main(String[] args) throws Exception {
     testDisplay();
@@ -60,7 +60,7 @@ public class HistoryTester {
     List<Map<String, Object>> matches = doQuery(querySql, 10000);
     for (int i = 0; i < matches.size(); i++) {
       final Map<String, Object> match = matches.get(i);
-      NewRulEval.evalRules(80, match)
+      ruleEval.evalRules(80, match)
           .forEach(rule -> new HistoryConsumer().accept(new Estimation(rule, match, rule.value(),
               rule.prob0(), rule.prob1(), rule.prob2(), rule.profitRate())));
     }
@@ -84,7 +84,7 @@ public class HistoryTester {
     List<Map<String, Object>> matches = doQuery(querySql, 4000);
     for (int i = 0; i < matches.size(); i++) {
       final Map<String, Object> match = matches.get(i);
-      NewRulEval.evalRules(80, match)
+      ruleEval.evalRules(80, match)
           .forEach(rule -> new HistoryConsumer().accept(new Estimation(rule, match, rule.value(),
               rule.prob0(), rule.prob1(), rule.prob2(), rule.profitRate())));
     }
@@ -155,7 +155,7 @@ public class HistoryTester {
   }
 
 
-  public static void doTest(List<Map<String, Object>> matches) throws Exception {
+  public static void doTest(List<Map<String, Object>> matches) {
     System.out.println("测试数量: " + matches.size());
     final boolean delay = false;
     final List<Float> thresholds = Arrays.asList(1.05f);
@@ -230,7 +230,7 @@ public class HistoryTester {
 
     for (int i = 0; i < matches.size(); i++) {
       final Map<String, Object> match = matches.get(i);
-      NewRulEval.evalRules(80, match).stream().filter(rule -> {
+      ruleEval.evalRules(80, match).stream().filter(rule -> {
         if (!delay) {
           return true;
         }

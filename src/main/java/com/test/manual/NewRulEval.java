@@ -8,16 +8,30 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.test.Keys;
+import com.test.entity.Estimation;
 
 public class NewRulEval implements Keys {
 
-  public static void main(String[] args) throws Exception {
+  public List<Estimation> evalEst(int nowMin, Map<String, Object> match) {
+    final String nowTimePrefix = "min" + nowMin + "_";
+    final int nowHostScore = valueOfInt(match.get(nowTimePrefix + "hostScore"));
+    final int nowCustomScore = valueOfInt(match.get(nowTimePrefix + "customScore"));
 
+    return evalRules(nowMin, match).stream().filter(rule -> {
+      final int timeMin = rule.mTimeMin;
+      final String timePrefix = "min" + timeMin + "_";
+      int minHostScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostScore"));
+      int minCustomScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customScore"));
+      // 比分发生了则抛弃
+      return minHostScore == nowHostScore && minCustomScore == nowCustomScore;
+    }).map(rule -> new Estimation(rule, match, rule.value(), rule.prob0(), rule.prob1(),
+        rule.prob2(), rule.profitRate())).collect(Collectors.toList());
   }
 
-  public static List<Rule> evalRules(int nowMin, Map<String, Object> match) {
+  public List<Rule> evalRules(int nowMin, Map<String, Object> match) {
     Set<String> keySet = new HashSet<>();
     List<Rule> rules = new ArrayList<>();
     for (int timeMin = -1; timeMin <= nowMin; timeMin++) {
@@ -41,7 +55,7 @@ public class NewRulEval implements Keys {
   }
 
 
-  public static Rule evalNewRule(int timeMin, Map<String, Object> match) {
+  private Rule evalNewRule(int timeMin, Map<String, Object> match) {
     final String timePrefix = "min" + timeMin + "_";
     int hostScore = valueOfInt(match.get(timePrefix + "hostScore"));
     int customScore = valueOfInt(match.get(timePrefix + "customScore"));
@@ -69,7 +83,7 @@ public class NewRulEval implements Keys {
     boolean isTimeOk = timeMin >= 30 && timeMin <= 70;
     // 射正差距要足够大
     boolean isShootOk = isHost ? shootDelta >= 2 : shootDelta <= -2;
-     isShootOk = true;
+    isShootOk = true;
     boolean isBestShootOk = isHost ? bestShootDelta >= 2 : bestShootDelta <= -2;
     boolean isDangerOk =
         (isHost ? hostDanger : customDanger) * 1f / (hostDanger + customDanger) >= 0.5;
@@ -124,7 +138,7 @@ public class NewRulEval implements Keys {
 
 
 
-  private static int shootAfterLastGoal(boolean isHost, int nowMin, Map<String, Object> match) {
+  private int shootAfterLastGoal(boolean isHost, int nowMin, Map<String, Object> match) {
     final String nowPrefix = "min" + nowMin + "_";
     int hostScore = valueOfInt(match.get(nowPrefix + "hostScore"));
     int customScore = valueOfInt(match.get(nowPrefix + "customScore"));

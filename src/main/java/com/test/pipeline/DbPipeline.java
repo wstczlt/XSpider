@@ -87,8 +87,8 @@ public class DbPipeline implements HttpPipeline {
     try {
       final int matchID = Utils.valueOfInt(items.get(MATCH_ID)); // matchID必须要
       QueryRunner runner = new QueryRunner(mDbHelper.open());
-      Map<String, Object> resultMap = null;
-      // runner.query("select matchID from football where matchID=" + matchID, new MapHandler());
+      Map<String, Object> resultMap =
+          runner.query("select matchID from football where matchID=" + matchID, new MapHandler());
 
       String updateSql;
       if (resultMap != null && resultMap.size() > 0) {// 做update
