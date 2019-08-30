@@ -23,6 +23,11 @@ public class QueryHelper implements Keys {
           "or league like '%友谊%' " +
           "or hostLeagueRank<>'null') " +
 
+          "and league not like '%女%' " +
+          "and league not like '%丙%' " +
+          "and league not like '%3' " +
+          "and league not like '%U19%' " +
+          "and league not like '%2L' " +
           "and league not like '%降%' " +
           "and league not like '%业余%' " +
           "and league not like '%沙滩%' " +

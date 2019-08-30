@@ -84,9 +84,10 @@ public class NewRulEval implements Keys {
     // 射正差距要足够大
     boolean isShootOk = isHost ? shootDelta >= 2 : shootDelta <= -2;
     isShootOk = true;
-    boolean isBestShootOk = isHost ? bestShootDelta >= 2 : bestShootDelta <= -2;
+    boolean isBestShootOk = isShootOk(isHost, timeMin, match);
     boolean isDangerOk =
-        (isHost ? hostDanger : customDanger) * 1f / (hostDanger + customDanger) >= 0.5;
+        (isHost ? hostDanger : customDanger) * 1f / (hostDanger + customDanger) >= 0.55;
+    // isDangerOk = true;
     // 强势方落后或者平, 且不能落后太多
     boolean isScoreOk = isHost
         ? scoreDelta <= 0 && scoreDelta >= -4 // 主队强势
@@ -104,7 +105,7 @@ public class NewRulEval implements Keys {
     boolean originalOk =
         Math.abs(openingScoreOdd) <= 0.25 && Math.abs(originalScoreOdd - openingScoreOdd) <= 0.25;
     originalOk = true;
-    boolean isOpeningOk = isHost ? openingScoreOdd <= 0.25 : openingScoreOdd >= -0.25;
+    boolean isOpeningOk = isHost ? openingScoreOdd <= 0.5 : openingScoreOdd >= -0.5;
 
     // System.out.println("timeMin=" + timeMin + ", hostBestShoot=" + hostBestShoot
     // + ", customBestShoot=" + customBestShoot);
@@ -134,6 +135,39 @@ public class NewRulEval implements Keys {
     // isHost ? 0 : 1, 0, isHost ? 1 : 0,
     // isHost ? 0 : 2, isHost ? 2 : 0)
     // : null;
+  }
+
+  private boolean isShootOk(boolean isHost, int nowMin, Map<String, Object> match) {
+    final String nowPrefix = "min" + nowMin + "_";
+    int hostShoot = valueOfInt(match.get(nowPrefix + "hostShoot"));
+    int customShoot = valueOfInt(match.get(nowPrefix + "customShoot"));
+    int hostBestShoot = valueOfInt(match.get(nowPrefix + "hostBestShoot"));
+    int customBestShoot = valueOfInt(match.get(nowPrefix + "customBestShoot"));
+
+    int needDelta = 2;
+    boolean ok = isHost
+        ? (hostShoot - customShoot >= needDelta && hostBestShoot - customBestShoot >= needDelta)
+        : (customShoot - hostShoot >= needDelta && customBestShoot - hostBestShoot >= needDelta);
+
+    if (!ok) return false;
+
+    for (int timeMin = 40; timeMin <= nowMin; timeMin++) {
+      final String minPrefix = "min" + timeMin + "_";
+      int minHostShoot = valueOfInt(match.get(minPrefix + "hostShoot"));
+      int minCustomShoot = valueOfInt(match.get(minPrefix + "customShoot"));
+      int minHostBestShoot = valueOfInt(match.get(minPrefix + "hostBestShoot"));
+      int minCustomBestShoot = valueOfInt(match.get(minPrefix + "customBestShoot"));
+      needDelta = 0;
+      ok = isHost
+          ? (minHostShoot - minCustomShoot >= needDelta
+              && minHostBestShoot - minCustomBestShoot >= needDelta)
+          : (minCustomShoot - minHostShoot >= needDelta
+              && minCustomBestShoot - minHostBestShoot >= needDelta);
+
+      if (!ok) return false;
+    }
+
+    return true;
   }
 
 
