@@ -80,7 +80,7 @@ public class NewRulEval implements Keys {
 
 
     // 时间区间
-    boolean isTimeOk = timeMin >= 30 && timeMin <= 70;
+    boolean isTimeOk = timeMin >= 50 && timeMin <= 70;
     // 射正差距要足够大
     boolean isShootOk = isHost ? shootDelta >= 2 : shootDelta <= -2;
     isShootOk = true;
