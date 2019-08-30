@@ -22,23 +22,23 @@ public class Main {
     //
 
     // HistoryTester.testDisplay();
-
-    System.out.println("\n昨日数据: ");
-    HistoryTester.testOnLastDay();
-
-    System.out.println("\n近3日数据: ");
-    HistoryTester.testOnLast3Day();
-
-    System.out.println("\n上周数据: ");
-    HistoryTester.testOnLast1Weeks();
-
-    System.out.println("\n上两周数据: ");
-    HistoryTester.testOnLast2Weeks();
-
-    for (int i = 0; i < 10; i++) {
-      System.out.println("\n随机数据(" + i + "): ");
-      HistoryTester.testOnRandomHistoryWeek();
-    }
+    //
+    // System.out.println("\n昨日数据: ");
+    // HistoryTester.testOnLastDay();
+    //
+    // System.out.println("\n近3日数据: ");
+    // HistoryTester.testOnLast3Day();
+    //
+    // System.out.println("\n上周数据: ");
+    // HistoryTester.testOnLast1Weeks();
+    //
+    // System.out.println("\n上两周数据: ");
+    // HistoryTester.testOnLast2Weeks();
+    //
+    // for (int i = 0; i < 10; i++) {
+    // System.out.println("\n随机数据(" + i + "): ");
+    // HistoryTester.testOnRandomHistoryWeek();
+    // }
 
     // HistoryTester.testHistoryDisplay(3);
 
@@ -52,6 +52,8 @@ public class Main {
 
     // new HistoryRadar().run(1000);
     // DsHelper.main(null);
+
+    HistoryTester.testBotDisplay();
   }
 
 }

@@ -19,6 +19,7 @@ import java.util.Random;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.test.bot.BotConsumer;
 import com.test.dszuqiu.DsHistoryJobFactory;
 import com.test.dszuqiu.DsJobBuilder;
 import com.test.entity.Estimation;
@@ -77,7 +78,7 @@ public class HistoryTester {
         + "and cast(matchTime as bigint)<=" + timeEnd + " "
         + SQL_ORDER;
 
-//     querySql = QUERY_LAST_3_DAY_SQL;
+    // querySql = QUERY_LAST_3_DAY_SQL;
 
     SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd");
     sft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
@@ -88,6 +89,18 @@ public class HistoryTester {
       final Map<String, Object> match = matches.get(i);
       ruleEval.evalRules(80, match)
           .forEach(rule -> new HistoryConsumer().accept(new Estimation(rule, match, rule.value(),
+              rule.prob0(), rule.prob1(), rule.prob2(), rule.profitRate())));
+    }
+  }
+
+
+  public static void testBotDisplay() throws Exception {
+    final BotConsumer consumer = new BotConsumer();
+    List<Map<String, Object>> matches = doQuery(QUERY_LAST_DAY_SQL, 4000);
+    for (int i = 0; i < matches.size(); i++) {
+      final Map<String, Object> match = matches.get(i);
+      ruleEval.evalRules(80, match)
+          .forEach(rule -> consumer.accept(new Estimation(rule, match, rule.value(),
               rule.prob0(), rule.prob1(), rule.prob2(), rule.profitRate())));
     }
   }
