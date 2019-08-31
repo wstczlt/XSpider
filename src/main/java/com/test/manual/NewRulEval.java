@@ -73,7 +73,7 @@ public class NewRulEval implements Keys {
 
 
     // 时间区间
-    boolean isTimeOk = timeMin >= 50 && timeMin <= 70;
+    boolean isTimeOk = timeMin >= 50 && timeMin <= 80;
     boolean isShootOk = isShootOk(isHost, timeMin, match);
     boolean isDangerOk =
         (isHost ? hostDanger : customDanger) * 1f / (hostDanger + customDanger) >= 0.55;
