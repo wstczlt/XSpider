@@ -42,10 +42,10 @@ public class HistoryTester {
   }
 
   public static void testAndDisplay() throws Exception {
-    int startDay = new Random().nextInt(300) + 90; // 天
-    int zoneDays = 60;
+    int random = new Random().nextInt(100) + 12; // 周
+    int zoneDays = 28;
 
-    testAndDisplay(startDay, zoneDays);
+    testAndDisplay(random * 7, zoneDays);
   }
 
   public static void fetchAndDisplay(int zoneDays) throws Exception {
@@ -66,10 +66,10 @@ public class HistoryTester {
   }
 
   public static void testAndEval() throws Exception {
-    int startDay = new Random().nextInt(300) + 90; // 天
+    int random = new Random().nextInt(100) + 12; // 周
     int zoneDays = 28;
 
-    testAndEval(startDay, zoneDays);
+    testAndEval(random * 7, zoneDays);
   }
 
   public static void fetchAndEval(int zoneDays) throws Exception {
