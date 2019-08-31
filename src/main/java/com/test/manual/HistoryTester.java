@@ -89,6 +89,9 @@ public class HistoryTester {
         + "and cast(matchTime as bigint)>" + timeStart + " "
         + "and cast(matchTime as bigint)<=" + timeEnd + " "
         + SQL_ORDER;
+
+    // String querySql = SQL_SELECT + SQL_AND + SQL_ST +
+    // buildSqlIn(Collections.singletonList(657629));
     System.out.println("startDay=" + startDay + "，zoneDays=" + zoneDays + " ["
         + sft.format(timeStart) + " - " + sft.format(timeEnd) + "]");
     return doQuery(querySql, 4000);

@@ -94,6 +94,14 @@ public class NewRulEval implements Keys {
         && isOddOk
         && isRateOk
         && isOpeningOk;
+
+    // System.out.println(String.format("timeMin=%d, isTimeOk=%s," +
+    // " isShootOk=%s, isDangerOk=%s, isScoreOk=%s, " +
+    // "isOddOk=%s, isRateOk=%s, isOpeningOk=%s",
+    // timeMin, valueOf(isTimeOk),
+    // valueOf(isShootOk), valueOf(isDangerOk), valueOf(isScoreOk),
+    // valueOf(isOddOk), valueOf(isRateOk), valueOf(isOpeningOk)));
+
     return select
         ? new Rule(RuleType.SCORE, "", timeMin,
             isHost ? 1 : 0, 0, isHost ? 0 : 1,
@@ -108,24 +116,29 @@ public class NewRulEval implements Keys {
     int hostBestShoot = valueOfInt(match.get(nowPrefix + "hostBestShoot"));
     int customBestShoot = valueOfInt(match.get(nowPrefix + "customBestShoot"));
 
+    // 射正数量优势
     int needDelta = 2;
     boolean ok = isHost
         ? (hostShoot - customShoot >= needDelta && hostBestShoot - customBestShoot >= needDelta)
         : (customShoot - hostShoot >= needDelta && customBestShoot - hostBestShoot >= needDelta);
+    // 射正比例优势
+    ok = ok && (isHost ? hostBestShoot : customBestShoot) * 1f
+        / (hostBestShoot + customBestShoot) >= 0.6;
 
     if (!ok) return false;
 
-    for (int timeMin = 50; timeMin <= nowMin; timeMin++) {
+    // 最近20分钟之内攻势强
+    for (int timeMin = nowMin - 20; timeMin <= nowMin; timeMin++) {
       final String minPrefix = "min" + timeMin + "_";
-      int minHostShoot = valueOfInt(match.get(minPrefix + "hostShoot"));
-      int minCustomShoot = valueOfInt(match.get(minPrefix + "customShoot"));
       int minHostBestShoot = valueOfInt(match.get(minPrefix + "hostBestShoot"));
       int minCustomBestShoot = valueOfInt(match.get(minPrefix + "customBestShoot"));
+      int minHostOffShoot = valueOfInt(match.get(minPrefix + "hostShoot"));
+      int minCustomOffShoot = valueOfInt(match.get(minPrefix + "customShoot"));
       needDelta = 0;
       ok = isHost
-          ? (minHostShoot - minCustomShoot >= needDelta
+          ? (minHostOffShoot - minCustomOffShoot >= needDelta
               && minHostBestShoot - minCustomBestShoot >= needDelta)
-          : (minCustomShoot - minHostShoot >= needDelta
+          : (minCustomOffShoot - minHostOffShoot >= needDelta
               && minCustomBestShoot - minHostBestShoot >= needDelta);
 
       if (!ok) return false;
