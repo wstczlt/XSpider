@@ -83,7 +83,7 @@ public class NewRulEval implements Keys {
     // 强势方让球不能太深
     boolean isOddOk = minScoreOdd == 0;
     // 赔率不能太低
-    boolean isRateOk = isHost ? minScoreOddOfVictory >= 1.6f : minScoreOddOfDefeat >= 1.6f;
+    boolean isRateOk = isHost ? minScoreOddOfVictory >= 1.75f : minScoreOddOfDefeat >= 1.75f;
     // isRateOk = true;
     boolean isOpeningOk = isHost ? openingScoreOdd <= 0.5 : openingScoreOdd >= -0.5;
 

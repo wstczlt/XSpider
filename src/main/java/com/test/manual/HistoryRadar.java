@@ -19,7 +19,6 @@ import java.util.function.Predicate;
 
 import com.test.Config;
 import com.test.Keys;
-import com.test.bot.BotConsumer;
 import com.test.dszuqiu.DsJobBuilder;
 import com.test.dszuqiu.DsJobFactory;
 import com.test.entity.Estimation;
@@ -70,7 +69,6 @@ public class HistoryRadar implements Keys {
         || (rule.profitRate() >= Config.BALL_LOW_PROFIT_THRESHOLD && isBallSmall);
   };
 
-  private static final NewRulEval RULE_EVAL = new NewRulEval();
   private static final List<Consumer<Estimation>> CONSUMERS =
       Arrays.asList(new HistoryConsumer());
 
@@ -112,11 +110,18 @@ public class HistoryRadar implements Keys {
     List<Map<String, Object>> matches = doQuery(querySql, 1000);
     System.out.println("比赛总场次: " + matches.size());
 
-    matches.forEach(match -> RULE_EVAL.evalEst(valueOfInt(match.get(TIME_MIN)), match)
-        .stream()
-        .filter(DISPLAY_FILTER)
-        .filter(THRESHOLD_FILTER)
-        .sorted((o1, o2) -> (int) (o2.mProfitRate * 1000 - o1.mProfitRate * 1000))
-        .forEach(est -> CONSUMERS.forEach(consumer -> consumer.accept(est))));
+    final NewRulEval newRulEval = new NewRulEval();
+    final RuleEval ruleEval = new RuleEval();
+
+    matches.forEach(match -> {
+      List<Estimation> list = newRulEval.evalEst(valueOfInt(match.get(TIME_MIN)), match);
+      list.addAll(ruleEval.evalEst(valueOfInt(match.get(TIME_MIN)), match));
+
+      list.stream()
+          .filter(DISPLAY_FILTER)
+          .filter(THRESHOLD_FILTER)
+          .sorted((o1, o2) -> (int) (o2.mProfitRate * 1000 - o1.mProfitRate * 1000))
+          .forEach(est -> CONSUMERS.forEach(consumer -> consumer.accept(est)));
+    });
   }
 }
