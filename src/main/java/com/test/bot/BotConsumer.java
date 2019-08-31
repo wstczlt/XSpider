@@ -132,7 +132,7 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
             ? (est.mValue == 0 ? minScoreOddVictory : minScoreOddDefeat)
             : (est.mValue == 0 ? minBallOddVictory : minBallOddDefeat)));
 
-
+    sb.append(String.format("预计盈利率: %.2f\n", est.mProfitRate));
     return sb.toString();
   }
 }
