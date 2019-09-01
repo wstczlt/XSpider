@@ -26,14 +26,14 @@ public class Main {
     //
     // System.out.println("\n上月数据: ");
     // HistoryTester.testAndEval(0, 28);
-
+    //
     // for (int i = 0; i < 10; i++) {
     // System.out.println("\n随机数据(" + i + "): ");
     // HistoryTester.testAndEval();
     // }
 
 
-    // HistoryTester.fetchAndDisplay(1);
+    // HistoryTester.fetchAndEval(30);
 
     new HistoryRadar().run(1000);
   }

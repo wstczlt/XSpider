@@ -31,7 +31,7 @@ public class HistoryTester {
 
   public static final List<Integer> TEST_MATCHES = Collections.emptyList();
   // public static final List<Integer> TEST_MATCHES = Arrays.asList(657551, 657629);
-  private static final RuleEval ruleEval = new RuleEval2();
+  private static final RuleEval ruleEval = new RuleEval1();
 
   public static void testAndDisplay(int startDay, int zoneDays) throws Exception {
     List<Map<String, Object>> matches = queryHistoryMatch(startDay, zoneDays);

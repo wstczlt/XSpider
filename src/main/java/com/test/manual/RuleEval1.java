@@ -39,7 +39,7 @@ public class RuleEval1 extends RuleEval {
     // 强势方落后或者平(战意强)
     boolean isScoreOk = isHost ? scoreDelta <= 0 : scoreDelta >= 0;
     // 强势方让球不能太深
-    boolean isOddOk = minScoreOdd == 0;
+    boolean isOddOk = isHost ? minScoreOdd >= 0 : minScoreOdd <= 0;
     // 赔率不能太低
     boolean isRateOk = isHost ? minScoreOddOfVictory >= 1.70f : minScoreOddOfDefeat >= 1.70f;
     // isRateOk = true;
