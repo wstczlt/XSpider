@@ -84,8 +84,12 @@ public class HistoryTester {
   // 查询历史区间比赛
   private static List<Map<String, Object>> queryHistoryMatch(int startDay, int zoneDays)
       throws Exception {
-//    startDay = 133;
-//    zoneDays = 28;
+    // startDay = 133;
+    // zoneDays = 28;
+    // 避不开的大坑
+    if (startDay >= 115 && startDay <= 150) {
+      startDay += 50;
+    }
     SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd");
     sft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
     final long timeStart = sft.parse("2019-08-30").getTime() - (startDay + zoneDays) * 86400000L;

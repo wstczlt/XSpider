@@ -76,15 +76,14 @@ public class NewRulEval implements Keys {
     // 时间区间
     boolean isTimeOk = timeMin >= 50 && timeMin <= 85;
     boolean isShootOk = isShootOk(isHost, timeMin, match);
-    boolean isDangerOk =
-        (isHost ? hostDanger : customDanger) * 1f / (hostDanger + customDanger) >= 0.55;
-    // isDangerOk = true;
+    boolean isDangerOk = hostDanger > 0 && customDanger > 0 &&
+        (isHost ? hostDanger : customDanger) * 1f / (hostDanger + customDanger) >= 0.50;
     // 强势方落后或者平(战意强)
     boolean isScoreOk = isHost ? scoreDelta <= 0 : scoreDelta >= 0;
     // 强势方让球不能太深
     boolean isOddOk = minScoreOdd == 0;
     // 赔率不能太低
-    boolean isRateOk = isHost ? minScoreOddOfVictory >= 1.75f : minScoreOddOfDefeat >= 1.75f;
+    boolean isRateOk = isHost ? minScoreOddOfVictory >= 1.70f : minScoreOddOfDefeat >= 1.70f;
     // isRateOk = true;
     boolean isOpeningOk = isHost ? openingScoreOdd <= 0.5 : openingScoreOdd >= -0.5;
 
@@ -123,7 +122,6 @@ public class NewRulEval implements Keys {
     int totalDis = hostTotalShoot - customTotalShoot;
 
 
-
     // 射正数量优势
     int needDelta = 2;
     boolean ok = isHost
@@ -146,11 +144,11 @@ public class NewRulEval implements Keys {
       int minCustomAllShoot = valueOfInt(match.get(minPrefix + "customShoot")) + minCustomBestShoot;
 
       int minBestDis = minHostBestShoot - minCustomBestShoot;
-      int minAlldis = minHostAllShoot - minCustomBestShoot;
+      int minAllDis = minHostAllShoot - minCustomAllShoot;
       needDelta = 0;
       ok = isHost
-          ? (minBestDis >= needDelta && minAlldis >= 0)
-          : (-minBestDis >= needDelta && -minAlldis >= needDelta);
+          ? (minBestDis >= needDelta && minAllDis >= 0)
+          : (-minBestDis >= needDelta && -minAllDis >= needDelta);
 
       if (!ok) return false;
     }
