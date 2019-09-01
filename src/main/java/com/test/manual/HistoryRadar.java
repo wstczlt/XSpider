@@ -112,13 +112,11 @@ public class HistoryRadar implements Keys {
     List<Map<String, Object>> matches = doQuery(querySql, 1000);
     System.out.println("比赛总场次: " + matches.size());
 
-    final NewRulEval newRulEval = new NewRulEval();
-    final RuleEval ruleEval = new RuleEval();
-
+    final List<RuleEval> evals = Arrays.asList(new RuleEval1());
     matches.forEach(match -> {
-      List<Estimation> list = new ArrayList<>();
-      list.addAll(newRulEval.evalEst(valueOfInt(match.get(TIME_MIN)), match));
-      // list.addAll(ruleEval.evalEst(valueOfInt(match.get(TIME_MIN)), match));
+      final List<Estimation> list = new ArrayList<>();
+      evals.forEach(
+          ruleEval -> list.addAll(ruleEval.evalEst(valueOfInt(match.get(TIME_MIN)), match)));
 
       list.stream()
           .filter(DISPLAY_FILTER)

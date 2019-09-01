@@ -1,6 +1,6 @@
 package com.test;
 
-import com.test.manual.HistoryTester;
+import com.test.manual.HistoryRadar;
 
 public class Main {
 
@@ -27,15 +27,15 @@ public class Main {
     // System.out.println("\n上月数据: ");
     // HistoryTester.testAndEval(0, 28);
 
-    for (int i = 0; i < 10; i++) {
-      System.out.println("\n随机数据(" + i + "): ");
-      HistoryTester.testAndEval();
-    }
+    // for (int i = 0; i < 10; i++) {
+    // System.out.println("\n随机数据(" + i + "): ");
+    // HistoryTester.testAndEval();
+    // }
 
 
     // HistoryTester.fetchAndDisplay(1);
 
-    // new HistoryRadar().run(1000);
+    new HistoryRadar().run(1000);
   }
 
 }

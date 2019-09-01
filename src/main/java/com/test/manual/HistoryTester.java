@@ -31,7 +31,7 @@ public class HistoryTester {
 
   public static final List<Integer> TEST_MATCHES = Collections.emptyList();
   // public static final List<Integer> TEST_MATCHES = Arrays.asList(657551, 657629);
-  private static final NewRulEval ruleEval = new NewRulEval();
+  private static final RuleEval ruleEval = new RuleEval2();
 
   public static void testAndDisplay(int startDay, int zoneDays) throws Exception {
     List<Map<String, Object>> matches = queryHistoryMatch(startDay, zoneDays);
@@ -361,22 +361,22 @@ public class HistoryTester {
       //
       //
       //
-      // float sumBallGainValue = sumBallGain.get(threshold);
-      // int ballCountValue = ballCount.get(threshold).get();
-      // int drewBallCountValue = drewBallCount.get(threshold).get();
-      // int victoryBallCountValue = victoryBallCount.get(threshold).get();
-      // int defeatBallCountValue = defeatBallCount.get(threshold).get();
-      //
-      // System.out.println(
-      // String.format("Ball, threshold=%.2f, " +
-      // "sumGain=%.2f, total=%d," +
-      // " drewCount=%d, victoryCount=%d, defeatCount=%d," +
-      // " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
-      // threshold, sumBallGainValue, ballCountValue,
-      // drewBallCountValue, victoryBallCountValue, defeatBallCountValue,
-      // victoryBallCountValue * 1f / (victoryBallCountValue + defeatBallCountValue),
-      // sumBallGainValue * 1f / (victoryBallCountValue + defeatBallCountValue),
-      // sumBallGainValue - (victoryBallCountValue + defeatBallCountValue)));
+      float sumBallGainValue = sumBallGain.get(threshold);
+      int ballCountValue = ballCount.get(threshold).get();
+      int drewBallCountValue = drewBallCount.get(threshold).get();
+      int victoryBallCountValue = victoryBallCount.get(threshold).get();
+      int defeatBallCountValue = defeatBallCount.get(threshold).get();
+
+      System.out.println(
+          String.format("Ball, threshold=%.2f, " +
+              "sumGain=%.2f, total=%d," +
+              " drewCount=%d, victoryCount=%d, defeatCount=%d," +
+              " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
+              threshold, sumBallGainValue, ballCountValue,
+              drewBallCountValue, victoryBallCountValue, defeatBallCountValue,
+              victoryBallCountValue * 1f / (victoryBallCountValue + defeatBallCountValue),
+              sumBallGainValue * 1f / (victoryBallCountValue + defeatBallCountValue),
+              sumBallGainValue - (victoryBallCountValue + defeatBallCountValue)));
       //
       //
       //

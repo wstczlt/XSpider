@@ -4,59 +4,17 @@ import static com.test.manual.HistoryTester.TEST_MATCHES;
 import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.test.Keys;
-import com.test.entity.Estimation;
+/**
+ * 寻找数据碾压的平手盘来获得盈利.
+ */
+public class RuleEval1 extends RuleEval {
 
-public class NewRulEval implements Keys {
-
-  public List<Estimation> evalEst(int nowMin, Map<String, Object> match) {
-    final String nowTimePrefix = "min" + nowMin + "_";
-    final int nowHostScore = valueOfInt(match.get(nowTimePrefix + "hostScore"));
-    final int nowCustomScore = valueOfInt(match.get(nowTimePrefix + "customScore"));
-
-    return evalRules(nowMin, match).stream().filter(rule -> {
-      final int timeMin = rule.mTimeMin;
-      final String timePrefix = "min" + timeMin + "_";
-      int minHostScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostScore"));
-      int minCustomScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customScore"));
-      // 比分发生了则抛弃
-      return minHostScore == nowHostScore && minCustomScore == nowCustomScore;
-    }).map(rule -> new Estimation(rule, match, rule.value(), rule.prob0(), rule.prob1(),
-        rule.prob2(), rule.profitRate())).collect(Collectors.toList());
-  }
-
-  public List<Rule> evalRules(int nowMin, Map<String, Object> match) {
-    Set<String> keySet = new HashSet<>();
-    List<Rule> rules = new ArrayList<>();
-    for (int timeMin = -1; timeMin <= nowMin; timeMin++) {
-      final String timePrefix = "min" + timeMin + "_";
-      int minHostScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostScore"));
-      int minCustomScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customScore"));
-      // 用于去重
-      final String duplicateKey = minHostScore + "@" + minCustomScore;
-      Rule newRule = evalNewRule(timeMin, match);
-      if (newRule == null) {
-        continue;
-      }
-      if (!keySet.add(duplicateKey)) {
-        continue;
-      }
-      rules.add(newRule);
-      break;
-    }
-
-    return rules;
-  }
-
-
-  private Rule evalNewRule(int timeMin, Map<String, Object> match) {
+  @Override
+  public List<Rule> eval(int timeMin, Map<String, Object> match) {
     final String timePrefix = "min" + timeMin + "_";
     int hostScore = valueOfInt(match.get(timePrefix + "hostScore"));
     int customScore = valueOfInt(match.get(timePrefix + "customScore"));
@@ -104,12 +62,13 @@ public class NewRulEval implements Keys {
           String.valueOf(isOddOk), String.valueOf(isRateOk), String.valueOf(isOpeningOk)));
     }
 
-    return select
-        ? new Rule(RuleType.SCORE, "", timeMin,
-            isHost ? 1 : 0, 0, isHost ? 0 : 1,
-            isHost ? 2 : 0, isHost ? 0 : 2)
-        : null;
+    final Rule newRule = new Rule(RuleType.SCORE, "", timeMin,
+        isHost ? 1 : 0, 0, isHost ? 0 : 1,
+        isHost ? 2 : 0, isHost ? 0 : 2);
+
+    return select ? Collections.singletonList(newRule) : Collections.emptyList();
   }
+
 
   private boolean isShootOk(boolean isHost, int nowMin, Map<String, Object> match) {
     final String nowPrefix = "min" + nowMin + "_";
@@ -157,7 +116,6 @@ public class NewRulEval implements Keys {
   }
 
 
-
   private int shootAfterLastGoal(boolean isHost, int nowMin, Map<String, Object> match) {
     final String nowPrefix = "min" + nowMin + "_";
     int hostScore = valueOfInt(match.get(nowPrefix + "hostScore"));
@@ -190,6 +148,5 @@ public class NewRulEval implements Keys {
 
     return 0;
   }
-
 
 }
