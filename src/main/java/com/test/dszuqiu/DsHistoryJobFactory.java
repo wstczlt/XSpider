@@ -1,5 +1,6 @@
 package com.test.dszuqiu;
 
+import static com.test.manual.HistoryTester.TEST_MATCHES;
 import static com.test.tools.Utils.valueOfInt;
 
 import java.text.SimpleDateFormat;
@@ -43,7 +44,11 @@ public class DsHistoryJobFactory {
     }
 
     mJobs = new ArrayList<>();
-    mMatchIDs = realtime();
+    if (!TEST_MATCHES.isEmpty()) { // 测试指定
+      mMatchIDs = TEST_MATCHES;
+    } else {
+      mMatchIDs = realtime();
+    }
     for (int matchID : mMatchIDs) {
       mJobs.add(mBuilder.buildJobs(matchID));
     }

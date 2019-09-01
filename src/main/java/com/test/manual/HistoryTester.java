@@ -12,6 +12,7 @@ import static com.test.tools.Utils.valueOfInt;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,8 @@ import com.test.tools.Pair;
 
 public class HistoryTester {
 
+  public static final List<Integer> TEST_MATCHES = Collections.emptyList();
+  // public static final List<Integer> TEST_MATCHES = Arrays.asList(657551, 657629);
   private static final NewRulEval ruleEval = new NewRulEval();
 
   public static void testAndDisplay(int startDay, int zoneDays) throws Exception {
@@ -81,6 +84,8 @@ public class HistoryTester {
   // 查询历史区间比赛
   private static List<Map<String, Object>> queryHistoryMatch(int startDay, int zoneDays)
       throws Exception {
+//    startDay = 133;
+//    zoneDays = 28;
     SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd");
     sft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
     final long timeStart = sft.parse("2019-08-30").getTime() - (startDay + zoneDays) * 86400000L;
@@ -90,8 +95,9 @@ public class HistoryTester {
         + "and cast(matchTime as bigint)<=" + timeEnd + " "
         + SQL_ORDER;
 
-    // String querySql = SQL_SELECT + SQL_AND + SQL_ST +
-    // buildSqlIn(Collections.singletonList(657629));
+    if (!TEST_MATCHES.isEmpty()) { // 测试目的
+      querySql = SQL_SELECT + SQL_AND + SQL_ST + buildSqlIn(TEST_MATCHES);
+    }
     System.out.println("startDay=" + startDay + "，zoneDays=" + zoneDays + " ["
         + sft.format(timeStart) + " - " + sft.format(timeEnd) + "]");
     return doQuery(querySql, 4000);

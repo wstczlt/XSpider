@@ -1,5 +1,6 @@
 package com.test.manual;
 
+import static com.test.manual.HistoryTester.TEST_MATCHES;
 import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
@@ -73,7 +74,7 @@ public class NewRulEval implements Keys {
 
 
     // 时间区间
-    boolean isTimeOk = timeMin >= 50 && timeMin <= 80;
+    boolean isTimeOk = timeMin >= 50 && timeMin <= 85;
     boolean isShootOk = isShootOk(isHost, timeMin, match);
     boolean isDangerOk =
         (isHost ? hostDanger : customDanger) * 1f / (hostDanger + customDanger) >= 0.55;
@@ -95,12 +96,14 @@ public class NewRulEval implements Keys {
         && isRateOk
         && isOpeningOk;
 
-    // System.out.println(String.format("timeMin=%d, isTimeOk=%s," +
-    // " isShootOk=%s, isDangerOk=%s, isScoreOk=%s, " +
-    // "isOddOk=%s, isRateOk=%s, isOpeningOk=%s",
-    // timeMin, valueOf(isTimeOk),
-    // valueOf(isShootOk), valueOf(isDangerOk), valueOf(isScoreOk),
-    // valueOf(isOddOk), valueOf(isRateOk), valueOf(isOpeningOk)));
+    if (!TEST_MATCHES.isEmpty()) { // 测试指定
+      System.out.println(String.format("timeMin=%d, isTimeOk=%s," +
+          " isShootOk=%s, isDangerOk=%s, isScoreOk=%s, " +
+          "isOddOk=%s, isRateOk=%s, isOpeningOk=%s",
+          timeMin, String.valueOf(isTimeOk),
+          String.valueOf(isShootOk), String.valueOf(isDangerOk), String.valueOf(isScoreOk),
+          String.valueOf(isOddOk), String.valueOf(isRateOk), String.valueOf(isOpeningOk)));
+    }
 
     return select
         ? new Rule(RuleType.SCORE, "", timeMin,
@@ -111,22 +114,26 @@ public class NewRulEval implements Keys {
 
   private boolean isShootOk(boolean isHost, int nowMin, Map<String, Object> match) {
     final String nowPrefix = "min" + nowMin + "_";
-    int hostShoot = valueOfInt(match.get(nowPrefix + "hostShoot"));
-    int customShoot = valueOfInt(match.get(nowPrefix + "customShoot"));
     int hostBestShoot = valueOfInt(match.get(nowPrefix + "hostBestShoot"));
     int customBestShoot = valueOfInt(match.get(nowPrefix + "customBestShoot"));
+    int bestDis = hostBestShoot - customBestShoot;
+
+    int hostTotalShoot = valueOfInt(match.get(nowPrefix + "hostShoot")) + hostBestShoot;
+    int customTotalShoot = valueOfInt(match.get(nowPrefix + "customShoot")) + customBestShoot;
+    int totalDis = hostTotalShoot - customTotalShoot;
+
+
 
     // 射正数量优势
     int needDelta = 2;
     boolean ok = isHost
-        ? (hostShoot - customShoot >= needDelta && hostBestShoot - customBestShoot >= needDelta)
-        : (customShoot - hostShoot >= needDelta && customBestShoot - hostBestShoot >= needDelta);
+        ? (bestDis >= needDelta && totalDis >= 0)
+        : (-bestDis >= needDelta && -totalDis >= 0);
     // 射正比例优势
     ok = ok && (isHost ? hostBestShoot : customBestShoot) * 1f
         / (hostBestShoot + customBestShoot) >= 0.6;
     // 弱势队伍射门不能太多
-    ok = ok && (isHost ? customBestShoot : hostBestShoot) <= 5;
-    // ok = ok && (isHost ? hostBestShoot : customBestShoot) >= 5;
+    ok = ok && (isHost ? customBestShoot : hostBestShoot) <= 4;
 
     if (!ok) return false;
 
@@ -135,14 +142,15 @@ public class NewRulEval implements Keys {
       final String minPrefix = "min" + timeMin + "_";
       int minHostBestShoot = valueOfInt(match.get(minPrefix + "hostBestShoot"));
       int minCustomBestShoot = valueOfInt(match.get(minPrefix + "customBestShoot"));
-      int minHostOffShoot = valueOfInt(match.get(minPrefix + "hostShoot"));
-      int minCustomOffShoot = valueOfInt(match.get(minPrefix + "customShoot"));
+      int minHostAllShoot = valueOfInt(match.get(minPrefix + "hostShoot")) + minHostBestShoot;
+      int minCustomAllShoot = valueOfInt(match.get(minPrefix + "customShoot")) + minCustomBestShoot;
+
+      int minBestDis = minHostBestShoot - minCustomBestShoot;
+      int minAlldis = minHostAllShoot - minCustomBestShoot;
       needDelta = 0;
       ok = isHost
-          ? (minHostOffShoot - minCustomOffShoot >= needDelta
-              && minHostBestShoot - minCustomBestShoot >= needDelta)
-          : (minCustomOffShoot - minHostOffShoot >= needDelta
-              && minCustomBestShoot - minHostBestShoot >= needDelta);
+          ? (minBestDis >= needDelta && minAlldis >= 0)
+          : (-minBestDis >= needDelta && -minAlldis >= needDelta);
 
       if (!ok) return false;
     }
