@@ -6,11 +6,17 @@ import static com.test.tools.Utils.valueOfLong;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.util.TextUtils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.test.Config;
 import com.test.Keys;
 import com.test.entity.Estimation;
@@ -21,6 +27,7 @@ import com.test.tools.Utils;
 public class BotConsumer implements Consumer<Estimation>, Keys {
 
   private static final String PATH = "bot/wechat.dat";
+  private static final String LOG_PATH = "bot/r.log";
 
   @Override
   public void accept(Estimation est) {
@@ -29,10 +36,52 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     }
 
     try {
+      List<Estimation> list = readLog();
+      String newMatchID = est.mMatch.get(MATCH_ID) + "";
+      String newType = ((Rule) est.mModel).mType.name();
+
+      for (Estimation item : list) {
+        String matchID = item.mMatch.get(MATCH_ID) + "";
+        String type = ((Rule) item.mModel).mType.name();
+        // 相同比赛，相同推荐类型
+        if (newMatchID.equals(matchID) && type.equals(newType)) {
+          return;
+        }
+      }
+      // 保存结果
+      list.add(est);
+      saveLog(list);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    try {
       send(buildText(est));
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  public List<Estimation> readLog() throws Exception {
+    final List<Estimation> list = new ArrayList<>();
+    File log = new File(LOG_PATH);
+    if (log.isFile()) {
+      return list;
+    }
+    String json = FileUtils.readFileToString(log, "utf-8").trim();
+    if (TextUtils.isEmpty(json)) {
+      return list;
+    }
+    if (JSONObject.parse(json) == null) {
+      return list;
+    }
+
+    return new Gson().fromJson(json, new TypeToken<List<Estimation>>() {}.getType());
+  }
+
+  public static void saveLog(List<Estimation> list) throws Exception {
+    String json = new Gson().toJson(list);
+    FileUtils.writeStringToFile(new File(LOG_PATH), json, "utf-8");
   }
 
   private void send(String text) throws Exception {

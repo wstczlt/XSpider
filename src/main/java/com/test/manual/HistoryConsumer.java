@@ -88,7 +88,7 @@ public class HistoryConsumer implements Consumer<Estimation>, Keys {
 
 
     System.out.println(String.format("     当前时刻: %d' [比分: %d : %d],  盘口: %s， 赔率: %.2f",
-        nowMin,  hostScore, customScore,
+        nowMin, hostScore, customScore,
         rule.mType == RuleType.SCORE
             ? (nowScoreOdd + "[" + (est.mValue == 0 ? "主" : "客") + "]")
             : (nowBallOdd + "[" + (est.mValue == 0 ? "大" : "小") + "]"),

@@ -11,7 +11,7 @@ public class EstScore {
   public final float mMaxContinueMissCount; // 最大连黑次数
 
   public EstScore(float totalCount, float hitCount, float drewCount,
-                  float positiveHitCount, float profit, float maxContinueHitCount, float maxContinueMissCount) {
+      float positiveHitCount, float profit, float maxContinueHitCount, float maxContinueMissCount) {
     mTotalCount = totalCount;
     mHitCount = hitCount;
     mDrewCount = drewCount;

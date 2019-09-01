@@ -59,7 +59,8 @@ public class HistoryAnalyser implements Keys {
   }
 
   public static void main(String[] args) throws Exception {
-    String querySql = SQL_BASE + "and league in ('英超', '中超') " + SQL_AND + SQL_ST + "order by RANDOM() ";
+    String querySql =
+        SQL_BASE + "and league in ('英超', '中超') " + SQL_AND + SQL_ST + "order by RANDOM() ";
     List<Map<String, Object>> matches = QueryHelper.doQuery(querySql, 100);
     List<Pair<HistorySuggest, Map<String, Object>>> min0Suggests = new ArrayList<>();
     List<Pair<HistorySuggest, Map<String, Object>>> min40Suggests = new ArrayList<>();

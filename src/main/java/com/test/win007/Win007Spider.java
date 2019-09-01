@@ -1,13 +1,13 @@
 package com.test.win007;
 
+import static com.test.Config.SPIDER_THREAD_COUNT;
+
 import java.util.List;
 
-import com.test.pipeline.DbPipeline;
 import com.test.http.HttpEngine;
 import com.test.http.ListJobFactory;
 import com.test.http.RangeJobFactory;
-
-import static com.test.Config.SPIDER_THREAD_COUNT;
+import com.test.pipeline.DbPipeline;
 
 public class Win007Spider {
 

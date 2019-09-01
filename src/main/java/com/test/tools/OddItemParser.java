@@ -10,7 +10,6 @@ import org.apache.http.util.TextUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.test.Keys;
-import com.test.tools.Utils;
 
 public class OddItemParser implements Keys {
 
