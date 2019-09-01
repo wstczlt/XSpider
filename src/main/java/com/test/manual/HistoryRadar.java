@@ -10,6 +10,7 @@ import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -115,8 +116,9 @@ public class HistoryRadar implements Keys {
     final RuleEval ruleEval = new RuleEval();
 
     matches.forEach(match -> {
-      List<Estimation> list = newRulEval.evalEst(valueOfInt(match.get(TIME_MIN)), match);
-      list.addAll(ruleEval.evalEst(valueOfInt(match.get(TIME_MIN)), match));
+      List<Estimation> list = new ArrayList<>();
+      list.addAll(newRulEval.evalEst(valueOfInt(match.get(TIME_MIN)), match));
+      // list.addAll(ruleEval.evalEst(valueOfInt(match.get(TIME_MIN)), match));
 
       list.stream()
           .filter(DISPLAY_FILTER)
