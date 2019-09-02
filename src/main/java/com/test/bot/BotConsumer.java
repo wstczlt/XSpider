@@ -16,6 +16,9 @@ import org.apache.http.util.TextUtils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.test.Config;
 import com.test.Keys;
@@ -28,6 +31,16 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
 
   private static final String PATH = "bot/wechat.dat";
   private static final String LOG_PATH = "bot/r.log";
+  private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Estimation.class,
+      (JsonDeserializer<Estimation>) (json, typeOfT, context) -> {
+        final JsonObject res = (JsonObject) json;
+        JsonObject ruleJson = (JsonObject) res.remove("mModel");
+        Gson newGson = new Gson();
+        Estimation estimation = newGson.fromJson(res, Estimation.class);
+        Rule rule = newGson.fromJson(ruleJson, Rule.class);
+        return new Estimation(rule, estimation.mMatch, estimation.mValue, estimation.mProb0,
+            estimation.mProb1, estimation.mProb2, estimation.mProfitRate);
+      }).create();
 
   @Override
   public void accept(Estimation est) {
@@ -37,14 +50,17 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
 
     try {
       List<Estimation> list = readLog();
-      String newMatchID = est.mMatch.get(MATCH_ID) + "";
+      System.out.println(list);
+
+      float newMatchID = valueOfFloat(est.mMatch.get(MATCH_ID));
       String newType = ((Rule) est.mModel).mType.name();
 
       for (Estimation item : list) {
-        String matchID = item.mMatch.get(MATCH_ID) + "";
+        float matchID = valueOfFloat(item.mMatch.get(MATCH_ID));
         String type = ((Rule) item.mModel).mType.name();
+
         // 相同比赛，相同推荐类型
-        if (newMatchID.equals(matchID) && type.equals(newType)) {
+        if (newMatchID == matchID && newType.equals(type)) {
           return;
         }
       }
@@ -65,18 +81,19 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
   public List<Estimation> readLog() throws Exception {
     final List<Estimation> list = new ArrayList<>();
     File log = new File(LOG_PATH);
-    if (log.isFile()) {
+    if (!log.isFile()) {
       return list;
     }
     String json = FileUtils.readFileToString(log, "utf-8").trim();
     if (TextUtils.isEmpty(json)) {
       return list;
     }
+
     if (JSONObject.parse(json) == null) {
       return list;
     }
 
-    return new Gson().fromJson(json, new TypeToken<List<Estimation>>() {}.getType());
+    return GSON.fromJson(json, new TypeToken<ArrayList<Estimation>>() {}.getType());
   }
 
   public static void saveLog(List<Estimation> list) throws Exception {
