@@ -84,12 +84,12 @@ public class HistoryTester {
   // 查询历史区间比赛
   private static List<Map<String, Object>> queryHistoryMatch(int startDay, int zoneDays)
       throws Exception {
-    // startDay = 133;
-    // zoneDays = 28;
     // 避不开的大坑
     if (startDay >= 115 && startDay <= 150) {
       startDay += 50;
     }
+    // startDay = 133;
+    // zoneDays = 28;
     SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd");
     sft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
     final long timeStart = sft.parse("2019-08-30").getTime() - (startDay + zoneDays) * 86400000L;
@@ -361,22 +361,22 @@ public class HistoryTester {
       //
       //
       //
-      float sumBallGainValue = sumBallGain.get(threshold);
-      int ballCountValue = ballCount.get(threshold).get();
-      int drewBallCountValue = drewBallCount.get(threshold).get();
-      int victoryBallCountValue = victoryBallCount.get(threshold).get();
-      int defeatBallCountValue = defeatBallCount.get(threshold).get();
-
-      System.out.println(
-          String.format("Ball, threshold=%.2f, " +
-              "sumGain=%.2f, total=%d," +
-              " drewCount=%d, victoryCount=%d, defeatCount=%d," +
-              " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
-              threshold, sumBallGainValue, ballCountValue,
-              drewBallCountValue, victoryBallCountValue, defeatBallCountValue,
-              victoryBallCountValue * 1f / (victoryBallCountValue + defeatBallCountValue),
-              sumBallGainValue * 1f / (victoryBallCountValue + defeatBallCountValue),
-              sumBallGainValue - (victoryBallCountValue + defeatBallCountValue)));
+      // float sumBallGainValue = sumBallGain.get(threshold);
+      // int ballCountValue = ballCount.get(threshold).get();
+      // int drewBallCountValue = drewBallCount.get(threshold).get();
+      // int victoryBallCountValue = victoryBallCount.get(threshold).get();
+      // int defeatBallCountValue = defeatBallCount.get(threshold).get();
+      //
+      // System.out.println(
+      // String.format("Ball, threshold=%.2f, " +
+      // "sumGain=%.2f, total=%d," +
+      // " drewCount=%d, victoryCount=%d, defeatCount=%d," +
+      // " victoryRate=%.2f, profitRate=%.2f, profit=%.2f",
+      // threshold, sumBallGainValue, ballCountValue,
+      // drewBallCountValue, victoryBallCountValue, defeatBallCountValue,
+      // victoryBallCountValue * 1f / (victoryBallCountValue + defeatBallCountValue),
+      // sumBallGainValue * 1f / (victoryBallCountValue + defeatBallCountValue),
+      // sumBallGainValue - (victoryBallCountValue + defeatBallCountValue)));
       //
       //
       //
