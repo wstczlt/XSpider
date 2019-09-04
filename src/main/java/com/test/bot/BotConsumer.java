@@ -23,6 +23,7 @@ import com.google.gson.reflect.TypeToken;
 import com.test.Config;
 import com.test.Keys;
 import com.test.entity.Estimation;
+import com.test.manual.HistoryConsumer;
 import com.test.manual.Rule;
 import com.test.manual.RuleType;
 import com.test.tools.Utils;
@@ -41,6 +42,13 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
         return new Estimation(rule, estimation.mMatch, estimation.mValue, estimation.mProb0,
             estimation.mProb1, estimation.mProb2, estimation.mProfitRate);
       }).create();
+
+
+  public static void main(String[] args) throws Exception {
+    List<Estimation> estimations = new BotConsumer().readLog();
+    final HistoryConsumer consumer = new HistoryConsumer();
+    estimations.forEach(consumer);
+  }
 
   @Override
   public void accept(Estimation est) {
