@@ -36,8 +36,9 @@ import okhttp3.Request;
 public class BotConsumer implements Consumer<Estimation>, Keys {
 
   private static final String UID_WSTCZLT = "wstczlt";
-  private static final String UID_SAOHUO = "11339123190%40chatroom";
-  private static final String UID_LIWEIMIN = "wxid_61qtomt6qgb622";
+  private static final String UID_SAOHUO = "11339123190@chatroom"; // 扫货
+  private static final String UID_SANRENYOU = "14192966472@chatroom"; // 三人游
+  private static final String UID_LIWEIMIN = "wxid_61qtomt6qgb622"; // 李维民
 
   private static final String PATH = "bot/wechat.dat";
   private static final String LOG_PATH = "bot/r.log";
@@ -58,6 +59,8 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     final HistoryConsumer consumer = new HistoryConsumer();
     // final BotConsumer consumer = new BotConsumer();
     estimations.forEach(consumer);
+
+    // new BotConsumer().sendByMac("Test: PM 威武雄壮XXX");
   }
 
   @Override
@@ -89,7 +92,8 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     }
 
     try {
-      sendByMac(buildText(est));
+      final String text = buildText(est);
+      sendByMac(text);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -134,15 +138,19 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
   }
 
   private void sendByMac(String text) throws Exception {
-    OkHttpClient client = HttpUtils.buildHttpClient();
-    FormBody body = new FormBody.Builder()
-        .add("content", text)
-        .add("userId", UID_WSTCZLT)
-        .add("srvId", "0")
-        .build();
-    Request request = new Request.Builder().url("http://127.0.0.1:52700/wechat-plugin/send-message")
-        .post(body).build();
-    client.newCall(request).execute();
+    final String[] list = new String[] {UID_WSTCZLT, UID_SANRENYOU};
+    for (String uid : list) {
+      OkHttpClient client = HttpUtils.buildHttpClient();
+      FormBody body = new FormBody.Builder()
+          .add("content", text)
+          .add("userId", uid)
+          .add("srvId", "0")
+          .build();
+      Request request =
+          new Request.Builder().url("http://127.0.0.1:52700/wechat-plugin/send-message")
+              .post(body).build();
+      client.newCall(request).execute();
+    }
   }
 
   private static String buildText(Estimation est) {
