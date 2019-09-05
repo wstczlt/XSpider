@@ -23,12 +23,21 @@ import com.google.gson.reflect.TypeToken;
 import com.test.Config;
 import com.test.Keys;
 import com.test.entity.Estimation;
+import com.test.http.HttpUtils;
 import com.test.manual.HistoryConsumer;
 import com.test.manual.Rule;
 import com.test.manual.RuleType;
 import com.test.tools.Utils;
 
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+
 public class BotConsumer implements Consumer<Estimation>, Keys {
+
+  private static final String UID_WSTCZLT = "wstczlt";
+  private static final String UID_SAOHUO = "11339123190%40chatroom";
+  private static final String UID_LIWEIMIN = "wxid_61qtomt6qgb622";
 
   private static final String PATH = "bot/wechat.dat";
   private static final String LOG_PATH = "bot/r.log";
@@ -47,6 +56,7 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
   public static void main(String[] args) throws Exception {
     List<Estimation> estimations = new BotConsumer().readLog();
     final HistoryConsumer consumer = new HistoryConsumer();
+    // final BotConsumer consumer = new BotConsumer();
     estimations.forEach(consumer);
   }
 
@@ -58,7 +68,6 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
 
     try {
       List<Estimation> list = readLog();
-      System.out.println(list);
 
       float newMatchID = valueOfFloat(est.mMatch.get(MATCH_ID));
       String newType = ((Rule) est.mModel).mType.name();
@@ -80,7 +89,7 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     }
 
     try {
-      send(buildText(est));
+      sendByMac(buildText(est));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -109,7 +118,7 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     FileUtils.writeStringToFile(new File(LOG_PATH), json, "utf-8");
   }
 
-  private void send(String text) throws Exception {
+  private void sendByPython(String text) throws Exception {
     File dat = new File(PATH);
     // 等待删除
     while (true) {
@@ -122,6 +131,18 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     }
     // 写入文件
     FileUtils.writeStringToFile(dat, text, "utf-8");
+  }
+
+  private void sendByMac(String text) throws Exception {
+    OkHttpClient client = HttpUtils.buildHttpClient();
+    FormBody body = new FormBody.Builder()
+        .add("content", text)
+        .add("userId", UID_WSTCZLT)
+        .add("srvId", "0")
+        .build();
+    Request request = new Request.Builder().url("http://127.0.0.1:52700/wechat-plugin/send-message")
+        .post(body).build();
+    client.newCall(request).execute();
   }
 
   private static String buildText(Estimation est) {
