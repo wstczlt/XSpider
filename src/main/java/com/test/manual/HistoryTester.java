@@ -20,7 +20,6 @@ import java.util.Random;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.test.bot.BotConsumer;
 import com.test.dszuqiu.DsHistoryJobFactory;
 import com.test.dszuqiu.DsJobBuilder;
 import com.test.entity.Estimation;
@@ -31,7 +30,7 @@ import com.test.tools.Pair;
 public class HistoryTester {
 
   public static final List<Integer> TEST_MATCHES = Collections.emptyList();
-  // public static final List<Integer> TEST_MATCHES = Arrays.asList(657551, 657629);
+  // public static final List<Integer> TEST_MATCHES = Arrays.asList(662307);
   private static final RuleEval ruleEval = new RuleEval1();
 
   public static void testAndDisplay(int startDay, int zoneDays) throws Exception {
@@ -58,7 +57,7 @@ public class HistoryTester {
     for (int i = 0; i < matches.size(); i++) {
       final Map<String, Object> match = matches.get(i);
       ruleEval.evalRules(80, match)
-          .forEach(rule -> new BotConsumer().accept(new Estimation(rule, match, rule.value(),
+          .forEach(rule -> new HistoryConsumer().accept(new Estimation(rule, match, rule.value(),
               rule.prob0(), rule.prob1(), rule.prob2(), rule.profitRate())));
     }
   }

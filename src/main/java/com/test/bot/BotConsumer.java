@@ -60,7 +60,7 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     // final BotConsumer consumer = new BotConsumer();
     estimations.forEach(consumer);
 
-    // new BotConsumer().sendByMac("Test: PM 威武雄壮XXX");
+     new BotConsumer().sendByMac("@焦功进 @朱蓝天 Test: PM 威武雄壮XXX");
   }
 
   @Override
