@@ -35,9 +35,12 @@ import okhttp3.Request;
 public class BotConsumer implements Consumer<Estimation>, Keys {
 
   private static final String UID_WSTCZLT = "wstczlt";
+  private static final String UID_LIWEIMIN = "wxid_61qtomt6qgb622"; // 李维民
+  private static final String UID_FILE_HELPER = "filehelper"; // 文件传输助手
+
   private static final String UID_SAOHUO = "11339123190@chatroom"; // 扫货
   private static final String UID_SANRENYOU = "14192966472@chatroom"; // 三人游
-  private static final String UID_LIWEIMIN = "wxid_61qtomt6qgb622"; // 李维民
+
 
   private static final String PATH = "bot/wechat.dat";
   private static final String LOG_PATH = "bot/r.log";
@@ -59,7 +62,13 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     // final BotConsumer consumer = new BotConsumer();
     estimations.forEach(consumer);
 
-    estimations.stream().findAny().ifPresent(estimation -> new BotConsumer().accept(estimation));
+    estimations.stream().findAny().ifPresent(estimation -> {
+      try {
+        new BotConsumer().sendByMac(buildText(estimation));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
   }
 
   @Override
@@ -137,7 +146,7 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
   }
 
   private void sendByMac(String text) throws Exception {
-    final String[] list = new String[] {UID_WSTCZLT, UID_SANRENYOU};
+    final String[] list = new String[] {UID_WSTCZLT, UID_LIWEIMIN, UID_FILE_HELPER};
     final OkHttpClient client = new OkHttpClient.Builder().build();
     for (String uid : list) {
       FormBody body = new FormBody.Builder()
