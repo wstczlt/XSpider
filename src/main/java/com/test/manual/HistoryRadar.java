@@ -111,6 +111,11 @@ public class HistoryRadar implements Keys {
     // String querySql = SQL_SELECT + SQL_AND + SQL_ST + buildSqlIn(matchIDs);
     List<Map<String, Object>> matches = doQuery(querySql, 1000);
     System.out.println("比赛总场次: " + matches.size());
+    matches.forEach(match -> {
+      String matchID = match.get(MATCH_ID) + "";
+      String league = match.get(LEAGUE) + "";
+      System.out.print(matchID + "[" + league + "]" + "\t");
+    });
 
     final List<RuleEval> evals = Arrays.asList(new RuleEval1());
     matches.forEach(match -> {

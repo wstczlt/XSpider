@@ -35,7 +35,7 @@ public class DsJobFactory {
 
     mJobs = new ArrayList<>();
     mMatchIDs = realtime();
-    // System.out.println(mMatchIDs);
+    System.out.println("扫描到的比赛列表:" + mMatchIDs);
     // mMatchIDs = Collections.singletonList(647274);
     for (int matchID : mMatchIDs) {
       mJobs.add(mBuilder.buildJobs(matchID));

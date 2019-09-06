@@ -24,7 +24,7 @@ public class ListParser {
 
     return !Objects.equals(statusString, "全")
         && !Objects.equals(statusString, "未")
-        && timeMin >= 0 && timeMin <= 80;
+        && timeMin >= 0 && timeMin <= 90;
   };
 
   public static final Predicate<JSONObject> RACE_FILTER = jsonObject -> {
