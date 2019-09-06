@@ -25,7 +25,7 @@ public class HistoryConsumer implements Consumer<Estimation>, Keys {
     String hostName = (String) match.get(HOST_NAME);
     String customName = (String) match.get(CUSTOM_NAME);
     String league = (String) match.get(LEAGUE);
-    String matchID = match.get(MATCH_ID) + "";
+    String matchID = (int) valueOfFloat(match.get(MATCH_ID)) + "";
 
     int timeMin = rule.mTimeMin;
     int nowMin = Utils.valueOfInt(match.get(TIME_MIN));

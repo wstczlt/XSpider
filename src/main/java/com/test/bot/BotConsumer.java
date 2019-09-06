@@ -23,7 +23,6 @@ import com.google.gson.reflect.TypeToken;
 import com.test.Config;
 import com.test.Keys;
 import com.test.entity.Estimation;
-import com.test.http.HttpUtils;
 import com.test.manual.HistoryConsumer;
 import com.test.manual.Rule;
 import com.test.manual.RuleType;
@@ -60,7 +59,7 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     // final BotConsumer consumer = new BotConsumer();
     estimations.forEach(consumer);
 
-     new BotConsumer().sendByMac("@焦功进 @朱蓝天 Test: PM 威武雄壮XXX");
+    estimations.stream().findAny().ifPresent(estimation -> new BotConsumer().accept(estimation));
   }
 
   @Override
@@ -99,7 +98,7 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     }
   }
 
-  public List<Estimation> readLog() throws Exception {
+  private List<Estimation> readLog() throws Exception {
     final List<Estimation> list = new ArrayList<>();
     File log = new File(LOG_PATH);
     if (!log.isFile()) {
@@ -117,7 +116,7 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     return GSON.fromJson(json, new TypeToken<ArrayList<Estimation>>() {}.getType());
   }
 
-  public static void saveLog(List<Estimation> list) throws Exception {
+  private static void saveLog(List<Estimation> list) throws Exception {
     String json = new Gson().toJson(list);
     FileUtils.writeStringToFile(new File(LOG_PATH), json, "utf-8");
   }
@@ -139,8 +138,8 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
 
   private void sendByMac(String text) throws Exception {
     final String[] list = new String[] {UID_WSTCZLT, UID_SANRENYOU};
+    final OkHttpClient client = new OkHttpClient.Builder().build();
     for (String uid : list) {
-      OkHttpClient client = HttpUtils.buildHttpClient();
       FormBody body = new FormBody.Builder()
           .add("content", text)
           .add("userId", uid)
@@ -160,17 +159,15 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     String hostName = (String) match.get(HOST_NAME);
     String customName = (String) match.get(CUSTOM_NAME);
     String league = (String) match.get(LEAGUE);
-    String matchID = match.get(MATCH_ID) + "";
+    String matchID = (int) valueOfFloat(match.get(MATCH_ID)) + "";
 
     int timeMin = rule.mTimeMin;
     int nowMin = Utils.valueOfInt(match.get(TIME_MIN));
     long matchTime = valueOfLong(match.get(MATCH_TIME));
-    int matchStatus = valueOfInt(match.get(MATCH_STATUS));
     final int hostScore = valueOfInt(match.get(HOST_SCORE));
     final int customScore = valueOfInt(match.get(CUSTOM_SCORE));
 
     final String timePrefix = "min" + timeMin + "_";
-    final String nowTimePrefix = "min" + nowMin + "_";
     int minHostScore = valueOfInt(match.get(timePrefix + "hostScore"));
     int minCustomScore = valueOfInt(match.get(timePrefix + "customScore"));
     float minScoreOdd = timeMin > 0
@@ -192,32 +189,12 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
         ? valueOfFloat(match.get(timePrefix + "bigOddOfDefeat"))
         : valueOfFloat(match.get(OPENING_BIG_ODD_OF_DEFEAT));
 
-
-    float nowScoreOdd = nowMin > 0
-        ? valueOfFloat(match.get(nowTimePrefix + "scoreOdd"))
-        : valueOfFloat(match.get(OPENING_SCORE_ODD));
-    float nowScoreOddVictory = nowMin > 0
-        ? valueOfFloat(match.get(nowTimePrefix + "scoreOddOfVictory"))
-        : valueOfFloat(match.get(OPENING_SCORE_ODD_OF_VICTORY));
-    float nowScoreOddDefeat = nowMin > 0
-        ? valueOfFloat(match.get(nowTimePrefix + "scoreOddOfDefeat"))
-        : valueOfFloat(match.get(OPENING_SCORE_ODD_OF_DEFEAT));
-    float nowBallOdd = nowMin > 0
-        ? valueOfFloat(match.get(nowTimePrefix + "bigOdd"))
-        : valueOfFloat(match.get(OPENING_BIG_ODD));
-    float nowBallOddVictory = nowMin > 0
-        ? valueOfFloat(match.get(nowTimePrefix + "bigOddOfVictory"))
-        : valueOfFloat(match.get(OPENING_BIG_ODD_OF_VICTORY));
-    float nowBallOddDefeat = nowMin > 0
-        ? valueOfFloat(match.get(nowTimePrefix + "bigOddOfDefeat"))
-        : valueOfFloat(match.get(OPENING_BIG_ODD_OF_DEFEAT));
-
     String matchTimeStr =
         new SimpleDateFormat("yyyy-MM-dd HH:mm").format(matchTime - 8 * 3600 * 1000);
 
-    sb.append(String.format("ID [%s]\n", matchID));
+    sb.append("***********************************\n");
     sb.append(String.format("%s\n", matchTimeStr));
-    sb.append(String.format("[%s]\n", league));
+    sb.append(String.format("[%s]: %s\n", league, matchID));
     sb.append(String.format("%s VS %s\n", hostName, customName));
     sb.append("\n");
 
@@ -235,7 +212,7 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
             ? (est.mValue == 0 ? minScoreOddVictory : minScoreOddDefeat)
             : (est.mValue == 0 ? minBallOddVictory : minBallOddDefeat)));
 
-    sb.append(String.format("预计盈利率: %.2f\n", est.mProfitRate));
+    // sb.append(String.format("预计盈利率: %.2f\n", est.mProfitRate));
     return sb.toString();
   }
 }
