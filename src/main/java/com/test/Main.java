@@ -40,6 +40,16 @@ public class Main {
     // HistoryTester.testAndEval(245, 28);
     // HistoryTester.testAndEval(133, 28);
 
+    // 散点分布测试
+    // int total = 1000;
+    // List<Float> list = new ArrayList<>(total);
+    // while (total-- > 0) {
+    // list.add(HistoryTester.testAndEvalOfDay());
+    // }
+    // System.out.println(list);
+
+    // HistoryTester.fetchAndDisplay(10);
+
 
 
     new HistoryRadar().run(10000);

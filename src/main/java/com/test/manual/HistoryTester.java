@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.test.dszuqiu.DsHistoryJobFactory;
 import com.test.dszuqiu.DsJobBuilder;
@@ -30,7 +31,7 @@ import com.test.tools.Pair;
 public class HistoryTester {
 
   public static final List<Integer> TEST_MATCHES = Collections.emptyList();
-  // public static final List<Integer> TEST_MATCHES = Arrays.asList(661218);
+  // public static final List<Integer> TEST_MATCHES = Arrays.asList(661597, 663616);
   private static final RuleEval ruleEval = new RuleEval1();
 
   public static void testAndDisplay(int startDay, int zoneDays) throws Exception {
@@ -75,6 +76,14 @@ public class HistoryTester {
     testAndEval(random * 7, zoneDays);
   }
 
+  public static float testAndEvalOfDay() throws Exception {
+    int random = new Random().nextInt(500) + 70; // 天
+    int zoneDays = 14;
+
+    List<Map<String, Object>> matches = queryHistoryMatch(random, zoneDays);
+    return doTest(matches);
+  }
+
   public static void fetchAndEval(int zoneDays) throws Exception {
     List<Map<String, Object>> matches = fetchNewMatch(zoneDays);
 
@@ -104,6 +113,8 @@ public class HistoryTester {
     }
     System.out.println("startDay=" + startDay + "，zoneDays=" + zoneDays + " ["
         + sft.format(timeStart) + " - " + sft.format(timeEnd) + "]");
+
+    // DATABASE_URL = DATABASE_URL.replace(".test", "") + ".test"; // 使用测试库
     return doQuery(querySql, 4000);
   }
 
@@ -119,11 +130,12 @@ public class HistoryTester {
     String querySql = SQL_SELECT + SQL_AND + buildSqlIn(factory.getMatchIDs());
     // System.out.println(querySql);
 
+    // DATABASE_URL = DATABASE_URL.replace(".test", "") + ".test"; // 使用测试库
     return doQuery(querySql, 4000);
   }
 
 
-  private static void doTest(List<Map<String, Object>> matches) {
+  private static float doTest(List<Map<String, Object>> matches) {
     System.out.println("测试数量: " + matches.size());
     final boolean delay = false;
     final List<Float> thresholds = Arrays.asList(1.05f);
@@ -301,6 +313,7 @@ public class HistoryTester {
       });
     }
 
+    AtomicReference<Float> profitRate = new AtomicReference<>((float) 0);
     thresholds.forEach(threshold -> {
       System.out.println("\n\n");
       //
@@ -328,6 +341,8 @@ public class HistoryTester {
       int drewScoreCountValue = drewScoreCount.get(threshold).get();
       int victoryScoreCountValue = victoryScoreCount.get(threshold).get();
       int defeatScoreCountValue = defeatScoreCount.get(threshold).get();
+
+      profitRate.set(sumScoreGainValue * 1f / (victoryScoreCountValue + defeatScoreCountValue));
 
       System.out.println(
           String.format("Score, threshold=%.2f, " +
@@ -398,6 +413,8 @@ public class HistoryTester {
       // sumBigGainValue - (victoryBigCountValue + defeatBigCountValue)));
 
     });
+
+    return profitRate.get();
   }
 
 }

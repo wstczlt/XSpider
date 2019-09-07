@@ -20,6 +20,7 @@ public class QueryHelper implements Keys {
           "or league like '%冠%' " +
           "or league like '%杯%' " +
           "or league like '%超%' " +
+          "or league like '%巴甲%' " +
           "or league like '%国际比赛%' " +
           "or league like '%世界杯%' " +
           "or league like '%欧洲杯%' " +
