@@ -36,6 +36,7 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
 
   private static final String UID_WSTCZLT = "wstczlt";
   private static final String UID_LIWEIMIN = "wxid_61qtomt6qgb622"; // 李维民
+  private static final String UID_TUIJIAN = "19207581769@chatroom"; // 自动推荐
   private static final String UID_FILE_HELPER = "filehelper"; // 文件传输助手
 
   private static final String UID_SAOHUO = "11339123190@chatroom"; // 扫货
@@ -146,7 +147,7 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
   }
 
   private void sendByMac(String text) throws Exception {
-    final String[] list = new String[] {UID_WSTCZLT, UID_LIWEIMIN, UID_FILE_HELPER};
+    final String[] list = new String[] {UID_WSTCZLT, UID_TUIJIAN};
     final OkHttpClient client = new OkHttpClient.Builder().build();
     for (String uid : list) {
       FormBody body = new FormBody.Builder()
