@@ -30,7 +30,7 @@ import com.test.tools.Pair;
 public class HistoryTester {
 
   public static final List<Integer> TEST_MATCHES = Collections.emptyList();
-  // public static final List<Integer> TEST_MATCHES = Arrays.asList(662307);
+  // public static final List<Integer> TEST_MATCHES = Arrays.asList(661218);
   private static final RuleEval ruleEval = new RuleEval1();
 
   public static void testAndDisplay(int startDay, int zoneDays) throws Exception {
@@ -45,7 +45,7 @@ public class HistoryTester {
   }
 
   public static void testAndDisplay() throws Exception {
-    int random = new Random().nextInt(100) + 12; // 周
+    int random = new Random().nextInt(70) + 10; // 周
     int zoneDays = 28;
 
     testAndDisplay(random * 7, zoneDays);
@@ -69,7 +69,7 @@ public class HistoryTester {
   }
 
   public static void testAndEval() throws Exception {
-    int random = new Random().nextInt(100) + 12; // 周
+    int random = new Random().nextInt(70) + 10; // 周
     int zoneDays = 28;
 
     testAndEval(random * 7, zoneDays);
@@ -85,10 +85,10 @@ public class HistoryTester {
   private static List<Map<String, Object>> queryHistoryMatch(int startDay, int zoneDays)
       throws Exception {
     // 避不开的大坑
-    if (startDay >= 115 && startDay <= 150) {
-      startDay += 50;
-    }
-    // startDay = 133;
+    // if (startDay >= 115 && startDay <= 150) {
+    // startDay += 50;
+    // }
+    // startDay = 679;
     // zoneDays = 28;
     SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd");
     sft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
@@ -116,7 +116,7 @@ public class HistoryTester {
     HttpEngine dragon = new HttpEngine(factory.build(), pipeline, SPIDER_THREAD_COUNT);
     dragon.start();
 
-    String querySql = SQL_SELECT + SQL_AND + SQL_ST + buildSqlIn(factory.getMatchIDs());
+    String querySql = SQL_SELECT + SQL_AND + buildSqlIn(factory.getMatchIDs());
     // System.out.println(querySql);
 
     return doQuery(querySql, 4000);

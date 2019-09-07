@@ -11,7 +11,6 @@ public class Main {
     // new RuleFactory(RuleType.SCORE).build();
     // new RuleFactory(RuleType.BALL).build();
 
-    //
     // System.out.println("\n昨日数据: ");
     // HistoryTester.testAndEval(0, 1);
     //
@@ -31,9 +30,11 @@ public class Main {
     // System.out.println("\n随机数据(" + i + "): ");
     // HistoryTester.testAndEval();
     // }
+    //
+    // HistoryTester.testAndEval(0, 28);
+    // HistoryTester.testAndEval(133, 28);
 
 
-    // HistoryTester.fetchAndDisplay(30);
 
     new HistoryRadar().run(10000);
   }

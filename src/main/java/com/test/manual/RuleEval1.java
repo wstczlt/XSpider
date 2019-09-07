@@ -82,10 +82,9 @@ public class RuleEval1 extends RuleEval {
 
 
     // 射正数量优势
-    int needDelta = 2;
     boolean ok = isHost
-        ? (bestDis >= needDelta && totalDis >= 0)
-        : (-bestDis >= needDelta && -totalDis >= 0);
+        ? (bestDis >= 2 && totalDis >= 0)
+        : (-bestDis >= 2 && -totalDis >= 0);
     // 射正比例优势
     ok = ok && (isHost ? hostBestShoot : customBestShoot) * 1f
         / (hostBestShoot + customBestShoot) >= 0.6;
@@ -94,25 +93,44 @@ public class RuleEval1 extends RuleEval {
 
     if (!ok) return false;
 
-    // 最近20分钟之内攻势强
+
+    // 最近20分钟之内射门持续大于
     for (int timeMin = nowMin - 20; timeMin <= nowMin; timeMin++) {
-      final String minPrefix = "min" + timeMin + "_";
-      int minHostBestShoot = valueOfInt(match.get(minPrefix + "hostBestShoot"));
-      int minCustomBestShoot = valueOfInt(match.get(minPrefix + "customBestShoot"));
-      int minHostAllShoot = valueOfInt(match.get(minPrefix + "hostShoot")) + minHostBestShoot;
-      int minCustomAllShoot = valueOfInt(match.get(minPrefix + "customShoot")) + minCustomBestShoot;
+      final String minXPrefix = "min" + timeMin + "_";
+      int minXHostBestShoot = valueOfInt(match.get(minXPrefix + "hostBestShoot"));
+      int minXCustomBestShoot = valueOfInt(match.get(minXPrefix + "customBestShoot"));
+      int minXHostAllShoot = valueOfInt(match.get(minXPrefix + "hostShoot")) + minXHostBestShoot;
+      int minXCustomAllShoot =
+          valueOfInt(match.get(minXPrefix + "customShoot")) + minXCustomBestShoot;
 
-      int minBestDis = minHostBestShoot - minCustomBestShoot;
-      int minAllDis = minHostAllShoot - minCustomAllShoot;
-      needDelta = 0;
-      ok = isHost
-          ? (minBestDis >= needDelta && minAllDis >= 0)
-          : (-minBestDis >= needDelta && -minAllDis >= needDelta);
-
-      if (!ok) return false;
+      int minBestDis = minXHostBestShoot - minXCustomBestShoot;
+      int minAllDis = minXHostAllShoot - minXCustomAllShoot;
+      ok = ok && isHost
+          ? (minBestDis >= 2 && minAllDis >= 2)
+          : (-minBestDis >= 2 && -minAllDis >= 2);
     }
+    if (ok) return true;
 
-    return true;
+    final String minPrefix = "min" + (nowMin - 20) + "_";
+    int minHostBestShoot = valueOfInt(match.get(minPrefix + "hostBestShoot"));
+    int minCustomBestShoot = valueOfInt(match.get(minPrefix + "customBestShoot"));
+    int minHostAllShoot = valueOfInt(match.get(minPrefix + "hostShoot")) + minHostBestShoot;
+    int minCustomAllShoot = valueOfInt(match.get(minPrefix + "customShoot")) +
+        minCustomBestShoot;
+
+    int hostBestDelta = hostBestShoot - minHostBestShoot;
+    int hostTotalDelta = hostTotalShoot - minHostAllShoot;
+    int customBestDelta = customBestShoot - minCustomBestShoot;
+    int customTotalDelta = customTotalShoot - minCustomAllShoot;
+    // 近20分钟射门数据不错
+    ok = (isHost
+        ? (hostBestDelta >= 2 && hostBestDelta - customBestDelta >= 2)
+        : (customBestDelta >= 2 && customBestDelta - hostBestDelta >= 2));
+    ok = ok && (isHost
+        ? (hostTotalDelta >= 2 && hostTotalDelta - customTotalDelta >= 2)
+        : (customTotalDelta >= 2 && customTotalDelta - hostTotalDelta >= 2));
+
+    return ok;
   }
 
 
