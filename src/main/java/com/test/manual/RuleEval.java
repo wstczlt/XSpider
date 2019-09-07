@@ -22,8 +22,8 @@ public abstract class RuleEval implements Keys {
     return evalRules(nowMin, match).stream().filter(rule -> {
       final int timeMin = rule.mTimeMin;
       final String timePrefix = "min" + timeMin + "_";
-      int minHostScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "hostScore"));
-      int minCustomScore = timeMin <= 0 ? 0 : valueOfInt(match.get(timePrefix + "customScore"));
+      int minHostScore = valueOfInt(match.get(timePrefix + "hostScore"));
+      int minCustomScore = valueOfInt(match.get(timePrefix + "customScore"));
       // 比分发生了则抛弃
       return minHostScore == nowHostScore && minCustomScore == nowCustomScore;
     }).map(rule -> new Estimation(rule, match, rule.value(), rule.prob0(), rule.prob1(),
@@ -33,9 +33,10 @@ public abstract class RuleEval implements Keys {
   public final List<Rule> evalRules(int nowMin, Map<String, Object> match) {
     Set<String> keySet = new HashSet<>();
     List<Rule> rules = new ArrayList<>();
-    for (int timeMin = -1; timeMin <= nowMin; timeMin++) {
+    for (int timeMin = 0; timeMin <= nowMin; timeMin++) {
       // 用于去重, 一场比赛每个盘口类型(让球/大小球)只预测一次
       final List<Rule> newRules = eval(timeMin, match);
+
       for (Rule rule : newRules) {
         final String duplicateKey = rule.mType.name();
         if (keySet.contains(duplicateKey)) {

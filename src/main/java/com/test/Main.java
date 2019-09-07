@@ -31,7 +31,13 @@ public class Main {
     // HistoryTester.testAndEval();
     // }
     //
-    // HistoryTester.testAndEval(0, 28);
+    // // 正向
+    // HistoryTester.testAndEval(175, 28);
+    // HistoryTester.testAndEval(231, 28);
+    // HistoryTester.testAndEval(490, 28);
+    //
+    // // 负向
+    // HistoryTester.testAndEval(245, 28);
     // HistoryTester.testAndEval(133, 28);
 
 
