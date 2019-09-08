@@ -106,31 +106,30 @@ public class RuleEval1 extends RuleEval {
       int minBestDis = minXHostBestShoot - minXCustomBestShoot;
       int minAllDis = minXHostAllShoot - minXCustomAllShoot;
       ok = ok && isHost
-          ? (minBestDis >= 2 && minAllDis >= 2)
-          : (-minBestDis >= 2 && -minAllDis >= 2);
+          ? (minBestDis >= 0 && minAllDis >= 1)
+          : (-minBestDis >= 0 && -minAllDis >= 1);
     }
-    if (ok) return true;
-
-    final String minPrefix = "min" + (nowMin - 20) + "_";
-    int minHostBestShoot = valueOfInt(match.get(minPrefix + "hostBestShoot"));
-    int minCustomBestShoot = valueOfInt(match.get(minPrefix + "customBestShoot"));
-    int minHostAllShoot = valueOfInt(match.get(minPrefix + "hostShoot")) + minHostBestShoot;
-    int minCustomAllShoot = valueOfInt(match.get(minPrefix + "customShoot")) +
-        minCustomBestShoot;
-
-    int hostBestDelta = hostBestShoot - minHostBestShoot;
-    int hostTotalDelta = hostTotalShoot - minHostAllShoot;
-    int customBestDelta = customBestShoot - minCustomBestShoot;
-    int customTotalDelta = customTotalShoot - minCustomAllShoot;
-    // 近20分钟射门数据不错
-    ok = (isHost
-        ? (hostBestDelta >= 2 && hostBestDelta - customBestDelta >= 2)
-        : (customBestDelta >= 2 && customBestDelta - hostBestDelta >= 2));
-    ok = ok && (isHost
-        ? (hostTotalDelta >= 2 && hostTotalDelta - customTotalDelta >= 2)
-        : (customTotalDelta >= 2 && customTotalDelta - hostTotalDelta >= 2));
 
     return ok;
+
+    // final String minPrefix = "min" + (nowMin - 20) + "_";
+    // int minHostBestShoot = valueOfInt(match.get(minPrefix + "hostBestShoot"));
+    // int minCustomBestShoot = valueOfInt(match.get(minPrefix + "customBestShoot"));
+    // int minHostAllShoot = valueOfInt(match.get(minPrefix + "hostShoot")) + minHostBestShoot;
+    // int minCustomAllShoot = valueOfInt(match.get(minPrefix + "customShoot")) +
+    // minCustomBestShoot;
+    //
+    // int hostBestDelta = hostBestShoot - minHostBestShoot;
+    // int hostTotalDelta = hostTotalShoot - minHostAllShoot;
+    // int customBestDelta = customBestShoot - minCustomBestShoot;
+    // int customTotalDelta = customTotalShoot - minCustomAllShoot;
+    // // 近20分钟射门数据不错
+    // ok = (isHost
+    // ? (hostBestDelta >= 2 && hostBestDelta - customBestDelta >= 2)
+    // : (customBestDelta >= 2 && customBestDelta - hostBestDelta >= 2));
+    // ok = ok && (isHost
+    // ? (hostTotalDelta >= 2 && hostTotalDelta - customTotalDelta >= 2)
+    // : (customTotalDelta >= 2 && customTotalDelta - hostTotalDelta >= 2));
   }
 
 
