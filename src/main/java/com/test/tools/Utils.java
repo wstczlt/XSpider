@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -265,5 +266,59 @@ public class Utils {
           return -1;
       }
     }
+  }
+
+  /**
+   * 获得平均分.
+   */
+  public static double calMean(List<Float> rawScores) {
+    double scoreAll = 0.0;
+    for (Float score : rawScores) {
+      scoreAll += score;
+    }
+    return scoreAll / rawScores.size();
+  }
+
+  public static double calMin(List<Float> rawScores) {
+    rawScores = new ArrayList<>(rawScores);
+    Collections.sort(rawScores);
+    return rawScores.get(0);
+  }
+
+  public static double calMax(List<Float> rawScores) {
+    rawScores = new ArrayList<>(rawScores);
+    Collections.sort(rawScores);
+    return rawScores.get(rawScores.size() - 1);
+  }
+
+  /**
+   * 计算分位数
+   */
+  public static double calPercentile(List<Float> rawScores, float p) {
+    rawScores = new ArrayList<>(rawScores);
+    Collections.sort(rawScores);
+    int n = rawScores.size();
+    double px = p * (n - 1);
+    int i = (int) Math.floor(px);
+    double g = px - i;
+    if (g == 0) {
+      return rawScores.get(i);
+    } else {
+      return (1 - g) * rawScores.get(i) + g * rawScores.get(i + 1);
+    }
+  }
+
+  /**
+   * 计算标准差
+   */
+  public static double calStd(List<Float> rawScores) {
+    double allSquare = 0.0;
+    double scoreMean = calMean(rawScores);
+    for (Float rawScore : rawScores) {
+      allSquare += (rawScore - scoreMean) * (rawScore - scoreMean);
+    }
+    // (xi - x(平均分)的平方 的和计算完毕
+    double denominator = rawScores.size() * (rawScores.size() - 1);
+    return Math.sqrt(allSquare / denominator);
   }
 }

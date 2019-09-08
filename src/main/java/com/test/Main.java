@@ -1,6 +1,10 @@
 package com.test;
 
-import com.test.manual.HistoryRadar;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.test.manual.HistoryTester;
+import com.test.tools.Utils;
 
 public class Main {
 
@@ -41,18 +45,27 @@ public class Main {
     // HistoryTester.testAndEval(133, 28);
 
     // 散点分布测试
-    // int total = 1000;
-    // List<Float> list = new ArrayList<>(total);
-    // while (total-- > 0) {
-    // list.add(HistoryTester.testAndEvalOfDay());
-    // }
-    // System.out.println(list);
+    List<Float> list = new ArrayList<>();
+    for (int i = 10; i <= 100; i++) {
+      System.out.println(i);
+      list.add(HistoryTester.testAndEval(i * 7, 7));
+    }
+    System.out.println(list);
+    System.out.println(
+        String.format("均值:%.3f, 最小值:%.3f, 最大值:%.3f, 25分位数:%.3f, 50分位数:%.3f, 75分位数:%.3f, 标准差:%.3f",
+            Utils.calMean(list),
+            Utils.calMin(list),
+            Utils.calMax(list),
+            Utils.calPercentile(list, 0.25f),
+            Utils.calPercentile(list, 0.5f),
+            Utils.calPercentile(list, 0.75f),
+            Utils.calStd(list)));
 
     // HistoryTester.fetchAndDisplay(10);
 
 
 
-    new HistoryRadar().run(10000);
+    // new HistoryRadar().run(10000);
   }
 
 }

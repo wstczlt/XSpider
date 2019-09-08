@@ -63,25 +63,23 @@ public class HistoryTester {
     }
   }
 
-  public static void testAndEval(int startDay, int zoneDays) throws Exception {
+  public static float testAndEval(int startDay, int zoneDays) throws Exception {
     List<Map<String, Object>> matches = queryHistoryMatch(startDay, zoneDays);
 
-    doTest(matches);
+    return doTest(matches);
   }
 
-  public static void testAndEval() throws Exception {
+  public static float testAndEval(int zoneDays) throws Exception {
+    int random = new Random().nextInt(70) + 10; // 周
+
+    return testAndEval(random * 7, zoneDays);
+  }
+
+  public static float testAndEval() throws Exception {
     int random = new Random().nextInt(70) + 10; // 周
     int zoneDays = 28;
 
-    testAndEval(random * 7, zoneDays);
-  }
-
-  public static float testAndEvalOfDay() throws Exception {
-    int random = new Random().nextInt(500) + 70; // 天
-    int zoneDays = 14;
-
-    List<Map<String, Object>> matches = queryHistoryMatch(random, zoneDays);
-    return doTest(matches);
+    return testAndEval(random * 7, zoneDays);
   }
 
   public static void fetchAndEval(int zoneDays) throws Exception {
