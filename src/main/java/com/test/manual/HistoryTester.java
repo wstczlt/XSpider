@@ -31,7 +31,7 @@ import com.test.tools.Pair;
 public class HistoryTester {
 
   public static final List<Integer> TEST_MATCHES = Collections.emptyList();
-  // public static final List<Integer> TEST_MATCHES = Arrays.asList(661597, 663616);
+  // public static final List<Integer> TEST_MATCHES = Arrays.asList(663257);
   private static final RuleEval ruleEval = new RuleEval1();
 
   public static void testAndDisplay(int startDay, int zoneDays) throws Exception {

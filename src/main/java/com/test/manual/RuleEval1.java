@@ -43,7 +43,7 @@ public class RuleEval1 extends RuleEval {
     // 赔率不能太低
     boolean isRateOk = isHost ? minScoreOddOfVictory >= 1.70f : minScoreOddOfDefeat >= 1.70f;
     // isRateOk = true;
-    boolean isOpeningOk = isHost ? openingScoreOdd <= 0.5 : openingScoreOdd >= -0.5;
+    boolean isOpeningOk = isHost ? openingScoreOdd <= 1 : openingScoreOdd >= -1;
 
     boolean select = isTimeOk
         && isShootOk

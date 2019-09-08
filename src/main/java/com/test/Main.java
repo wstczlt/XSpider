@@ -44,7 +44,10 @@ public class Main {
     // List<Float> list = new ArrayList<>();
     // for (int i = 10; i <= 100; i++) {
     // System.out.println(i);
-    // list.add(HistoryTester.testAndEval(i * 7, 7));
+    // float rate = HistoryTester.testAndEval(i * 7, 7);
+    // if (rate > 0) {
+    // list.add(rate);
+    // }
     // }
     // System.out.println(list);
     // System.out.println(
@@ -63,5 +66,4 @@ public class Main {
 
     new HistoryRadar().run(10000);
   }
-
 }
