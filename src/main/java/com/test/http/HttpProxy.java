@@ -29,7 +29,7 @@ public class HttpProxy extends ProxySelector {
   private static final long PROXY_DURATION = 2 * 86400000L;
   // 获取48小时的proxy，1个
   private static final String REQUEST_48H =
-      "http://webapi.http.zhimacangku.com/getip?num=1&type=3&pro=&city=0&yys=0&port=1&time=7&ts=0&ys=0&cs=0&lb=1&sb=0&pb=4&mr=1&regions=";
+      "http://webapi.http.zhimacangku.com/getip?num=1&type=3&pro=&city=0&yys=0&port=1&time=1&ts=0&ys=0&cs=0&lb=1&sb=0&pb=4&mr=1&regions=";
 
   private long mExpireTimeMills;
   private long mLastRequestTimeMills;
@@ -45,7 +45,12 @@ public class HttpProxy extends ProxySelector {
   }
 
   public static void main(String[] args) {
-    new HttpProxy(true).autoUpdate();
+    HttpProxy httpProxy = new HttpProxy(true);
+    httpProxy.autoUpdate();
+
+    System.out.println(httpProxy.mProxySet);
+    System.out.println(httpProxy.mExpireTimeMills);
+    System.out.println(httpProxy.mLastRequestTimeMills);
   }
 
   private void autoUpdate() {
@@ -53,8 +58,9 @@ public class HttpProxy extends ProxySelector {
       return;
     }
     // 已过期, 更新
-    if (System.currentTimeMillis() > mExpireTimeMills
+    if (System.currentTimeMillis() < mExpireTimeMills
         || System.currentTimeMillis() - mLastRequestTimeMills < PROXY_DURATION) {
+      System.out.println("XX");
       return;
     }
 
@@ -66,7 +72,7 @@ public class HttpProxy extends ProxySelector {
         return;
       }
 
-      String list = response.body().string();
+      String list = response.body().string().replace("\r\n", " ");
       Properties properties = new Properties();
       properties.setProperty("proxy", list);
       properties.setProperty("expireTimeMills", (System.currentTimeMillis() + 2 * 864000_000) + "");
@@ -91,8 +97,9 @@ public class HttpProxy extends ProxySelector {
       mLastRequestTimeMills = Long.parseLong(lastRequestTimeString);
 
       // 装载配置
-      mProxySet.addAll(Arrays.asList(list));
+      mProxySet.clear();
       mPointer.set(0);
+      mProxySet.addAll(Arrays.asList(list));
       Collections.shuffle(mProxySet);
     } catch (Exception e) {
       throw new RuntimeException(e);
