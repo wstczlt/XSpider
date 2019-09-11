@@ -99,8 +99,8 @@ public class HistoryRadar implements Keys {
 
     // 运行爬虫
     final DbPipeline pipeline = new DbPipeline();
-    DsJobFactory factory = new DsJobFactory(new DsJobBuilder());
-    HttpEngine dragon = new HttpEngine(factory.build(), pipeline, RADAR_THREAD_COUNT);
+    DsJobFactory factory = new DsJobFactory(new DsJobBuilder(), true);
+    HttpEngine dragon = new HttpEngine(factory.build(), pipeline, RADAR_THREAD_COUNT, true);
     dragon.start();
 
     final List<Integer> matchIDs = factory.getMatchIDs();

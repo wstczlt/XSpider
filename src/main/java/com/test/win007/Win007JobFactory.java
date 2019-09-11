@@ -25,7 +25,7 @@ public class Win007JobFactory {
 
   public Win007JobFactory(HttpJobBuilder builder) {
     mBuilder = builder;
-    mClient = HttpUtils.buildHttpClient();
+    mClient = HttpUtils.newHttpClient();
   }
 
   public List<List<HttpJob>> build() throws Exception {

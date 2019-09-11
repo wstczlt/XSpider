@@ -23,9 +23,9 @@ public class DsJobFactory {
   private List<List<HttpJob>> mJobs;
   private List<Integer> mMatchIDs;
 
-  public DsJobFactory(HttpJobBuilder builder) {
+  public DsJobFactory(HttpJobBuilder builder, boolean autoProxy) {
     mBuilder = builder;
-    mClient = HttpUtils.buildHttpClient();
+    mClient = HttpUtils.newHttpClient(autoProxy);
   }
 
   public List<List<HttpJob>> build() throws Exception {

@@ -63,7 +63,7 @@ public class Radar implements Keys {
 
     // 运行爬虫
     final DbPipeline pipeline = new DbPipeline();
-    DsJobFactory factory = new DsJobFactory(new DsJobBuilder());
+    DsJobFactory factory = new DsJobFactory(new DsJobBuilder(), false);
     HttpEngine dragon = new HttpEngine(factory.build(), pipeline, RADAR_THREAD_COUNT);
     dragon.start();
 

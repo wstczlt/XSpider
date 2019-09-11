@@ -35,7 +35,7 @@ public class DsHistoryJobFactory {
   public DsHistoryJobFactory(int lastDays, HttpJobBuilder builder) {
     mLastDays = lastDays;
     mBuilder = builder;
-    mClient = HttpUtils.buildHttpClient();
+    mClient = HttpUtils.newHttpClient();
   }
 
   public List<List<HttpJob>> build() throws Exception {

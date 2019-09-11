@@ -43,8 +43,6 @@ public class Config {
 
   // 数据库Url
   public static String DATABASE_URL;
-  // IP代理
-  public static String PROXY_STRING;
 
 
   static {
@@ -77,7 +75,6 @@ public class Config {
     SHOW_BALL_SMALL = parseInt(p.getProperty("SHOW_BALL_SMALL", "1")) == 1;
 
     DATABASE_URL = p.getProperty("DATABASE_URL");
-    PROXY_STRING = p.getProperty("PROXY_STRING", "");
   }
 
 }

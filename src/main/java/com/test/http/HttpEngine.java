@@ -23,11 +23,18 @@ public class HttpEngine {
   private final List<List<HttpJob>> mJobs;
   private final HttpPipeline mProcessor;
   private final ExecutorService mPool;
+  private final boolean mAutoProxy;
   private final ThreadLocal<OkHttpClient> mClientThreadLocal;
 
   public HttpEngine(List<List<HttpJob>> jobs, HttpPipeline pipeline, int threadCount) {
+    this(jobs, pipeline, threadCount, false);
+  }
+
+  public HttpEngine(List<List<HttpJob>> jobs, HttpPipeline pipeline, int threadCount,
+      boolean autoProxy) {
     mJobs = jobs;
     mProcessor = pipeline;
+    mAutoProxy = autoProxy;
     mClientThreadLocal = new ThreadLocal<>();
     mPool = Executors.newFixedThreadPool(threadCount);
   }
@@ -99,7 +106,7 @@ public class HttpEngine {
         final Request request = buildRequest(job.newRequestBuilder());
         OkHttpClient httpClient = mClientThreadLocal.get();
         if (httpClient == null) {
-          httpClient = HttpUtils.buildHttpClient();
+          httpClient = HttpUtils.newHttpClient(mAutoProxy);
           mClientThreadLocal.set(httpClient);
         }
         response = httpClient.newCall(request).execute();
