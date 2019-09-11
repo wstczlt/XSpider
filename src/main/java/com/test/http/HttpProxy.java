@@ -44,6 +44,10 @@ public class HttpProxy extends ProxySelector {
     loadProxy();
   }
 
+  public static void main(String[] args) {
+    new HttpProxy(true).autoUpdate();
+  }
+
   private void autoUpdate() {
     if (!mAutoRequest) {
       return;
