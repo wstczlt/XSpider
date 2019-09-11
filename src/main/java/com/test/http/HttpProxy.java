@@ -60,7 +60,6 @@ public class HttpProxy extends ProxySelector {
     // 已过期, 更新
     if (System.currentTimeMillis() < mExpireTimeMills
         || System.currentTimeMillis() - mLastRequestTimeMills < PROXY_DURATION) {
-      System.out.println("XX");
       return;
     }
 
