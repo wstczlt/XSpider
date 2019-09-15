@@ -3,6 +3,8 @@ package com.test.http;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.ProxySelector;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.commons.io.IOUtils;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -63,6 +67,7 @@ public class HttpProxy extends ProxySelector {
       return;
     }
 
+    OutputStream outputStream = null;
     try {
       // 重新请求
       Response response = new OkHttpClient.Builder().build()
@@ -76,19 +81,24 @@ public class HttpProxy extends ProxySelector {
       properties.setProperty("proxy", list);
       properties.setProperty("expireTimeMills", (System.currentTimeMillis() + 2 * 864000_000) + "");
       properties.setProperty("requestTimeMills", System.currentTimeMillis() + "");
-      properties.store(new FileOutputStream(CONF_PROXY_PROPERTIES), "");
+      outputStream = new FileOutputStream(CONF_PROXY_PROPERTIES);
+      properties.store(outputStream, "");
 
       // 重新装载
       loadProxy();
     } catch (Exception e) {
       e.printStackTrace();
+    } finally {
+      IOUtils.closeQuietly(outputStream);
     }
   }
 
   private void loadProxy() {
+    InputStream in = null;
     try {
+      in = new FileInputStream(CONF_PROXY_PROPERTIES);
       Properties properties = new Properties();
-      properties.load(new FileInputStream(CONF_PROXY_PROPERTIES));
+      properties.load(in);
       String[] list = properties.getProperty("proxy").split("\\s");
       String expireString = properties.getProperty("expireTimeMills");
       mExpireTimeMills = Long.parseLong(expireString);
@@ -102,6 +112,8 @@ public class HttpProxy extends ProxySelector {
       Collections.shuffle(mProxySet);
     } catch (Exception e) {
       throw new RuntimeException(e);
+    } finally {
+      IOUtils.closeQuietly(in);
     }
   }
 

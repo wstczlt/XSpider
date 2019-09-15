@@ -6,8 +6,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
+
+import org.apache.commons.io.IOUtils;
 
 import com.test.tools.Logger;
 
@@ -55,8 +58,10 @@ public class Config {
 
   private static void load() throws IOException {
     final String filename = "conf/config.properties";
+    InputStream inputStream = new FileInputStream(filename);
+    InputStreamReader reader = new InputStreamReader(inputStream, UTF_8);
     Properties p = new Properties();
-    p.load(new InputStreamReader(new FileInputStream(filename), UTF_8));
+    p.load(reader);
 
     LOGGER = parseInt(p.getProperty("LOGGER")) == 0 ? Logger.EMPTY : Logger.SYSTEM;
     SPIDER_THREAD_COUNT = parseInt(p.getProperty("SPIDER_THREAD_COUNT", "10"));
@@ -75,6 +80,9 @@ public class Config {
     SHOW_BALL_SMALL = parseInt(p.getProperty("SHOW_BALL_SMALL", "1")) == 1;
 
     DATABASE_URL = p.getProperty("DATABASE_URL");
+
+    IOUtils.closeQuietly(inputStream);
+    IOUtils.closeQuietly(reader);
   }
 
 }
