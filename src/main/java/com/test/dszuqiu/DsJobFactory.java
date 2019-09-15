@@ -23,8 +23,9 @@ public class DsJobFactory {
   private List<List<HttpJob>> mJobs;
   private List<Integer> mMatchIDs;
 
-  public DsJobFactory(HttpJobBuilder builder, boolean autoProxy) {
+  public DsJobFactory(HttpJobBuilder builder, boolean autoProxy, List<Integer> matchIDs) {
     mBuilder = builder;
+    mMatchIDs = matchIDs;
     mClient = HttpUtils.newHttpClient(autoProxy);
   }
 
@@ -34,7 +35,9 @@ public class DsJobFactory {
     }
 
     mJobs = new ArrayList<>();
-    mMatchIDs = realtime();
+    if (mMatchIDs == null || mMatchIDs.isEmpty()) {
+      mMatchIDs = realtime();
+    }
     System.out.println("扫描到的比赛列表:" + mMatchIDs);
     // mMatchIDs = Collections.singletonList(647274);
     for (int matchID : mMatchIDs) {

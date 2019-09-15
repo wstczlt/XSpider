@@ -23,11 +23,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.test.Config;
 import com.test.Keys;
+import com.test.dszuqiu.DsJobBuilder;
+import com.test.dszuqiu.DsJobFactory;
 import com.test.entity.Estimation;
+import com.test.http.HttpEngine;
 import com.test.manual.HistoryConsumer;
 import com.test.manual.HistoryTester;
 import com.test.manual.Rule;
 import com.test.manual.RuleType;
+import com.test.pipeline.DbPipeline;
 import com.test.tools.Utils;
 
 import okhttp3.FormBody;
@@ -61,12 +65,20 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
 
   public static void main(String[] args) throws Exception {
     List<Estimation> estimations = new BotConsumer().readLog();
-    final HistoryConsumer consumer = new HistoryConsumer();
-    // final BotConsumer consumer = new BotConsumer();
-    estimations.forEach(consumer);
+    List<Integer> matchIDs = estimations.stream()
+        .map(estimation -> ((int) valueOfFloat(estimation.mMatch.get(MATCH_ID))))
+        .collect(Collectors.toList());
+    final DbPipeline pipeline = new DbPipeline();
+    DsJobFactory factory = new DsJobFactory(new DsJobBuilder(), false, matchIDs);
+    HttpEngine dragon = new HttpEngine(factory.build(), pipeline, 1, true);
+    dragon.start();
 
+    final HistoryConsumer consumer = new HistoryConsumer();
+    estimations.forEach(consumer);
     HistoryTester.doTest(
         estimations.stream().map(estimation -> estimation.mMatch).collect(Collectors.toList()));
+
+
     //
     // estimations.stream().findAny().ifPresent(estimation -> {
     // try {
