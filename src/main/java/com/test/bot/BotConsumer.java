@@ -1,5 +1,7 @@
 package com.test.bot;
 
+import static com.test.db.QueryHelper.SQL_SELECT;
+import static com.test.db.QueryHelper.buildSqlIn;
 import static com.test.tools.Utils.valueOfFloat;
 import static com.test.tools.Utils.valueOfInt;
 import static com.test.tools.Utils.valueOfLong;
@@ -23,11 +25,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.test.Config;
 import com.test.Keys;
+import com.test.db.QueryHelper;
 import com.test.dszuqiu.DsJobBuilder;
 import com.test.dszuqiu.DsJobFactory;
 import com.test.entity.Estimation;
 import com.test.http.HttpEngine;
-import com.test.manual.HistoryConsumer;
 import com.test.manual.HistoryTester;
 import com.test.manual.Rule;
 import com.test.manual.RuleType;
@@ -68,15 +70,18 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     List<Integer> matchIDs = estimations.stream()
         .map(estimation -> ((int) valueOfFloat(estimation.mMatch.get(MATCH_ID))))
         .collect(Collectors.toList());
+    String querySql = SQL_SELECT + buildSqlIn(matchIDs);
+    List<Map<String, Object>> matches = QueryHelper.doQuery(querySql, 10000);
+
+
     final DbPipeline pipeline = new DbPipeline();
     DsJobFactory factory = new DsJobFactory(new DsJobBuilder(), false, matchIDs);
     HttpEngine dragon = new HttpEngine(factory.build(), pipeline, 1, true);
     dragon.start();
 
-    final HistoryConsumer consumer = new HistoryConsumer();
-    estimations.forEach(consumer);
-    HistoryTester.doTest(
-        estimations.stream().map(estimation -> estimation.mMatch).collect(Collectors.toList()));
+    HistoryTester.testAndDisplay(matches);
+
+    HistoryTester.doTest(matches);
 
 
     //

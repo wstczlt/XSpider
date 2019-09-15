@@ -37,6 +37,10 @@ public class HistoryTester {
   public static void testAndDisplay(int startDay, int zoneDays) throws Exception {
     List<Map<String, Object>> matches = queryHistoryMatch(startDay, zoneDays);
 
+    testAndDisplay(matches);
+  }
+
+  public static void testAndDisplay(List<Map<String, Object>> matches) throws Exception {
     for (int i = 0; i < matches.size(); i++) {
       final Map<String, Object> match = matches.get(i);
       ruleEval.evalRules(80, match)
