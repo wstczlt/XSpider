@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.util.TextUtils;
@@ -24,6 +25,7 @@ import com.test.Config;
 import com.test.Keys;
 import com.test.entity.Estimation;
 import com.test.manual.HistoryConsumer;
+import com.test.manual.HistoryTester;
 import com.test.manual.Rule;
 import com.test.manual.RuleType;
 import com.test.tools.Utils;
@@ -63,13 +65,16 @@ public class BotConsumer implements Consumer<Estimation>, Keys {
     // final BotConsumer consumer = new BotConsumer();
     estimations.forEach(consumer);
 
-    estimations.stream().findAny().ifPresent(estimation -> {
-      try {
-        new BotConsumer().sendByMac(buildText(estimation));
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    });
+    HistoryTester.doTest(
+        estimations.stream().map(estimation -> estimation.mMatch).collect(Collectors.toList()));
+    //
+    // estimations.stream().findAny().ifPresent(estimation -> {
+    // try {
+    // new BotConsumer().sendByMac(buildText(estimation));
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // });
   }
 
   @Override

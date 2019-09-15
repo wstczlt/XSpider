@@ -133,7 +133,7 @@ public class HistoryTester {
   }
 
 
-  private static float doTest(List<Map<String, Object>> matches) {
+  public static float doTest(List<Map<String, Object>> matches) {
     System.out.println("测试数量: " + matches.size());
     final boolean delay = false;
     final List<Float> thresholds = Arrays.asList(1.05f);

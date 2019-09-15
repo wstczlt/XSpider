@@ -38,7 +38,7 @@ public class HttpProxy extends ProxySelector {
   private long mExpireTimeMills;
   private long mLastRequestTimeMills;
 
-  private final boolean mAutoRequest;
+  private boolean mAutoRequest;
   private final List<String> mProxySet = new ArrayList<>();
   private final Map<String, String> mUsedProxy = new HashMap<>();
   private final AtomicInteger mPointer = new AtomicInteger(0);
@@ -110,8 +110,9 @@ public class HttpProxy extends ProxySelector {
       mPointer.set(0);
       mProxySet.addAll(Arrays.asList(list));
       Collections.shuffle(mProxySet);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    } catch (Exception ignore) {
+      // 不设置代理
+      mAutoRequest = false;
     } finally {
       IOUtils.closeQuietly(in);
     }
