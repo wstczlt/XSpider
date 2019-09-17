@@ -1,0 +1,922 @@
+Parallel execution is an incubating feature.
+
+> Task :run
+10
+startDay=70，zoneDays=7 [2019-06-14 - 2019-06-21]
+查询结果条数: 483
+
+
+测试数量: 483
+
+
+
+Score, threshold=1.05, sumGain=13.00, total=31, drewCount=17, victoryCount=7, defeatCount=7, victoryRate=0.50, profitRate=0.93, profit=-1.00
+11
+startDay=77，zoneDays=7 [2019-06-07 - 2019-06-14]
+查询结果条数: 397
+
+
+测试数量: 397
+
+
+
+Score, threshold=1.05, sumGain=29.40, total=41, drewCount=14, victoryCount=16, defeatCount=11, victoryRate=0.59, profitRate=1.09, profit=2.40
+12
+startDay=84，zoneDays=7 [2019-05-31 - 2019-06-07]
+查询结果条数: 460
+
+
+测试数量: 460
+
+
+
+Score, threshold=1.05, sumGain=27.54, total=39, drewCount=13, victoryCount=15, defeatCount=11, victoryRate=0.58, profitRate=1.06, profit=1.54
+13
+startDay=91，zoneDays=7 [2019-05-24 - 2019-05-31]
+查询结果条数: 752
+
+
+测试数量: 752
+
+
+
+Score, threshold=1.05, sumGain=37.60, total=66, drewCount=28, victoryCount=21, defeatCount=17, victoryRate=0.55, profitRate=0.99, profit=-0.40
+14
+startDay=98，zoneDays=7 [2019-05-17 - 2019-05-24]
+查询结果条数: 936
+
+
+测试数量: 936
+
+
+
+Score, threshold=1.05, sumGain=44.33, total=72, drewCount=26, victoryCount=25, defeatCount=21, victoryRate=0.54, profitRate=0.96, profit=-1.67
+15
+startDay=105，zoneDays=7 [2019-05-10 - 2019-05-17]
+查询结果条数: 1027
+
+
+测试数量: 1027
+
+
+
+Score, threshold=1.05, sumGain=53.20, total=82, drewCount=27, victoryCount=29, defeatCount=26, victoryRate=0.53, profitRate=0.97, profit=-1.80
+16
+startDay=112，zoneDays=7 [2019-05-03 - 2019-05-10]
+查询结果条数: 1044
+
+
+测试数量: 1044
+
+
+
+Score, threshold=1.05, sumGain=60.31, total=89, drewCount=33, victoryCount=34, defeatCount=22, victoryRate=0.61, profitRate=1.08, profit=4.31
+17
+startDay=119，zoneDays=7 [2019-04-26 - 2019-05-03]
+查询结果条数: 1162
+
+
+测试数量: 1162
+
+
+
+Score, threshold=1.05, sumGain=74.78, total=107, drewCount=34, victoryCount=41, defeatCount=32, victoryRate=0.56, profitRate=1.02, profit=1.78
+18
+startDay=126，zoneDays=7 [2019-04-19 - 2019-04-26]
+查询结果条数: 1238
+
+
+测试数量: 1238
+
+
+
+Score, threshold=1.05, sumGain=70.15, total=97, drewCount=38, victoryCount=39, defeatCount=20, victoryRate=0.66, profitRate=1.19, profit=11.15
+19
+startDay=133，zoneDays=7 [2019-04-12 - 2019-04-19]
+查询结果条数: 1022
+
+
+测试数量: 1022
+
+
+
+Score, threshold=1.05, sumGain=52.95, total=86, drewCount=27, victoryCount=29, defeatCount=30, victoryRate=0.49, profitRate=0.90, profit=-6.05
+20
+startDay=140，zoneDays=7 [2019-04-05 - 2019-04-12]
+查询结果条数: 1133
+
+
+测试数量: 1133
+
+
+
+Score, threshold=1.05, sumGain=65.84, total=93, drewCount=33, victoryCount=37, defeatCount=23, victoryRate=0.62, profitRate=1.10, profit=5.84
+21
+startDay=147，zoneDays=7 [2019-03-29 - 2019-04-05]
+查询结果条数: 1237
+
+
+测试数量: 1237
+
+
+
+Score, threshold=1.05, sumGain=57.74, total=111, drewCount=43, victoryCount=32, defeatCount=36, victoryRate=0.47, profitRate=0.85, profit=-10.26
+22
+startDay=154，zoneDays=7 [2019-03-22 - 2019-03-29]
+查询结果条数: 743
+
+
+测试数量: 743
+
+
+
+Score, threshold=1.05, sumGain=36.60, total=71, drewCount=29, victoryCount=20, defeatCount=22, victoryRate=0.48, profitRate=0.87, profit=-5.40
+23
+startDay=161，zoneDays=7 [2019-03-15 - 2019-03-22]
+查询结果条数: 951
+
+
+测试数量: 951
+
+
+
+Score, threshold=1.05, sumGain=48.15, total=75, drewCount=30, victoryCount=26, defeatCount=19, victoryRate=0.58, profitRate=1.07, profit=3.15
+24
+startDay=168，zoneDays=7 [2019-03-08 - 2019-03-15]
+查询结果条数: 1194
+
+
+测试数量: 1194
+
+
+
+Score, threshold=1.05, sumGain=71.96, total=106, drewCount=38, victoryCount=40, defeatCount=28, victoryRate=0.59, profitRate=1.06, profit=3.96
+25
+startDay=175，zoneDays=7 [2019-03-01 - 2019-03-08]
+查询结果条数: 1083
+
+
+测试数量: 1083
+
+
+
+Score, threshold=1.05, sumGain=56.26, total=82, drewCount=25, victoryCount=31, defeatCount=26, victoryRate=0.54, profitRate=0.99, profit=-0.74
+26
+startDay=182，zoneDays=7 [2019-02-22 - 2019-03-01]
+查询结果条数: 1172
+
+
+测试数量: 1172
+
+
+
+Score, threshold=1.05, sumGain=65.35, total=98, drewCount=35, victoryCount=37, defeatCount=26, victoryRate=0.59, profitRate=1.04, profit=2.35
+27
+startDay=189，zoneDays=7 [2019-02-15 - 2019-02-22]
+查询结果条数: 1132
+
+
+测试数量: 1132
+
+
+
+Score, threshold=1.05, sumGain=59.31, total=91, drewCount=33, victoryCount=32, defeatCount=26, victoryRate=0.55, profitRate=1.02, profit=1.31
+28
+startDay=196，zoneDays=7 [2019-02-08 - 2019-02-15]
+查询结果条数: 1179
+
+
+测试数量: 1179
+
+
+
+Score, threshold=1.05, sumGain=66.19, total=100, drewCount=41, victoryCount=38, defeatCount=21, victoryRate=0.64, profitRate=1.12, profit=7.19
+29
+startDay=203，zoneDays=7 [2019-02-01 - 2019-02-08]
+查询结果条数: 1118
+
+
+测试数量: 1118
+
+
+
+Score, threshold=1.05, sumGain=46.66, total=89, drewCount=32, victoryCount=26, defeatCount=31, victoryRate=0.46, profitRate=0.82, profit=-10.34
+30
+startDay=210，zoneDays=7 [2019-01-25 - 2019-02-01]
+查询结果条数: 1041
+
+
+测试数量: 1041
+
+
+
+Score, threshold=1.05, sumGain=52.34, total=83, drewCount=34, victoryCount=29, defeatCount=20, victoryRate=0.59, profitRate=1.07, profit=3.34
+31
+startDay=217，zoneDays=7 [2019-01-18 - 2019-01-25]
+查询结果条数: 1014
+
+
+测试数量: 1014
+
+
+
+Score, threshold=1.05, sumGain=51.91, total=81, drewCount=37, victoryCount=30, defeatCount=14, victoryRate=0.68, profitRate=1.18, profit=7.91
+32
+startDay=224，zoneDays=7 [2019-01-11 - 2019-01-18]
+查询结果条数: 896
+
+
+测试数量: 896
+
+
+
+Score, threshold=1.05, sumGain=30.55, total=63, drewCount=30, victoryCount=17, defeatCount=16, victoryRate=0.52, profitRate=0.93, profit=-2.45
+33
+startDay=231，zoneDays=7 [2019-01-04 - 2019-01-11]
+查询结果条数: 701
+
+
+测试数量: 701
+
+
+
+Score, threshold=1.05, sumGain=39.55, total=51, drewCount=19, victoryCount=21, defeatCount=11, victoryRate=0.66, profitRate=1.24, profit=7.55
+34
+startDay=238，zoneDays=7 [2018-12-28 - 2019-01-04]
+查询结果条数: 418
+
+
+测试数量: 418
+
+
+
+Score, threshold=1.05, sumGain=17.11, total=32, drewCount=11, victoryCount=10, defeatCount=11, victoryRate=0.48, profitRate=0.81, profit=-3.89
+35
+startDay=245，zoneDays=7 [2018-12-21 - 2018-12-28]
+查询结果条数: 528
+
+
+测试数量: 528
+
+
+
+Score, threshold=1.05, sumGain=27.40, total=39, drewCount=11, victoryCount=16, defeatCount=12, victoryRate=0.57, profitRate=0.98, profit=-0.60
+36
+startDay=252，zoneDays=7 [2018-12-14 - 2018-12-21]
+查询结果条数: 646
+
+
+测试数量: 646
+
+
+
+Score, threshold=1.05, sumGain=36.60, total=53, drewCount=20, victoryCount=20, defeatCount=13, victoryRate=0.61, profitRate=1.11, profit=3.60
+37
+startDay=259，zoneDays=7 [2018-12-07 - 2018-12-14]
+查询结果条数: 771
+
+
+测试数量: 771
+
+
+
+Score, threshold=1.05, sumGain=22.81, total=58, drewCount=35, victoryCount=13, defeatCount=10, victoryRate=0.57, profitRate=0.99, profit=-0.19
+38
+startDay=266，zoneDays=7 [2018-11-30 - 2018-12-07]
+查询结果条数: 929
+
+
+测试数量: 929
+
+
+
+Score, threshold=1.05, sumGain=42.83, total=76, drewCount=30, victoryCount=25, defeatCount=21, victoryRate=0.54, profitRate=0.93, profit=-3.17
+39
+startDay=273，zoneDays=7 [2018-11-23 - 2018-11-30]
+查询结果条数: 889
+
+
+测试数量: 889
+
+
+
+Score, threshold=1.05, sumGain=56.24, total=80, drewCount=29, victoryCount=31, defeatCount=20, victoryRate=0.61, profitRate=1.10, profit=5.24
+40
+startDay=280，zoneDays=7 [2018-11-16 - 2018-11-23]
+查询结果条数: 576
+
+
+测试数量: 576
+
+
+
+Score, threshold=1.05, sumGain=36.78, total=44, drewCount=17, victoryCount=21, defeatCount=6, victoryRate=0.78, profitRate=1.36, profit=9.78
+41
+startDay=287，zoneDays=7 [2018-11-09 - 2018-11-16]
+查询结果条数: 929
+
+
+测试数量: 929
+
+
+
+Score, threshold=1.05, sumGain=42.62, total=64, drewCount=25, victoryCount=24, defeatCount=15, victoryRate=0.62, profitRate=1.09, profit=3.62
+42
+startDay=294，zoneDays=7 [2018-11-02 - 2018-11-09]
+查询结果条数: 1085
+
+
+测试数量: 1085
+
+
+
+Score, threshold=1.05, sumGain=49.54, total=86, drewCount=38, victoryCount=28, defeatCount=20, victoryRate=0.58, profitRate=1.03, profit=1.54
+43
+startDay=301，zoneDays=7 [2018-10-26 - 2018-11-02]
+查询结果条数: 1249
+
+
+测试数量: 1249
+
+
+
+Score, threshold=1.05, sumGain=65.86, total=99, drewCount=33, victoryCount=37, defeatCount=29, victoryRate=0.56, profitRate=1.00, profit=-0.14
+44
+startDay=308，zoneDays=7 [2018-10-19 - 2018-10-26]
+查询结果条数: 1154
+
+
+测试数量: 1154
+
+
+
+Score, threshold=1.05, sumGain=57.56, total=86, drewCount=40, victoryCount=32, defeatCount=14, victoryRate=0.70, profitRate=1.25, profit=11.56
+45
+startDay=315，zoneDays=7 [2018-10-12 - 2018-10-19]
+查询结果条数: 680
+
+
+测试数量: 680
+
+
+
+Score, threshold=1.05, sumGain=26.35, total=50, drewCount=15, victoryCount=14, defeatCount=21, victoryRate=0.40, profitRate=0.75, profit=-8.65
+46
+startDay=322，zoneDays=7 [2018-10-05 - 2018-10-12]
+查询结果条数: 1061
+
+
+测试数量: 1061
+
+
+
+Score, threshold=1.05, sumGain=53.70, total=76, drewCount=25, victoryCount=30, defeatCount=21, victoryRate=0.59, profitRate=1.05, profit=2.70
+47
+startDay=329，zoneDays=7 [2018-09-28 - 2018-10-05]
+查询结果条数: 1218
+
+
+测试数量: 1218
+
+
+
+Score, threshold=1.05, sumGain=54.81, total=100, drewCount=41, victoryCount=32, defeatCount=27, victoryRate=0.54, profitRate=0.93, profit=-4.19
+48
+startDay=336，zoneDays=7 [2018-09-21 - 2018-09-28]
+查询结果条数: 1430
+
+
+测试数量: 1430
+
+
+
+Score, threshold=1.05, sumGain=87.95, total=119, drewCount=33, victoryCount=49, defeatCount=37, victoryRate=0.57, profitRate=1.02, profit=1.95
+49
+startDay=343，zoneDays=7 [2018-09-14 - 2018-09-21]
+查询结果条数: 1175
+
+
+测试数量: 1175
+
+
+
+Score, threshold=1.05, sumGain=73.43, total=111, drewCount=41, victoryCount=42, defeatCount=28, victoryRate=0.60, profitRate=1.05, profit=3.43
+50
+startDay=350，zoneDays=7 [2018-09-07 - 2018-09-14]
+查询结果条数: 957
+
+
+测试数量: 957
+
+
+
+Score, threshold=1.05, sumGain=57.36, total=81, drewCount=29, victoryCount=33, defeatCount=19, victoryRate=0.63, profitRate=1.10, profit=5.36
+51
+startDay=357，zoneDays=7 [2018-08-31 - 2018-09-07]
+查询结果条数: 1177
+
+
+测试数量: 1177
+
+
+
+Score, threshold=1.05, sumGain=57.66, total=91, drewCount=33, victoryCount=32, defeatCount=26, victoryRate=0.55, profitRate=0.99, profit=-0.34
+52
+startDay=364，zoneDays=7 [2018-08-24 - 2018-08-31]
+查询结果条数: 1263
+
+
+测试数量: 1263
+
+
+
+Score, threshold=1.05, sumGain=74.16, total=113, drewCount=43, victoryCount=41, defeatCount=29, victoryRate=0.59, profitRate=1.06, profit=4.16
+53
+startDay=371，zoneDays=7 [2018-08-17 - 2018-08-24]
+查询结果条数: 1226
+
+
+测试数量: 1226
+
+
+
+Score, threshold=1.05, sumGain=54.53, total=96, drewCount=32, victoryCount=30, defeatCount=34, victoryRate=0.47, profitRate=0.85, profit=-9.47
+54
+startDay=378，zoneDays=7 [2018-08-10 - 2018-08-17]
+查询结果条数: 1258
+
+
+测试数量: 1258
+
+
+
+Score, threshold=1.05, sumGain=79.79, total=106, drewCount=36, victoryCount=43, defeatCount=27, victoryRate=0.61, profitRate=1.14, profit=9.79
+55
+startDay=385，zoneDays=7 [2018-08-03 - 2018-08-10]
+查询结果条数: 1142
+
+
+测试数量: 1142
+
+
+
+Score, threshold=1.05, sumGain=59.05, total=74, drewCount=26, victoryCount=32, defeatCount=16, victoryRate=0.67, profitRate=1.23, profit=11.05
+56
+startDay=392，zoneDays=7 [2018-07-27 - 2018-08-03]
+查询结果条数: 1247
+
+
+测试数量: 1247
+
+
+
+Score, threshold=1.05, sumGain=70.15, total=105, drewCount=36, victoryCount=39, defeatCount=30, victoryRate=0.57, profitRate=1.02, profit=1.15
+57
+startDay=399，zoneDays=7 [2018-07-20 - 2018-07-27]
+查询结果条数: 1260
+
+
+测试数量: 1260
+
+
+
+Score, threshold=1.05, sumGain=52.54, total=92, drewCount=34, victoryCount=31, defeatCount=27, victoryRate=0.53, profitRate=0.91, profit=-5.46
+58
+startDay=406，zoneDays=7 [2018-07-13 - 2018-07-20]
+查询结果条数: 1074
+
+
+测试数量: 1074
+
+
+
+Score, threshold=1.05, sumGain=32.21, total=57, drewCount=21, victoryCount=18, defeatCount=18, victoryRate=0.50, profitRate=0.89, profit=-3.79
+59
+startDay=413，zoneDays=7 [2018-07-06 - 2018-07-13]
+查询结果条数: 851
+
+
+测试数量: 851
+
+
+
+Score, threshold=1.05, sumGain=49.49, total=62, drewCount=17, victoryCount=28, defeatCount=17, victoryRate=0.62, profitRate=1.10, profit=4.49
+60
+startDay=420，zoneDays=7 [2018-06-29 - 2018-07-06]
+查询结果条数: 679
+
+
+测试数量: 679
+
+
+
+Score, threshold=1.05, sumGain=24.46, total=37, drewCount=15, victoryCount=13, defeatCount=9, victoryRate=0.59, profitRate=1.11, profit=2.46
+61
+startDay=427，zoneDays=7 [2018-06-22 - 2018-06-29]
+查询结果条数: 528
+
+
+测试数量: 528
+
+
+
+Score, threshold=1.05, sumGain=27.51, total=33, drewCount=7, victoryCount=15, defeatCount=11, victoryRate=0.58, profitRate=1.06, profit=1.51
+62
+startDay=434，zoneDays=7 [2018-06-15 - 2018-06-22]
+查询结果条数: 383
+
+
+测试数量: 383
+
+
+
+Score, threshold=1.05, sumGain=30.14, total=33, drewCount=8, victoryCount=17, defeatCount=8, victoryRate=0.68, profitRate=1.21, profit=5.14
+63
+startDay=441，zoneDays=7 [2018-06-08 - 2018-06-15]
+查询结果条数: 458
+
+
+测试数量: 458
+
+
+
+Score, threshold=1.05, sumGain=36.19, total=47, drewCount=19, victoryCount=20, defeatCount=8, victoryRate=0.71, profitRate=1.29, profit=8.19
+64
+startDay=448，zoneDays=7 [2018-06-01 - 2018-06-08]
+查询结果条数: 526
+
+
+测试数量: 526
+
+
+
+Score, threshold=1.05, sumGain=44.60, total=47, drewCount=11, victoryCount=25, defeatCount=11, victoryRate=0.69, profitRate=1.24, profit=8.60
+65
+startDay=455，zoneDays=7 [2018-05-25 - 2018-06-01]
+查询结果条数: 577
+
+
+测试数量: 577
+
+
+
+Score, threshold=1.05, sumGain=35.75, total=46, drewCount=13, victoryCount=20, defeatCount=13, victoryRate=0.61, profitRate=1.08, profit=2.75
+66
+startDay=462，zoneDays=7 [2018-05-18 - 2018-05-25]
+查询结果条数: 788
+
+
+测试数量: 788
+
+
+
+Score, threshold=1.05, sumGain=44.77, total=57, drewCount=18, victoryCount=25, defeatCount=14, victoryRate=0.64, profitRate=1.15, profit=5.77
+67
+startDay=469，zoneDays=7 [2018-05-11 - 2018-05-18]
+查询结果条数: 1005
+
+
+测试数量: 1005
+
+
+
+Score, threshold=1.05, sumGain=47.67, total=77, drewCount=30, victoryCount=26, defeatCount=21, victoryRate=0.55, profitRate=1.01, profit=0.67
+68
+startDay=476，zoneDays=7 [2018-05-04 - 2018-05-11]
+查询结果条数: 1050
+
+
+测试数量: 1050
+
+
+
+Score, threshold=1.05, sumGain=67.23, total=89, drewCount=22, victoryCount=37, defeatCount=30, victoryRate=0.55, profitRate=1.00, profit=0.23
+69
+startDay=483，zoneDays=7 [2018-04-27 - 2018-05-04]
+查询结果条数: 1185
+
+
+测试数量: 1185
+
+
+
+Score, threshold=1.05, sumGain=69.80, total=95, drewCount=35, victoryCount=39, defeatCount=21, victoryRate=0.65, profitRate=1.16, profit=9.80
+70
+startDay=490，zoneDays=7 [2018-04-20 - 2018-04-27]
+查询结果条数: 1201
+
+
+测试数量: 1201
+
+
+
+Score, threshold=1.05, sumGain=61.98, total=82, drewCount=27, victoryCount=34, defeatCount=21, victoryRate=0.62, profitRate=1.13, profit=6.98
+71
+startDay=497，zoneDays=7 [2018-04-13 - 2018-04-20]
+查询结果条数: 1310
+
+
+测试数量: 1310
+
+
+
+Score, threshold=1.05, sumGain=72.45, total=101, drewCount=36, victoryCount=40, defeatCount=25, victoryRate=0.62, profitRate=1.11, profit=7.45
+72
+startDay=504，zoneDays=7 [2018-04-06 - 2018-04-13]
+查询结果条数: 1177
+
+
+测试数量: 1177
+
+
+
+Score, threshold=1.05, sumGain=46.19, total=102, drewCount=45, victoryCount=26, defeatCount=31, victoryRate=0.46, profitRate=0.81, profit=-10.81
+73
+startDay=511，zoneDays=7 [2018-03-30 - 2018-04-06]
+查询结果条数: 1126
+
+
+测试数量: 1126
+
+
+
+Score, threshold=1.05, sumGain=53.50, total=92, drewCount=39, victoryCount=28, defeatCount=25, victoryRate=0.53, profitRate=1.01, profit=0.50
+74
+startDay=518，zoneDays=7 [2018-03-23 - 2018-03-30]
+查询结果条数: 820
+
+
+测试数量: 820
+
+
+
+Score, threshold=1.05, sumGain=23.55, total=52, drewCount=21, victoryCount=13, defeatCount=18, victoryRate=0.42, profitRate=0.76, profit=-7.45
+75
+startDay=525，zoneDays=7 [2018-03-16 - 2018-03-23]
+查询结果条数: 1025
+
+
+测试数量: 1025
+
+
+
+Score, threshold=1.05, sumGain=67.37, total=83, drewCount=33, victoryCount=37, defeatCount=13, victoryRate=0.74, profitRate=1.35, profit=17.37
+76
+startDay=532，zoneDays=7 [2018-03-09 - 2018-03-16]
+查询结果条数: 1166
+
+
+测试数量: 1166
+
+
+
+Score, threshold=1.05, sumGain=59.22, total=99, drewCount=39, victoryCount=33, defeatCount=27, victoryRate=0.55, profitRate=0.99, profit=-0.78
+77
+startDay=539，zoneDays=7 [2018-03-02 - 2018-03-09]
+查询结果条数: 991
+
+
+测试数量: 991
+
+
+
+Score, threshold=1.05, sumGain=52.86, total=74, drewCount=27, victoryCount=30, defeatCount=17, victoryRate=0.64, profitRate=1.12, profit=5.86
+78
+startDay=546，zoneDays=7 [2018-02-23 - 2018-03-02]
+查询结果条数: 1021
+
+
+测试数量: 1021
+
+
+
+Score, threshold=1.05, sumGain=76.38, total=91, drewCount=26, victoryCount=42, defeatCount=23, victoryRate=0.65, profitRate=1.18, profit=11.38
+79
+startDay=553，zoneDays=7 [2018-02-16 - 2018-02-23]
+查询结果条数: 1062
+
+
+测试数量: 1062
+
+
+
+Score, threshold=1.05, sumGain=49.58, total=81, drewCount=36, victoryCount=29, defeatCount=16, victoryRate=0.64, profitRate=1.10, profit=4.58
+80
+startDay=560，zoneDays=7 [2018-02-09 - 2018-02-16]
+查询结果条数: 1052
+
+
+测试数量: 1052
+
+
+
+Score, threshold=1.05, sumGain=57.28, total=90, drewCount=36, victoryCount=32, defeatCount=22, victoryRate=0.59, profitRate=1.06, profit=3.28
+81
+startDay=567，zoneDays=7 [2018-02-02 - 2018-02-09]
+查询结果条数: 1073
+
+
+测试数量: 1073
+
+
+
+Score, threshold=1.05, sumGain=52.65, total=80, drewCount=32, victoryCount=28, defeatCount=20, victoryRate=0.58, profitRate=1.10, profit=4.65
+82
+startDay=574，zoneDays=7 [2018-01-26 - 2018-02-02]
+查询结果条数: 1045
+
+
+测试数量: 1045
+
+
+
+Score, threshold=1.05, sumGain=51.12, total=75, drewCount=31, victoryCount=28, defeatCount=16, victoryRate=0.64, profitRate=1.16, profit=7.12
+83
+startDay=581，zoneDays=7 [2018-01-19 - 2018-01-26]
+查询结果条数: 910
+
+
+测试数量: 910
+
+
+
+Score, threshold=1.05, sumGain=27.34, total=60, drewCount=30, victoryCount=15, defeatCount=15, victoryRate=0.50, profitRate=0.91, profit=-2.66
+84
+startDay=588，zoneDays=7 [2018-01-12 - 2018-01-19]
+查询结果条数: 820
+
+
+测试数量: 820
+
+
+
+Score, threshold=1.05, sumGain=45.20, total=55, drewCount=11, victoryCount=26, defeatCount=18, victoryRate=0.59, profitRate=1.03, profit=1.20
+85
+startDay=595，zoneDays=7 [2018-01-05 - 2018-01-12]
+查询结果条数: 661
+
+
+测试数量: 661
+
+
+
+Score, threshold=1.05, sumGain=33.43, total=49, drewCount=19, victoryCount=19, defeatCount=11, victoryRate=0.63, profitRate=1.11, profit=3.43
+86
+startDay=602，zoneDays=7 [2017-12-29 - 2018-01-05]
+查询结果条数: 406
+
+
+测试数量: 406
+
+
+
+Score, threshold=1.05, sumGain=34.65, total=35, drewCount=12, victoryCount=19, defeatCount=4, victoryRate=0.83, profitRate=1.51, profit=11.65
+87
+startDay=609，zoneDays=7 [2017-12-22 - 2017-12-29]
+查询结果条数: 398
+
+
+测试数量: 398
+
+
+
+Score, threshold=1.05, sumGain=24.46, total=33, drewCount=14, victoryCount=14, defeatCount=5, victoryRate=0.74, profitRate=1.29, profit=5.46
+88
+startDay=616，zoneDays=7 [2017-12-15 - 2017-12-22]
+查询结果条数: 566
+
+
+测试数量: 566
+
+
+
+Score, threshold=1.05, sumGain=31.12, total=50, drewCount=16, victoryCount=17, defeatCount=17, victoryRate=0.50, profitRate=0.92, profit=-2.88
+89
+startDay=623，zoneDays=7 [2017-12-08 - 2017-12-15]
+查询结果条数: 728
+
+
+测试数量: 728
+
+
+
+Score, threshold=1.05, sumGain=40.61, total=60, drewCount=21, victoryCount=24, defeatCount=15, victoryRate=0.62, profitRate=1.04, profit=1.61
+90
+startDay=630，zoneDays=7 [2017-12-01 - 2017-12-08]
+查询结果条数: 806
+
+
+测试数量: 806
+
+
+
+Score, threshold=1.05, sumGain=47.86, total=68, drewCount=28, victoryCount=26, defeatCount=14, victoryRate=0.65, profitRate=1.20, profit=7.86
+91
+startDay=637，zoneDays=7 [2017-11-24 - 2017-12-01]
+查询结果条数: 1003
+
+
+测试数量: 1003
+
+
+
+Score, threshold=1.05, sumGain=50.98, total=86, drewCount=33, victoryCount=29, defeatCount=24, victoryRate=0.55, profitRate=0.96, profit=-2.02
+92
+startDay=644，zoneDays=7 [2017-11-17 - 2017-11-24]
+查询结果条数: 951
+
+
+测试数量: 951
+
+
+
+Score, threshold=1.05, sumGain=59.53, total=90, drewCount=37, victoryCount=33, defeatCount=20, victoryRate=0.62, profitRate=1.12, profit=6.53
+93
+startDay=651，zoneDays=7 [2017-11-10 - 2017-11-17]
+查询结果条数: 659
+
+
+测试数量: 659
+
+
+
+Score, threshold=1.05, sumGain=35.59, total=61, drewCount=25, victoryCount=20, defeatCount=16, victoryRate=0.56, profitRate=0.99, profit=-0.41
+94
+startDay=658，zoneDays=7 [2017-11-03 - 2017-11-10]
+查询结果条数: 951
+
+
+测试数量: 951
+
+
+
+Score, threshold=1.05, sumGain=61.50, total=87, drewCount=31, victoryCount=35, defeatCount=21, victoryRate=0.63, profitRate=1.10, profit=5.50
+95
+startDay=665，zoneDays=7 [2017-10-27 - 2017-11-03]
+查询结果条数: 1055
+
+
+测试数量: 1055
+
+
+
+Score, threshold=1.05, sumGain=37.08, total=83, drewCount=41, victoryCount=21, defeatCount=21, victoryRate=0.50, profitRate=0.88, profit=-4.92
+96
+startDay=672，zoneDays=7 [2017-10-20 - 2017-10-27]
+查询结果条数: 1244
+
+
+测试数量: 1244
+
+
+
+Score, threshold=1.05, sumGain=57.00, total=107, drewCount=45, victoryCount=33, defeatCount=29, victoryRate=0.53, profitRate=0.92, profit=-5.00
+97
+startDay=679，zoneDays=7 [2017-10-13 - 2017-10-20]
+查询结果条数: 1124
+
+
+测试数量: 1124
+
+
+
+Score, threshold=1.05, sumGain=53.73, total=98, drewCount=34, victoryCount=30, defeatCount=34, victoryRate=0.47, profitRate=0.84, profit=-10.27
+98
+startDay=686，zoneDays=7 [2017-10-06 - 2017-10-13]
+查询结果条数: 723
+
+
+测试数量: 723
+
+
+
+Score, threshold=1.05, sumGain=45.60, total=58, drewCount=21, victoryCount=24, defeatCount=13, victoryRate=0.65, profitRate=1.23, profit=8.60
+99
+startDay=693，zoneDays=7 [2017-09-29 - 2017-10-06]
+查询结果条数: 1057
+
+
+测试数量: 1057
+
+
+
+Score, threshold=1.05, sumGain=49.95, total=89, drewCount=34, victoryCount=29, defeatCount=26, victoryRate=0.53, profitRate=0.91, profit=-5.05
+100
+startDay=700，zoneDays=7 [2017-09-22 - 2017-09-29]
+查询结果条数: 1221
+
+
+测试数量: 1221
+
+
+
+Score, threshold=1.05, sumGain=59.45, total=102, drewCount=34, victoryCount=32, defeatCount=36, victoryRate=0.47, profitRate=0.87, profit=-8.55
+
+[0.92857134, 1.0889815, 1.0591346, 0.98947364, 0.9636413, 0.9672274, 1.077009, 1.0243835, 1.1889405, 0.8974576, 1.097375, 0.8491912, 0.8714287, 1.07, 1.0581617, 0.98710525, 1.0373411, 1.0226295, 1.1217798, 0.8185526, 1.0681632, 1.1798296, 0.9257576, 1.2360157, 0.8148809, 0.9784821, 1.1090908, 0.9919565, 0.9311414, 1.1026961, 1.3624074, 1.0928205, 1.0320313, 0.997841, 1.2511958, 0.7528571, 1.0529414, 0.9289831, 1.0227033, 1.0490357, 1.103125, 0.99413806, 1.0594643, 0.85207033, 1.1398215, 1.2302083, 1.0166664, 0.90581894, 0.8947916, 1.0997221, 1.1119318, 1.0578847, 1.2055, 1.2924107, 1.238889, 1.0833334, 1.1480129, 1.0143085, 1.0034701, 1.1633334, 1.1268182, 1.1145769, 0.8103948, 1.0094341, 0.75967747, 1.3474, 0.9869584, 1.1246278, 1.1751152, 1.1018889, 1.060787, 1.0967709, 1.1618183, 0.9113334, 1.0272727, 1.1142501, 1.5065218, 1.2875, 0.91522056, 1.0412179, 1.1964376, 0.96188676, 1.1232076, 0.9885417, 1.0981696, 0.8827381, 0.91935474, 0.839492, 1.2324322, 0.9081819, 0.8742648]
+均值:1.047, 最小值:0.753, 最大值:1.507, 25分位数:0.963, 50分位数:1.053, 75分位数:1.118, 标准差:0.014
+
+BUILD SUCCESSFUL in 4m 55s
+2 actionable tasks: 1 executed, 1 up-to-date
+
+
+cat test.log |grep "profit=" |awk '{print substr($4,7),substr($10, 8)}' |awk '{split($0,a,",");print a[1],a[2]};' |awk 'BEGIN{total=0;gain=0}{total=total+$1;gain=gain+$2;}END{print total, gain}'
